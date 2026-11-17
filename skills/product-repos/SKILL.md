@@ -33,7 +33,7 @@ Owner patterns, only when the CEO asks for one (never propose it): an item with 
 
 ## Planned repos
 
-A repo marked `planned: true` does not exist yet. Before the first write to it, check once with `gh repo view <slug>`. While it does not exist, skip each issue or tracker write for it with one line (this is not a failure) and make sure an A item asks the CEO to create it with the exact command, for example `gh repo create <slug> --private` (add one unless it is already open). Once it exists, remove `planned: true` from `org.yaml` with notice, clear the A item, and ask for its clone path.
+A repo marked `planned: true` does not exist yet. Before the first write to it, check once with `gh repo view <slug>`. While it does not exist, skip each issue or tracker write for it with one line (this is not a failure) and make sure an A item of kind `{do}` asks the CEO to create it with the exact command, for example `gh repo create <slug> --private` (add one unless it is already open). Once it exists, remove `planned: true` from `org.yaml` with notice, clear the A item, and ask for its clone path.
 
 ## Clone paths
 
@@ -47,6 +47,6 @@ Write the answers to `repo_paths:` in that file, creating it if missing (each sl
 
 ## Tools
 
-Use `gh` with `-R <slug>` for a repo and `gh project <subcommand> --owner <owner>` for the tracker. If `gh` is missing, not signed in, or lacks the `project` scope (`gh auth status` shows it), say so once, add an A item with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, and carry on without tracker writes. Never guess what the tracker holds.
+Use `gh` with `-R <slug>` for a repo and `gh project <subcommand> --owner <owner>` for the tracker. If `gh` is missing, not signed in, or lacks the `project` scope (`gh auth status` shows it), say so once, add an A item of kind `{do}` with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, and carry on without tracker writes. Never guess what the tracker holds.
 
 Issue and tracker writes themselves follow the `intake` skill (issue route) and the `record-decision` skill.

@@ -72,7 +72,7 @@ Full steps: [Install](#3-install) · [First run](#4-first-run) · [Daily use](#5
 | **company** | A company, or a **holding**: it follows its companies without changing them, gives you one pending list across them, and sets shared rules (approvals, model limits) they follow. |
 | **personal** | Your own life: health, money, paperwork. Personal data stays on your computer, out of git. Suggested departments (health, money, paperwork) only prepare and remember: your doctor, accountant or lawyer decides, and they never file, sign or pay. Never joins a holding. |
 
-You pick each department, or none. Take the suggested ones as they are, change what one covers, write your own from scratch, or bring agents and skills you already have; setup warns you when two departments cover the same work. Except for a holding and personal, setup also suggests a design and brand department: its first task can be to draw your org chart, which your chief of staff offers at the first session.
+You pick each department, or none. Take the suggested ones as they are, change what one covers, write your own from scratch, or bring agents and skills you already have; setup warns you when two departments cover the same work. At the first session your chief of staff offers to draw your org chart from the setup, no extra department needed.
 
 ## 2. What you need
 
@@ -113,7 +113,7 @@ claude plugin marketplace add iamgiolaga/ceo-of-agents
 claude plugin install ceo-of-agents@ceo-of-agents --scope project
 ```
 
-The plugin is then turned on in the folder's `.claude/settings.json`, so it loads only in your hq. Install it once, at project scope only: a second copy at another scope can stay on an older version and be the one that loads ([how to remove one](#6-update)). On another computer, run the same commands inside your hq's clone.
+The plugin is then turned on in the folder's `.claude/settings.json`, so it loads only in your hq. Install it once, at project scope only: a second copy at another scope can stay on an older version and be the one that loads ([how to remove one](#6-update)). On another computer, or after moving the folder, run the same commands inside your hq's clone: being turned on in `.claude/settings.json` is not enough, the plugin must be installed for that folder.
 
 ## 4. First run
 

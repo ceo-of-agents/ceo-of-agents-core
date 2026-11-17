@@ -15,6 +15,7 @@ to: cos
 date: YYYY-MM-DD
 needs_ceo_decision: yes | no
 proposed_card: <one-line question, or none>
+title: <short plain title>   # optional
 initiative: <slug>   # only when the brief named an initiative
 ---
 

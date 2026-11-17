@@ -28,7 +28,7 @@ Only the chief of staff (CoS) runs this skill. A department never changes its ow
    - never one listed in `accounts.forbidden_connectors` in `org.yaml`;
    - only a connector of this org's own accounts (see "Account separation" in `CLAUDE.md`);
    - an advisory department gets only read-only connector tools, named one by one, never a whole server (`mcp__<server>__*`).
-6. Write the decision card (`company/decision-queue.md`, own D code) with the draft, the reasons and a recommendation, and add it to "Waiting on the CEO".
+6. Write the decision card (`company/decision-queue.md`, own D code) with the draft, the reasons and a recommendation, and add it to "Open decisions" and to "Waiting on the CEO" as `- <ORG_ID>-D<n> [urgency] {decide}: decide <question>, see decision queue (since YYYY-MM-DD)` (`${CLAUDE_PLUGIN_ROOT}/schemas/state.md`).
 
 A reply from the CEO to a denied permission is not a grant by itself: do not widen an allowlist on the strength of it; the grant goes through the card.
 
