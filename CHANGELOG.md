@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.14.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.13.0...v0.14.0) (2026-11-17)
+
+
+### Features
+
+* tag pending items by kind, pre-allow plugin skills and check boot budgets with a script ([#63](https://github.com/iamgiolaga/ceo-of-agents/issues/63)) ([f90faed](https://github.com/iamgiolaga/ceo-of-agents/commit/f90faed5ebb99844e2f8ce996df15c399b3c1ca9))
+
 ## [0.13.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.12.0...v0.13.0) (2026-11-07)
 
 
