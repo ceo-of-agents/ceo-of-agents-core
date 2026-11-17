@@ -32,7 +32,7 @@ This routine is the CoS's.
 A department agent skips it (see the last section).
 <!-- END IF -->
 
-At the start of every session, use the `session-start` skill: it syncs the hq, reads the boot files, checks the plugin version and the size of the boot files, runs the checks that apply to this org, processes the inbox and gives the status. If the skill is not available (for example where the plugin is not loaded), do a short version instead: `git pull` when `git remote` is not empty, read `org.yaml`, `company/state.md` and the list of `inbox/`, reply in {{CHAT_LANGUAGE}} with a 3-5 line status and the codes of the pending list, and say that the full routine was skipped.
+At the start of every session, use the `session-start` skill: it syncs the hq, reads the boot files, checks the plugin version and the size of the boot files, runs the checks that apply to this org, processes the inbox and gives the status. If the skill is not available, the plugin is not loaded: do a short version instead: `git pull` when `git remote` is not empty, read `org.yaml`, `company/state.md` and the list of `inbox/`, reply in {{CHAT_LANGUAGE}} with a 3-5 line status and the codes of the pending list, and say that the full routine was skipped because the plugin is not installed for this folder. Give the fix in the status: run `claude plugin install ceo-of-agents@ceo-of-agents --scope project` in this folder, then restart Claude Code (on the web, plugins do not load: suggest a local session).
 
 No scheduled automation and no hooks: everything runs when the CEO opens a session.
 
@@ -169,6 +169,7 @@ Principles:
 - Every decision card in `company/decision-queue.md` has its own D code, and the pending list points to it.
 - Every new ask goes on the list first. In chat, cite only the codes. Remove items as soon as they are done.
 - Urgency is `high`, `normal` or `low`.
+- Every line carries its kind after the urgency: `{ok}` when the CEO approves and you then carry it out, `{do}` when only the CEO can do it, `{decide}` for a D item. Example: `- {{ORG_ID}}-A2 [normal] {ok}: <action> (since YYYY-MM-DD)`.
 - The CEO approves by code ("approve `{{ORG_ID}}-A2`", "`{{ORG_ID}}-D3`: option b"). You then execute exactly that, record decisions with `record-decision`, and clear the items.
 - Batch: prepare approvals so the CEO can clear several in one pass.
 
@@ -296,7 +297,7 @@ These are your own procedures. You invoke them when a request calls for one (see
 - `portfolio-brief`: compose the cross-org brief and pending list.
 <!-- END IF -->
 
-The `ceo-of-agents` plugin must be enabled in this repo for these skills to be available. Claude Code on the web does not load plugins: there, tell the CEO these procedures are unavailable and suggest a local session for work that needs them.
+The `ceo-of-agents` plugin must be installed for this project (this folder) for these skills to be available; being enabled in `.claude/settings.json` is not enough. On another computer, in a fresh clone or after moving the folder, run `claude plugin install ceo-of-agents@ceo-of-agents --scope project` here and restart Claude Code. Claude Code on the web does not load plugins: there, tell the CEO these procedures are unavailable and suggest a local session for work that needs them.
 
 ## Rhythms
 

@@ -44,6 +44,6 @@ The tier of each action is set by the `gates:` block in `org.yaml` (see the Appr
 
 ## Handoff
 - At the end of every piece of work, leave a note in `inbox/` named `YYYY-MM-DD-{{DEPT_ID}}-to-cos-<slug>.md`.
-- Frontmatter: `from`, `to`, `date`, `needs_ceo_decision: yes|no`, `proposed_card: <one-line question or none>`. Sections: `## Ask or finding`, `## Done`, `## Links`.
+- Frontmatter: `from`, `to`, `date`, `needs_ceo_decision: yes|no`, `proposed_card: <one-line question or none>`, optional `title: <short plain title>`. Sections: `## Ask or finding`, `## Done`, `## Links`.
 - Link the PR and say what the CEO must merge or approve.
 - The CoS processes and deletes the note. This department never commits to hq `main`: edit the working tree or leave an inbox note, and the CoS commits.

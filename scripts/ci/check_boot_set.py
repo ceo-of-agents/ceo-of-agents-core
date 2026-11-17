@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+"""Check scripts/check-boot-set.sh against schemas/boot-set.md.
+
+Rules:
+- The budgets table in schemas/boot-set.md and the block between
+  "# BUDGETS BEGIN" and "# BUDGETS END" in the script name the same files with
+  the same byte budgets, and each row's KiB figure times 1024 equals its bytes.
+- The script behaves as documented on small fixture hqs (budgets, long lines in
+  characters, pending line groups, missing files, exit codes).
+"""
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+SCHEMA = ROOT / "schemas" / "boot-set.md"
+SCRIPT = ROOT / "scripts" / "check-boot-set.sh"
+ROW = re.compile(r"^\|\s*(`[^`]+`|Whole boot set)\s*\|\s*(\d+) KiB \(([\d,]+) bytes\)\s*\|")
+
+
+def schema_budgets(errors):
+    budgets = {}
+    for line in SCHEMA.read_text(encoding="utf-8").splitlines():
+        match = ROW.match(line)
+        if not match:
+            continue
+        name, kib, raw = match.groups()
+        name = "TOTAL" if name == "Whole boot set" else name.strip("`")
+        value = int(raw.replace(",", ""))
+        if int(kib) * 1024 != value:
+            errors.append(f"schemas/boot-set.md: {name}: {kib} KiB is not {value} bytes")
+        budgets[name] = value
+    return budgets
+
+
+def script_budgets(errors):
+    text = SCRIPT.read_text(encoding="utf-8")
+    block = re.search(r"# BUDGETS BEGIN\n(.*?)# BUDGETS END", text, re.DOTALL)
+    if not block:
+        errors.append("scripts/check-boot-set.sh: no # BUDGETS BEGIN / # BUDGETS END block")
+        return {}
+    budgets = {}
+    for match in re.finditer(r"([\w./-]+) (\d+)", block.group(1)):
+        budgets[match.group(1)] = int(match.group(2))
+    return budgets
+
+
+def run(target):
+    proc = subprocess.run(["sh", str(SCRIPT), str(target)], capture_output=True, text=True, encoding="utf-8")
+    return proc.returncode, proc.stdout
+
+
+def build(root, files):
+    for rel, content in files.items():
+        path = root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content.encode("utf-8"))
+
+
+GOOD_STATE = (
+    "---\nlast_updated: 2026-01-01\n---\n# State\n\n## Waiting on the CEO\n"
+    "- ACME-A1 [high] {ok}: Approve the listing\n"
+    "- ACME-A2 [low] {do}: Rename the folder\n"
+    "- ACME-D1 [normal] {decide}: Pick a name\n\n## Open decisions\n- none\n"
+)
+
+
+def hq(state=GOOD_STATE, **extra):
+    files = {"CLAUDE.md": "x\n", "org.yaml": "a: 1\n", "company/vision.md": "v\n",
+             "company/strategy.md": "s\n", "company/state.md": state,
+             "company/decision-queue.md": "q\n", "accounts.local.yaml": "p: 1\n"}
+    files.update(extra)
+    return files
+
+
+def pending(*lines):
+    return "## Waiting on the CEO\n" + "".join(line + "\n" for line in lines) + "\n## Next\n"
+
+
+def behaviour(errors):
+    def case(label, files, checks, code=0):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            build(root, files)
+            got, out = run(root)
+        if got != code:
+            errors.append(f"{label}: exit {got}, expected {code}")
+        for needle in checks:
+            if needle not in out:
+                errors.append(f"{label}: output lacks {needle!r}")
+
+    case("clean hq", hq(), ["verdict: ok", "pending lines not in the line format: 0"])
+    case("at budget", hq(**{"org.yaml": "a" * 6144}), ["org.yaml: 6144 bytes, budget 6144: ok"])
+    case("one byte over", hq(**{"org.yaml": "a" * 6145}), ["over by 1 bytes", "verdict: 1 issue(s)"])
+    case("300 characters", hq(state=GOOD_STATE + "é" * 300 + "\n"), ["lines over 300 characters: 0"])
+    case("301 characters", hq(state=GOOD_STATE + "é" * 301 + "\n"), ["lines over 300 characters: 1", "(301 characters)"])
+    case("untagged A line", hq(state=pending("- ACME-A2 [high]: Approve the store listing")),
+         ["pending lines without a kind: 1", "pending lines whose kind does not fit the code: 0", "pending lines not in the line format: 0"])
+    case("A with decide", hq(state=pending("- ACME-A2 [high] {decide}: Approve it")),
+         ["pending lines without a kind: 0", "pending lines whose kind does not fit the code: 1", "pending lines not in the line format: 0"])
+    case("junk line", hq(state=pending("- just something")),
+         ["pending lines without a kind: 0", "pending lines whose kind does not fit the code: 0", "pending lines not in the line format: 1"])
+    case("many long lines", hq(state=GOOD_STATE + ("w" * 301 + "\n") * 5),
+         ["lines over 300 characters: 5", "and 2 more"])
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        files = hq()
+        del files["accounts.local.yaml"]
+        build(root, files)
+        _, out = run(root)
+        if "accounts.local.yaml: missing, counted as 0 bytes" not in out:
+            errors.append("missing file: not reported as missing, counted as 0 bytes")
+        got, _ = run(root / "nope")
+        if got != 2:
+            errors.append(f"non-directory argument: exit {got}, expected 2")
+
+
+def main():
+    errors = []
+    schema = schema_budgets(errors)
+    script = script_budgets(errors)
+    if schema != script:
+        for name in sorted(set(schema) | set(script)):
+            if schema.get(name) != script.get(name):
+                errors.append(f"budget {name}: schemas/boot-set.md has {schema.get(name)}, scripts/check-boot-set.sh has {script.get(name)}")
+    if not schema:
+        errors.append("schemas/boot-set.md: no budgets table rows found")
+    behaviour(errors)
+    for error in errors:
+        print(f"error: {error}")
+    print(f"{len(schema)} budgets in the schema; {len(script)} in the script; {len(errors)} errors")
+    return 1 if errors else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

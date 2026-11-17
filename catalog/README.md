@@ -33,13 +33,13 @@ The catalog holds starting templates for departments. Each entry has two files:
 
 Suggestions only. The wizard shows the line for the chosen purpose next to the list above; nothing is preselected and the CEO still picks each department or none. This table is the single source the wizard reads.
 
-Org chart reason: wherever `design-brand` is suggested, the wizard shows this reason with it: its first task can be to draw the org chart of this org (you, your chief of staff, each department and how work flows between them), a picture that helps you understand and explain the org you just set up. For `job` it adds that the chart is for you, not something that speaks for your employer. When `design-brand` is picked, the chief of staff proposes the org chart as its first task at the first session, and runs it only if you say yes.
+`design-brand` is suggested only for visual and brand work: identity, assets, voice rules and review of what the public sees. It is never suggested to draw the org chart: at the first session the chief of staff offers to draw that itself from `org.yaml`, with or without a design department; when one exists, it can turn the chart into a polished picture for sharing.
 
 | Purpose and level | Suggested departments |
 |---|---|
-| `job` (company level) | `operations` (recurring obligations and work tools); `design-brand` (org chart reason; the chart is for the CEO, not a deliverable that speaks for the employer); `engineering` (only if the job is technical); custom departments that mirror the CEO's own work streams. Not suggested: `business`, `growth-social`, `legal`, `finance`, `tax` (they speak for the employer or cover the employer's own functions). |
-| `product` (company level) | `engineering`, `design-brand` (also for the org chart reason), `growth-social`, `business` |
-| `startup` (company level) | `engineering`, `business`, `design-brand` (also for the org chart reason), `growth-social`, `legal`, `finance` |
-| `company` (company level) | `engineering`, `business`, `legal`, `finance`, `tax`, `operations`, `design-brand` (org chart reason) |
+| `job` (company level) | `operations` (recurring obligations and work tools); `engineering` (only if the job is technical); custom departments that mirror the CEO's own work streams. Not suggested: `business`, `growth-social`, `legal`, `finance`, `tax` (they speak for the employer or cover the employer's own functions), `design-brand` (the employer owns its brand). |
+| `product` (company level) | `engineering`, `design-brand` (visual identity and assets), `growth-social`, `business` |
+| `startup` (company level) | `engineering`, `business`, `design-brand` (visual identity and assets), `growth-social`, `legal`, `finance` |
+| `company` (company level) | `engineering`, `business`, `legal`, `finance`, `tax`, `operations`, `design-brand` (when the company has a brand or a public face to look after) |
 | `company` (holding level) | None. Departments are optional for a holding; do not suggest any. |
 | `personal` (company level) | `health`, `money`, `paperwork` (advisory: they prepare and remember, the professional decides); custom departments for other areas of the CEO's life. Not suggested: `legal`, `finance`, `tax` (they cover a company's functions; `money` and `paperwork` cover the personal side), `engineering`, `design-brand`, `business`, `growth-social`, `operations` (they work for an organization). |

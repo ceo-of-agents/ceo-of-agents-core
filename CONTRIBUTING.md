@@ -44,6 +44,7 @@ CI runs on every pull request and on `main`:
 | Every JSON and YAML file, and every Markdown frontmatter, parses | `scripts/ci/check_syntax.py` |
 | Plugin manifest and marketplace file are valid and agree; every skill has a name and description; every marked version line matches `plugin.json` | `scripts/ci/check_manifest.py` |
 | Every version has its migration file and its entry in `migrations/README.md` | `scripts/ci/check_migrations.py` |
+| The boot-set check script keeps its budgets in sync with `schemas/boot-set.md` and passes its behaviour tests | `scripts/ci/check_boot_set.py` |
 | Relative links and anchors in Markdown resolve (external links are not checked, to keep CI stable) | `scripts/ci/check_links.py` |
 
 Run them locally before pushing (Python 3.9 or later and PyYAML):
@@ -53,6 +54,7 @@ python3 -m pip install pyyaml
 python3 scripts/ci/check_syntax.py
 python3 scripts/ci/check_manifest.py
 python3 scripts/ci/check_migrations.py
+python3 scripts/ci/check_boot_set.py
 python3 scripts/ci/check_links.py
 ```
 

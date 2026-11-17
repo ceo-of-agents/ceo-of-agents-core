@@ -56,7 +56,7 @@ Gates live in `org.yaml` and are summarized in `CLAUDE.md`. Three tiers: free (d
 
 ## The pending list and codes
 
-"Waiting on the CEO" in `company/state.md` is the one list. Actions are `{{ORG_ID}}-A<n>`, decisions are `{{ORG_ID}}-D<n>`. Numbers grow monotonically and are never reused.
+"Waiting on the CEO" in `company/state.md` is the one list. Actions are `{{ORG_ID}}-A<n>`, decisions are `{{ORG_ID}}-D<n>`. Numbers grow monotonically and are never reused. Each line also says what it needs from the CEO: `{ok}` (approve, then the CoS does it), `{do}` (the CEO does it) or `{decide}` (a decision card).
 
 ## What lives where
 
@@ -85,11 +85,11 @@ A department leaves one file per handoff in `inbox/` (format in `inbox/README.md
 
 ## Working surfaces
 
-Full support: Claude Code on your own machine with the plugin enabled (terminal, the desktop app's Code tab, VS Code, JetBrains through its terminal). Claude Code on the web loads this hq's `CLAUDE.md` and `.claude/agents/` but not the plugin, so the CoS procedures are unavailable there. Chat-only surfaces without repo write access are read-only; their output comes back as files in `inbox/`.
+Full support: Claude Code on your own machine with the plugin installed for this folder (terminal, the desktop app's Code tab, VS Code, JetBrains through its terminal). Claude Code on the web loads this hq's `CLAUDE.md` and `.claude/agents/` but not the plugin, so the CoS procedures are unavailable there. Chat-only surfaces without repo write access are read-only; their output comes back as files in `inbox/`.
 
 ## Plugin requirement
 
-The `ceo-of-agents` plugin must be enabled in this hq. The CoS procedures (`session-start`, `intake`, `record-decision`, `weekly-brief`, `hq-version`, `departments`, `product-repos`, `initiatives`) come from it. They are hidden from the `/` menu: the CEO never types them, the CoS invokes them.
+The `ceo-of-agents` plugin must be installed for this hq's folder (`claude plugin install ceo-of-agents@ceo-of-agents --scope project`, run in the folder; repeat it on each computer and after moving the folder). Enabled in `.claude/settings.json` alone, it does not load. `.claude/settings.json` also allows `Skill(ceo-of-agents:*)`, so the procedures run without a prompt, also in non-interactive runs (`claude -p`). Claude Code applies that rule only once the folder is trusted: open it once in an interactive Claude Code session and accept the trust prompt (setup does this for the folder it runs in; a fresh clone needs it once). The CoS procedures (`session-start`, `intake`, `record-decision`, `weekly-brief`, `hq-version`, `departments`, `product-repos`, `initiatives`) come from it. They are hidden from the `/` menu: the CEO never types them, the CoS invokes them.
 <!-- IF holding -->
 The holding also uses the `portfolio-brief` procedure.
 <!-- END IF -->

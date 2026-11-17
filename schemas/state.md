@@ -28,7 +28,7 @@ An empty section body is the single line `- none`.
 
 ## Line formats
 
-Every line stays under 300 characters, frontmatter included (budget: `schemas/boot-set.md`). An item that needs more keeps one line and links a note for the detail.
+Every line stays at most 300 characters, frontmatter included (budget: `schemas/boot-set.md`). An item that needs more keeps one line and links a note for the detail.
 
 Products and status:
 `- <product>: <status in one line> (as of YYYY-MM-DD)`
@@ -47,8 +47,19 @@ Open decisions (one line per open card in decision-queue.md):
 The card in decision-queue.md carries the same fact as `- proposed_by: <dept-id|cos>` or `- needs analysis by: <dept-id>` (exactly one). Append ` [escalate: holding]` when the card has `escalate: holding` (company level only).
 
 Waiting on the CEO (THE pending list: every open A item and every open D item):
-`- ACME-A2 [high]: <exact action: where, what, link> (since YYYY-MM-DD)`
-`- ACME-D3 [normal]: decide <question>, see decision queue (since YYYY-MM-DD)`
+`- ACME-A2 [high] {ok}: <what the CoS will do once the CEO approves> (since YYYY-MM-DD)`
+`- ACME-A4 [normal] {do}: <exact action the CEO performs: where, what, link> (since YYYY-MM-DD)`
+`- ACME-D3 [normal] {decide}: decide <question>, see decision queue (since YYYY-MM-DD)`
+
+The kind, in braces right after the urgency, tells a reader (or a script, or a front-end) what the item needs from the CEO:
+
+| Kind | Code | Meaning | The CEO answers |
+|---|---|---|---|
+| `ok` | A | An approval: the CoS (or a department) carries out the action once the CEO says yes | "approve ACME-A2" |
+| `do` | A | A task only the CEO can perform (a click in a console, a signature, a command on their computer, an answer only they have) | "ACME-A4 done" |
+| `decide` | D | A decision card in `company/decision-queue.md` | "ACME-D3: option b" |
+
+Every line has exactly one kind. An A item is `ok` or `do`; a D item is always `decide`.
 
 ## Codes
 
@@ -70,7 +81,7 @@ org_id: ACME
 level: company
 last_updated: 2026-01-15
 framework_version: 0.9.0
-next_action: 3
+next_action: 5
 next_decision: 4
 ---
 
@@ -90,8 +101,9 @@ next_decision: 4
 - ACME-D3: Adopt usage-based pricing for the beta? (since 2026-01-10; needs analysis by business) [escalate: holding]
 
 ## Waiting on the CEO
-- ACME-A2 [high]: Approve the store listing in the developer console, Listings > Draft > Approve (since 2026-01-13)
-- ACME-D3 [normal]: decide pricing model for the beta, see decision queue (since 2026-01-10)
+- ACME-A2 [high] {do}: Approve the store listing in the developer console, Listings > Draft > Approve (since 2026-01-13)
+- ACME-A4 [normal] {ok}: approve merging the release pull request https://github.com/acme/app/pull/12 (since 2026-01-14)
+- ACME-D3 [normal] {decide}: decide pricing model for the beta, see decision queue (since 2026-01-10)
 ```
 
 ## Validation checklist
@@ -101,6 +113,7 @@ next_decision: 4
 - The five H2 headings exist, spelled exactly, in the stated order, with no extra H2.
 - No section is empty: use `- none`.
 - Every code starts with `<org_id>-A` or `<org_id>-D` followed by an integer; no code is below the `next_*` counters' history (all issued numbers are less than `next_action` / `next_decision`).
+- Every line in Waiting on the CEO has a kind: `{ok}` or `{do}` for an A code, `{decide}` for a D code (`scripts/check-boot-set.sh` in the plugin reports the lines that do not).
 - No code appears twice within a section; no code is ever reused for a different item.
 - Every open card in decision-queue.md has one line in Open decisions and one D line in Waiting on the CEO; every D line points to a card.
 - Every Key numbers line has a source and date, or says `unknown (no source yet)`.

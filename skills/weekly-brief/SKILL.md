@@ -2,7 +2,7 @@
 name: weekly-brief
 description: On-demand weekly brief for one org hq. Reads state, decision queue, recent decisions, inbox, metrics, initiatives and (read-only) the tracker, issues and PRs of registered product repos, runs a hygiene check (files over budget, old documents, long-open pending items, idle initiatives, contradictions, stale claims, orphans, missing links), writes company/briefs/YYYY-MM-DD-weekly.md with headline, changes, numbers with sources, risks, hygiene with a proposed archive list, what waits on the CEO and a proposed next week, and gives a short chat summary. Archives only what the CEO approves. Use only when the CEO asks for a briefing or weekly update; it never runs on a schedule.
 user-invocable: false
-allowed-tools: Read Write Edit Grep Glob Bash(git remote:*) Bash(git pull:*) Bash(git log:*) Bash(git status:*) Bash(git diff:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(git -C * rev-list *) Bash(mkdir:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(gh project item-list:*) Bash(gh issue list:*) Bash(gh pr list:*)
+allowed-tools: Read Write Edit Grep Glob Bash(git remote:*) Bash(git pull:*) Bash(git log:*) Bash(git status:*) Bash(git diff:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(git -C * rev-list *) Bash(mkdir:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(sh *check-boot-set.sh*) Bash(gh project item-list:*) Bash(gh issue list:*) Bash(gh pr list:*)
 ---
 
 # weekly-brief
@@ -26,7 +26,7 @@ On demand only: no scheduled automation. Never invent numbers; every number carr
 4. Numbers only from `company/state.md` Key numbers and `metrics/README.md`, with source and as-of date. If a number is older than the period, show the last known value with its date and mark it stale. If a number is unknown, write `unknown (no source yet)`.
 
 5. Hygiene. A fixed check that keeps the hq lean and findable. It reports and proposes; it never archives, trims or rewrites anything on its own. Thresholds: a document is old when its `as_of` is more than 90 days before today; a pending item is long-open when its `since` date is more than 14 days before today; an initiative is idle when its `state` is `active` and both its `updated` date and the last commit in its folder (`git log -1 --format=%cs -- initiatives/<slug>`) are more than 14 days before today. Documents are the files in `departments/` and `initiatives/` other than charters, `status.md` and `README.md`; never look in `archive/`.
-   - Boot files over budget: measure them as the `session-start` skill does (step 4), against `${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`.
+   - Boot files over budget and malformed pending lines: run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-boot-set.sh"` from the hq root, as the `session-start` skill does (step 4), and report its output as it is; never compute the budgets yourself. Rules: `${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`.
    - Old documents: Grep the frontmatter for `status: current` and `as_of:`, and list the current documents whose `as_of` is old. Count the documents with no lifecycle frontmatter, naming at most three.
    - Long-open pending items: the items in "Waiting on the CEO" whose `since` date is old, except the archive item of step 7. An item with no `since` date takes the date of the first commit that added its code (`git log -S '<code>' --format=%cs --reverse -- company/state.md`, first line).
    - Idle initiatives: from `initiatives/README.md` and the `status.md` of each current initiative. Also list the initiatives closed (`done` or `dropped`) but not yet archived.
