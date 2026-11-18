@@ -22,18 +22,18 @@ The registry is a list of facts, not a decision: no decision card and no new rec
 3. A repo that does not exist yet gets `planned: true` (see "Planned repos").
 4. The first repo of the list also needs an issues home: the repo that holds issues touching several repos (one of the listed repos, or the hq itself when it has a GitHub remote, then added with role `hq`, private). Exactly one item has `issues_home: true`.
 5. A board: its address (`https://github.com/orgs/<owner>/projects/<number>` or `https://github.com/users/<owner>/projects/<number>`) and the name of its status field (often "Status"). Write `kind: github-project`, `owner`, `number` (an integer) and `status_field`.
-6. Confirm the entry to the CEO in one line, edit `org.yaml`, and commit with notice (`chore: register <slug>`). Push if `git remote` is not empty.
+6. Confirm the entry to the CEO in one line, edit `org.yaml`, write the permission rules in `.claude/settings.json` again (`${CLAUDE_PLUGIN_ROOT}/gates/permissions.md`, section "Write the rules"), and commit both with notice (`chore: register <slug>`). Push if `git remote` is not empty.
 7. For a repo that exists and is not the hq, ask for its clone path on this computer (see "Clone paths").
 
 ## Protected repos
 
-A repo with `protected: true` gets no write from any agent without the CEO's explicit OK (see "Approval gates" in `CLAUDE.md`). The flag changes only on the CEO's word: "free <repo>" sets it to `false`, "protect <repo>" sets it to `true`; confirm in one line and commit with notice. The hq is never protected.
+A repo with `protected: true` gets no write from any agent without the CEO's explicit OK (see "Approval gates" in `CLAUDE.md`). The flag changes only on the CEO's word: "free <repo>" sets it to `false`, "protect <repo>" sets it to `true`; confirm in one line, write the permission rules in `.claude/settings.json` again (`${CLAUDE_PLUGIN_ROOT}/gates/permissions.md`, section "Write the rules") and commit both with notice. The hq is never protected.
 
 Owner patterns, only when the CEO asks for one (never propose it): an item with slug `<owner>/*` covers every repo of that owner that has no item of its own, with one `protected` value for all of them; an exact item for a repo of that owner is the exception and wins over the pattern. A pattern item has `issues_home: false`, no `planned` key and no clone path; for `visibility` take the CEO's answer for that owner's repos, and `public` when they are mixed or the CEO is not sure.
 
 ## Planned repos
 
-A repo marked `planned: true` does not exist yet. Before the first write to it, check once with `gh repo view <slug>`. While it does not exist, skip each issue or tracker write for it with one line (this is not a failure) and make sure an A item of kind `{do}` asks the CEO to create it with the exact command, for example `gh repo create <slug> --private` (add one unless it is already open). Once it exists, remove `planned: true` from `org.yaml` with notice, clear the A item, and ask for its clone path.
+A repo marked `planned: true` does not exist yet. Before the first write to it, check once with `gh repo view <slug>`. While it does not exist, skip each issue or tracker write for it with one line (this is not a failure) and make sure an A item of kind `{do}` asks the CEO to create it with the exact command, for example `gh repo create <slug> --private` (add one unless it is already open). Once it exists, remove `planned: true` from `org.yaml`, write the permission rules in `.claude/settings.json` again (`${CLAUDE_PLUGIN_ROOT}/gates/permissions.md`, section "Write the rules") and commit both with notice, clear the A item, and ask for its clone path.
 
 ## Clone paths
 
@@ -47,6 +47,6 @@ Write the answers to `repo_paths:` in that file, creating it if missing (each sl
 
 ## Tools
 
-Use `gh` with `-R <slug>` for a repo and `gh project <subcommand> --owner <owner>` for the tracker. If `gh` is missing, not signed in, or lacks the `project` scope (`gh auth status` shows it), say so once, add an A item of kind `{do}` with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, and carry on without tracker writes. Never guess what the tracker holds.
+Use `gh` with `-R <slug>` right after the subcommand for a repo (`gh issue comment -R <slug> 12 --body "..."`; the permission rules in `.claude/settings.json` match that form, so free writes on a repo that is not protected run without a prompt) and `gh project <subcommand> --owner <owner>` for the tracker. If `gh` is missing, not signed in, or lacks the `project` scope (`gh auth status` shows it), say so once, add an A item of kind `{do}` with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, and carry on without tracker writes. Never guess what the tracker holds.
 
 Issue and tracker writes themselves follow the `intake` skill (issue route) and the `record-decision` skill.

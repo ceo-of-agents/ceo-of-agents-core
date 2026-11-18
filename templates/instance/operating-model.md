@@ -54,6 +54,10 @@ To change a decision, a new record supersedes the old one; only the old record's
 
 Gates live in `org.yaml` and are summarized in `CLAUDE.md`. Three tiers: free (do it, mention it), notice (one line before acting), ok (the CEO's explicit OK). The CoS does not ask for OKs the table does not require, batches asks into the pending list, and runs exactly the approved action. The CEO approves by code, for example `{{ORG_ID}}-A2`.
 
+## Permission rules
+
+Claude Code asks before a command unless a rule allows it. `.claude/settings.json` holds rules that follow the gates in `org.yaml`: what the gates leave free runs without a prompt (reading, the plugin's own procedures, editing this hq and, on repos that are not protected, issues, comments and pull requests named with `-R <owner/name>`), what needs the CEO's OK always asks (pushes, merges, releases, settings, secrets, deletes, `gh api`, and any write on a protected repo), and notice actions ask by default. A stricter gate gives a stricter rule. The CoS writes the rules again when the gates, the repos or the roadmap board change. Rules of your own for this computer go in `.claude/settings.local.json`, which is not tracked; an ask rule from the gates still wins over them. The rules spare prompts; they do not replace the gates.
+
 ## The pending list and codes
 
 "Waiting on the CEO" in `company/state.md` is the one list. Actions are `{{ORG_ID}}-A<n>`, decisions are `{{ORG_ID}}-D<n>`. Numbers grow monotonically and are never reused. Each line also says what it needs from the CEO: `{ok}` (approve, then the CoS does it), `{do}` (the CEO does it) or `{decide}` (a decision card).

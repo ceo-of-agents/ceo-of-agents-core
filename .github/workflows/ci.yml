@@ -47,6 +47,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: python scripts/ci/check_boot_set.py
 
+      - name: Permission rules from the gates
+        if: ${{ !cancelled() }}
+        run: python scripts/ci/check_permissions.py
+
       - name: Relative links in Markdown
         if: ${{ !cancelled() }}
         run: python scripts/ci/check_links.py

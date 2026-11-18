@@ -69,6 +69,10 @@ gates:
   ok: [merge, deploy, publish, contact-people, spend-money, rotate-secrets, delete-data, org-or-repo-settings, change-brand-rules, change-policy-rules, file-or-sign, make-payment]
 ```
 
+## Permission rules
+
+The tiers also set Claude Code's permission rules in the hq's `.claude/settings.json`: free actions run without a prompt, ok actions always ask, notice actions ask by default. The rule groups and how they are written: [permissions.md](permissions.md).
+
 ## Tighten-only rule against a holding policy
 
 A job hq (`org.purpose: job`) never sets `policy`: it is never governed by a holding, and its optional `employer_rules` pointer takes that place. A personal hq (`org.purpose: personal`) never sets `policy` either.
