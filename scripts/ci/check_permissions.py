@@ -185,9 +185,14 @@ def risk(rule, guarded_ok=False):
 
 def rule_regex(rule):
     """Regex for the command text a Bash rule matches: `*` is any text; a
-    trailing ` *` also matches the bare command."""
+    trailing ` *` also matches the bare command. A rule ending in `:*` is Claude
+    Code's older prefix form: the text before `:*` is a literal prefix, its own `*`
+    included (checked live with Claude Code 2.1.327: `Bash(git push * :**)` does not
+    match `git push origin :old`, `Bash(git push * :**)` does)."""
     match = re.match(r"^Bash\((.*)\)$", rule)
     inner = match.group(1)
+    if inner.endswith(":*"):
+        return re.compile("^" + re.escape(inner[:-2]) + r"(?:\s.*)?$", re.S)
     tail = ""
     if inner.endswith(" *"):
         inner, tail = inner[:-2], "(?: .*)?"
@@ -555,6 +560,12 @@ def check(groups, retired):
             if g["scope"] == "repo" and " -R <slug> *)" not in r:
                 errors.append(f"group {g['name']}: repo rule without ' -R <slug> *': {r}")
 
+    # A rule that ends in `:*` is read by Claude Code as the older prefix form, so its `*`
+    # are literal: a deny or ask rule written that way silently matches nothing it should.
+    for g in groups:
+        for r in g["rules"]:
+            if r.startswith("Bash(") and r.endswith(":*)"):
+                errors.append(f"{g['name']}: {r} ends in ':*', which Claude Code reads as a literal prefix; end it in ':**'")
     # push-current: exact forms only
     push = [g for g in groups if g["name"] == "push-current"]
     if len(push) != 1 or push[0]["rules"] != PUSH_CURRENT or any("*" in r for r in push[0]["rules"]):
@@ -576,9 +587,9 @@ def check(groups, retired):
     if "removed from `ask` only" not in DOC.read_text(encoding="utf-8"):
         errors.append("gates/permissions.md: the retired git push rule must say it is removed from `ask` only")
     for must in ("Bash(git * push *--force*)", "Bash(git * push -f*)", "Bash(git * push * -f*)",
-                 "Bash(git * push *--delete*)", "Bash(git push * ':*)", 'Bash(git push * ":*)',
+                 "Bash(git * push *--delete*)", "Bash(git push * ':**)", 'Bash(git push * ":**)',
                  "Bash(git push *--force*)", "Bash(git push -f*)", "Bash(git push * -f*)", "Bash(git push * +*)",
-                 "Bash(git push *--delete*)", "Bash(git push -d*)", "Bash(git push * -d*)", "Bash(git push * :*)",
+                 "Bash(git push *--delete*)", "Bash(git push -d*)", "Bash(git push * -d*)", "Bash(git push * :**)",
                  "Bash(git push *--mirror*)", "Bash(git push *--prune*)", "Bash(git filter-branch*)",
                  "Bash(git filter-repo*)", "Bash(git reflog expire*)", "Bash(git reflog delete*)",
                  "Bash(git clean *-*f*)", "Bash(git clean *--force*)", "Bash(gh repo delete*)",

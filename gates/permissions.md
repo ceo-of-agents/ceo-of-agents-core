@@ -16,6 +16,7 @@ Facts from the Claude Code permissions documentation that this design relies on:
 - `Edit(/**)` in a project settings file means every file under the folder Claude Code was started in. `Edit` rules also cover `Write`. Writes into Claude Code's protected paths, among them `.git/`, `.claude/` and files such as `.gitconfig` or `.bashrc`, ask in the default modes whatever the allow rules: Claude Code checks them before it reads the allow rules.
 - Allow rules in `.claude/settings.json` apply only once the folder is trusted (the workspace trust prompt has been accepted). Ask and deny rules apply at once.
 - A rule Claude Code cannot parse is skipped; the rest of the file stays in effect.
+- A rule that ends in `:*` is Claude Code's older prefix form (`Bash(git pull:*)`): the text before `:*` is taken as a literal prefix, so a `*` inside it is not a wildcard. A rule that must end in a colon followed by any text ends in `:**` instead (checked with Claude Code 2.1.327: `Bash(git push * :*)` does not refuse `git push origin :old`, `Bash(git push * :**)` does).
 
 ## From tier to rule
 
@@ -107,7 +108,7 @@ These rules are written to `deny` in every org, whatever its gates: no gate lets
 | Group | Scope | Actions | When free | Rules |
 |---|---|---|---|---|
 | force-push | hq | - | deny | `Bash(git push *--force*)`, `Bash(git push -f*)`, `Bash(git push * -f*)`, `Bash(git push * +*)`, `Bash(git * push *--force*)`, `Bash(git * push -f*)`, `Bash(git * push * -f*)` |
-| remote-delete | hq | - | deny | `Bash(git push *--delete*)`, `Bash(git push -d*)`, `Bash(git push * -d*)`, `Bash(git push * :*)`, `Bash(git push * ':*)`, `Bash(git push * ":*)`, `Bash(git * push *--delete*)`, `Bash(git push *--mirror*)`, `Bash(git push *--prune*)` |
+| remote-delete | hq | - | deny | `Bash(git push *--delete*)`, `Bash(git push -d*)`, `Bash(git push * -d*)`, `Bash(git push * :**)`, `Bash(git push * ':**)`, `Bash(git push * ":**)`, `Bash(git * push *--delete*)`, `Bash(git push *--mirror*)`, `Bash(git push *--prune*)` |
 | history-rewrite | hq | - | deny | `Bash(git filter-branch*)`, `Bash(git filter-repo*)`, `Bash(git reflog expire*)`, `Bash(git reflog delete*)` |
 | git-clean | hq | - | deny | `Bash(git clean *-*f*)`, `Bash(git clean *--force*)` |
 | gh-delete | hq | - | deny | `Bash(gh repo delete*)`, `Bash(gh release delete*)` |
