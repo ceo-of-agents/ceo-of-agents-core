@@ -71,7 +71,7 @@ gates:
 
 ## Permission rules
 
-The tiers also set Claude Code's permission rules in the hq's `.claude/settings.json`: free and notice actions run without a prompt (notice means "say it in one line, then act": the line is not an OK), ok actions always ask, in every permission mode. Writes on GitHub that a rule cannot hold to one repo (issues, comments, pull requests, Project items) and every write on a protected repo still ask. A short deny baseline (force push, remote branch deletion, history rewrites, `git clean` with force, deleting a repo or a release, `gh api` DELETE) is refused in every mode whatever the tiers, and `git reset --hard` always asks. The rule groups and how they are written: [permissions.md](permissions.md).
+The tiers also set Claude Code's permission rules in the hq's `.claude/settings.json`: free and notice actions run without a prompt (notice means "say it in one line, then act": the line is not an OK), ok actions always ask, in every permission mode. Writes on GitHub that a rule cannot hold to one repo (issues, comments, pull requests, Project items) and every write on a protected repo still ask. A short deny baseline (force push, remote branch deletion, history rewrites, `git clean` with force, deleting a repo or a release, `gh api` DELETE) is refused in every mode whatever the tiers, and `git reset --hard` always asks. In an org with any registered repo marked `protected: true`, every push asks, the hq's own push included: a push carries no repo name, so a rule cannot tell a push to a protected repo from a push to the hq. The rule groups and how they are written: [permissions.md](permissions.md).
 
 ## Tighten-only rule against a holding policy
 

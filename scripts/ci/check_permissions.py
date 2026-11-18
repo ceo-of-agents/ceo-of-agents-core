@@ -251,10 +251,18 @@ def per_repo(rule, slug):
     return rule.replace("<slug>", slug)
 
 
+def has_protected(org):
+    """True when `repos:` has any entry with `protected: true` (exact repo, owner pattern or
+    planned). An unregistered repo also counts as protected in the gates, but does not
+    trigger this: a rule cannot know about repos the org has not listed."""
+    return any(r.get("protected") is True for r in (org.get("repos") or []))
+
+
 def hq_target(g, org, tier):
-    """Where the rules of an hq group go: "allow", "ask" or None (nowhere). The one
-    place to extend: a later option could return "ask" for push-current when `repos:`
-    has any `protected: true` entry (not implemented)."""
+    """Where the rules of an hq group go: "allow", "ask" or None (nowhere)."""
+    # A push cannot be told apart by repo, so an org with a protected repo is asked on every push.
+    if g["name"] == "push-current" and has_protected(org):
+        return "ask"
     if g["when_free"] == "allow" and tier in ("free", "notice"):
         return "allow"
     return "ask" if tier == "ok" else None
@@ -382,10 +390,14 @@ STRICT_ORG["gates"] = {
     "ok": DEFAULT_ORG["gates"]["ok"] + ["issues-and-labels", "comments", "push-non-deploy-branch", "hq-commit"],
 }
 
+# The default table with no protected repo: the only example where push-current is in allow.
+OWN_REPOS_ORG = copy.deepcopy(DEFAULT_ORG)
+OWN_REPOS_ORG["repos"] = [r for r in DEFAULT_ORG["repos"] if not r["protected"]]
+
 ALL_FREE_ORG = copy.deepcopy(DEFAULT_ORG)
 ALL_FREE_ORG["gates"] = {"free": sorted({a for t in DEFAULT_ORG["gates"].values() for a in t}), "notice": [], "ok": []}
 
-ORGS = (("default", DEFAULT_ORG), ("merge-notice", MERGE_NOTICE_ORG), ("strict", STRICT_ORG), ("all-free", ALL_FREE_ORG))
+ORGS = (("default", DEFAULT_ORG), ("own-repos", OWN_REPOS_ORG), ("merge-notice", MERGE_NOTICE_ORG), ("strict", STRICT_ORG), ("all-free", ALL_FREE_ORG))
 
 PUSH_CURRENT = ["Bash(git push origin HEAD)", "Bash(git push -u origin HEAD)"]
 RESET_ASK = ["Bash(git reset --hard*)", "Bash(git reset * --hard*)"]
@@ -450,9 +462,12 @@ def examples(groups):
     reads = {"read-github", "github-api-read", "sync-hq", "plugin-files", "edit-hq"}
     guards = expected(groups, {"github-api-write", "confirm-reset"})
     still_ok = {"release", "settings", "secrets", "delete"}
-    base = [SKILL_RULE] + expected(groups, reads | {"commit-hq", "push-current"})
-    asks = repo_rules(groups, {"issues", "comments", "pull-requests"}, ["partner/site"])
+    # Every example but own-repos has the protected repo partner/site, so push-current asks there.
+    base = [SKILL_RULE] + expected(groups, reads | {"commit-hq"})
+    push = expected(groups, {"push-current"})
+    asks = repo_rules(groups, {"issues", "comments", "pull-requests"}, ["partner/site"]) + push
     default = (base, asks + expected(groups, still_ok) + ["Bash(gh pr merge *)"] + guards)
+    own_repos = (base + push, expected(groups, still_ok) + ["Bash(gh pr merge *)"] + guards)
     merge_notice = (base + repo_rules(groups, {"merge"}, ["acme/app", "acme/hq"]),
                     asks + ["Bash(gh pr merge -R partner/site *)"] + expected(groups, still_ok)
                     + expected(groups, {"merge-guards"}) + guards)
@@ -461,9 +476,9 @@ def examples(groups):
               + ["Bash(gh pr create -R partner/site *)", "Bash(gh pr merge *)"]
               + expected(groups, still_ok | {"push-current"}) + guards)
     all_free = (base + repo_rules(groups, {"merge"}, ["acme/app", "acme/hq"]),
-                repo_rules(groups, {"issues", "comments", "pull-requests", "merge"}, ["partner/site"])
+                repo_rules(groups, {"issues", "comments", "pull-requests", "merge"}, ["partner/site"]) + push
                 + expected(groups, {"merge-guards"}) + guards)
-    return {"default": default, "merge-notice": merge_notice, "strict": strict, "all-free": all_free}
+    return {"default": default, "own-repos": own_repos, "merge-notice": merge_notice, "strict": strict, "all-free": all_free}
 
 
 def check(groups, retired):
@@ -612,7 +627,7 @@ def check(groups, retired):
                     errors.append(f"{label}: ok-tier group {g['name']} in allow: {leaked}")
         # tier mapping: the push-current group
         tier = tier_of(["hq-commit", "push-non-deploy-branch"], org["gates"])
-        want = "allow" if tier in ("free", "notice") else "ask"
+        want = "allow" if tier in ("free", "notice") and not has_protected(org) else "ask"
         for r in PUSH_CURRENT:
             if (r in allow) != (want == "allow") or (r in ask) != (want == "ask"):
                 errors.append(f"{label}: push-current rule {r} is not in {want} (tier {tier})")
@@ -728,6 +743,11 @@ def check(groups, retired):
     if "Bash(gh issue comment -R partner/site *)" in after["permissions"].get("ask", []) or \
             "Bash(gh issue comment -R partner/site *)" in after["permissions"].get("allow", []):
         errors.append("regeneration after freeing a repo kept its ask rules or allowed them")
+    # Option: any protected repo makes push-current ask; freeing the last one moves it back to allow.
+    if any(r not in once["permissions"]["ask"] or r in once["permissions"]["allow"] for r in PUSH_CURRENT):
+        errors.append("an org with a protected repo does not ask for push-current")
+    if any(r not in after["permissions"]["allow"] or r in after["permissions"]["ask"] for r in PUSH_CURRENT):
+        errors.append("regeneration after freeing the last protected repo did not move push-current to allow")
     strict_after = merge(once, dict(org, gates=STRICT_ORG["gates"]), groups, retired)
     if any(r.startswith("Bash(gh issue create -R") for r in strict_after["permissions"]["allow"]):
         errors.append("regeneration to a stricter org kept gh issue create in allow")
