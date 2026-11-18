@@ -46,6 +46,6 @@ For each migration in order, one at a time:
 5. Show a short summary: one line per changed file (from `git status --short`) and one or two plain lines on what it means for the CEO.
 6. Commit with notice (one line to the CEO first): `chore: migrate hq to <to>` with the attribution lines required by the session. Then push with `git push origin HEAD` if `git remote` is not empty.
 
-After the last migration: remove the A item, set `last_updated` in `company/state.md`, commit with notice, and say the hq is up to date.
+After the last migration: remove the A item, set `last_updated` in `company/state.md`, measure `company/state.md` with the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time"; Grep and `wc -c`), commit with notice, and say the hq is up to date.
 
 On any failure: stop, name the migration and the failed check, and leave the working tree as it is (never reset). Add nothing silently.

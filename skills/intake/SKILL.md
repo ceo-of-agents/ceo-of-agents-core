@@ -2,7 +2,7 @@
 name: intake
 description: Process handoff notes in inbox/ and new CEO requests or ideas in a ceo-of-agents hq. Updates state.md, adds decision cards and action items with namespaced codes, tracks tasks the CEO owns in the optional company/todo.md, opens issues in registered product repos and adds them to the tracker, flags escalations to the holding, deletes processed notes in the same hq commit. Use at session start when inbox/ has notes, or when the CEO brings a new idea, request or finding.
 user-invocable: false
-allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(git rm:*) Bash(ls:*) Bash(date:*) Bash(gh issue list:*) Bash(gh project view:*) Bash(gh project field-list:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(git rm:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(gh issue list:*) Bash(gh project view:*) Bash(gh project field-list:*)
 ---
 
 # intake: process handoffs and new requests
@@ -52,7 +52,7 @@ Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_RO
 
 5. Escalation (company level, purpose product, startup or company; the `escalate:` line does not exist in a holding, a job or a personal queue): if a decision touches money, personal liability or the portfolio, set `escalate: holding` on the card and append ` [escalate: holding]` to its line in "Open decisions". The holding reads it on its next portfolio brief. Never write to the holding repo. Tell the CEO the card is flagged and that the answer is still recorded here.
 
-6. Finish state.md: set `last_updated` to today (`date +%F`), keep the five H2 sections in order, `- none` for empty ones. Keep each line to the formats in the schema.
+6. Finish state.md: set `last_updated` to today (`date +%F`), keep the five H2 sections in order, `- none` for empty ones. Keep each line to the formats in the schema: rewrite a line to the current fact, never append to it, and put the history that matters in `company/log.md`. Then measure what this run touched, before the commit of step 8: the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time"; Grep and `wc -c`, not the script).
 
 7. Delete each processed note (`git rm` or remove the file) in the same hq commit as the updates. Git history keeps them. Do not delete a note you could not fully process; say why.
 

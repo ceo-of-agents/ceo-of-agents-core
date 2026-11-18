@@ -62,6 +62,6 @@ Archiving removes nothing from git, so it is an hq write, but the CEO approves w
 
 ## Out of scope
 
-Files with a format of their own keep it and get no lifecycle frontmatter: decision records (`decisions/`, immutable, with their own status line), `company/` files (`state.md`, `decision-queue.md`, `vision.md`, `strategy.md`, briefs), charters, agent files, `inbox/` notes, folder indexes (`README.md`) and an initiative's `status.md`.
+Files with a format of their own keep it and get no lifecycle frontmatter: decision records (`decisions/`, immutable, with their own status line), `company/` files (`state.md`, `decision-queue.md`, `vision.md`, `strategy.md`, briefs), charters, agent files, `inbox/` notes, folder indexes (`README.md`), an initiative's `status.md`, and logs (`company/log.md`, `initiatives/<slug>/log.md`; `schemas/log.md`).
 
 A document written before this schema existed has no frontmatter and is read as `current` with an unknown `as_of`; add the frontmatter when the document is next touched.

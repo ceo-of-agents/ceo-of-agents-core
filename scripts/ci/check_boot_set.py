@@ -5,6 +5,9 @@ Rules:
 - The budgets table in schemas/boot-set.md and the block between
   "# BUDGETS BEGIN" and "# BUDGETS END" in the script name the same files with
   the same byte budgets, and each row's KiB figure times 1024 equals its bytes.
+- The initiative page budget in schemas/boot-set.md ("at most N KiB per page
+  (B bytes") and STATUS_BUDGET in the script are the same number, and the
+  script reports pages over it and their long lines (nothing without pages).
 - The script behaves as documented on small fixture hqs (budgets, long lines in
   characters, pending line groups, missing files, exit codes, and the line
   format of the optional company/todo.md, silent when that file is missing).
@@ -46,6 +49,50 @@ def script_budgets(errors):
     for match in re.finditer(r"([\w./-]+) (\d+)", block.group(1)):
         budgets[match.group(1)] = int(match.group(2))
     return budgets
+
+
+PAGE = re.compile(r"at most (\d+) KiB per page \(([\d,]+) bytes")
+
+
+def page_budgets(errors):
+    schema = PAGE.search(SCHEMA.read_text(encoding="utf-8"))
+    script = re.search(r"^STATUS_BUDGET=(\d+)$", SCRIPT.read_text(encoding="utf-8"), re.MULTILINE)
+    if not schema:
+        errors.append("schemas/boot-set.md: no initiative page budget (\"at most N KiB per page (B bytes\")")
+    if not script:
+        errors.append("scripts/check-boot-set.sh: no STATUS_BUDGET=<bytes> line")
+    if not schema or not script:
+        return
+    kib, raw = int(schema.group(1)), int(schema.group(2).replace(",", ""))
+    if kib * 1024 != raw:
+        errors.append(f"schemas/boot-set.md: initiative page budget {kib} KiB is not {raw} bytes")
+    if raw != int(script.group(1)):
+        errors.append(f"initiative page budget: schemas/boot-set.md has {raw}, scripts/check-boot-set.sh has {script.group(1)}")
+
+
+def pages(errors):
+    page = "---\ninitiative: beta\nstate: active\n---\n\n# Beta\n\n## State\nOn track.\n"
+    cases = [
+        ("no initiative pages", {"initiatives/README.md": "# Initiatives\n"}, ["verdict: ok"],
+         ["initiative pages", "initiative page lines"]),
+        ("small initiative page", {"initiatives/beta/status.md": page},
+         ["initiative pages over 4096 bytes: 0", "initiative page lines over 300 characters: 0", "verdict: ok"], []),
+        ("big initiative page", {"initiatives/beta/status.md": page + ("w" * 200 + "\n") * 25},
+         ["initiative pages over 4096 bytes: 1", "initiatives/beta/status.md: ", " bytes, over by ", "verdict: 1 issue(s)"], []),
+        ("long page lines", {"initiatives/beta/status.md": page + "é" * 301 + "\n" + "é" * 300 + "\n",
+                             "initiatives/gamma/status.md": page + ("x" * 400 + "\n") * 4},
+         ["initiative pages over 4096 bytes: 0", "initiative page lines over 300 characters: 5",
+          "initiatives/beta/status.md line 10 (301 characters)", "and 2 more", "verdict: 5 issue(s)"], []),
+    ]
+    for label, extra, present, absent in cases:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            build(root, hq(**extra))
+            got, out = run(root)
+        if got != 0:
+            errors.append(f"{label}: exit {got}, expected 0")
+        errors.extend(f"{label}: output lacks {n!r}" for n in present if n not in out)
+        errors.extend(f"{label}: output has {n!r}" for n in absent if n in out)
 
 
 def run(target):
@@ -148,6 +195,8 @@ def main():
     if not schema:
         errors.append("schemas/boot-set.md: no budgets table rows found")
     behaviour(errors)
+    page_budgets(errors)
+    pages(errors)
     for error in errors:
         print(f"error: {error}")
     print(f"{len(schema)} budgets in the schema; {len(script)} in the script; {len(errors)} errors")

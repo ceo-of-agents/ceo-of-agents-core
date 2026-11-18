@@ -9,6 +9,7 @@ initiatives/
   README.md                       index of initiatives, one line each
   <slug>/
     status.md                     one page: goal, state, next step, links (the CoS only)
+    log.md                        its history, append-only, newest first (the CoS only; created when first needed)
     README.md                     index of the documents in this folder
     YYYY-MM-DD-<dept-id>-<slug>.md   documents, with the lifecycle frontmatter of schemas/document.md
 ```
@@ -17,7 +18,7 @@ initiatives/
 
 ## `status.md`
 
-One page, under about 60 lines (4 KB): the detail goes in documents that it links. Only the CoS edits it; departments report through their handoffs.
+One page, at most 4 KiB (4,096 bytes) and lines of at most 300 characters (`schemas/boot-set.md`, "Initiative pages"): the detail goes in documents that it links. State and Next step are rewritten to the current fact, never appended to: what they said before goes to `log.md` in the same folder (`schemas/log.md`) when it is worth keeping. Only the CoS edits the page and the log; departments report through their handoffs.
 
 ```markdown
 ---
@@ -58,7 +59,7 @@ Only on close: three to five lines on the outcome, the decisions taken (by recor
 | `lead` | `cos` or a department id |
 | `departments` | The departments that work on it, `[]` if none yet |
 
-`status.md` and the folder's `README.md` have a format of their own and get no lifecycle frontmatter.
+`status.md`, `log.md` and the folder's `README.md` have a format of their own and get no lifecycle frontmatter; the folder's index does not list them.
 
 ## Folder index: `initiatives/<slug>/README.md`
 

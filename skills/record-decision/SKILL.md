@@ -3,7 +3,7 @@ name: record-decision
 description: Record a decision the CEO took, either by answering a decision card by code (for example ACME-D3) or by deciding in chat. Creates the immutable decision record, updates the index, the queue and the pending list, handles supersession, creates or updates issues and tracker fields in registered product repos, dispatches follow-ups, and commits with notice. Use when the CEO answers a card, says "decision", or confirms a direction.
 user-invocable: false
 argument-hint: "[card code, e.g. ACME-D3, optional]"
-allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(ls:*) Bash(date:*) Bash(gh issue list:*) Bash(gh project view:*) Bash(gh project field-list:*) Bash(gh project item-list:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(gh issue list:*) Bash(gh project view:*) Bash(gh project field-list:*) Bash(gh project item-list:*)
 ---
 
 # record-decision
@@ -66,7 +66,7 @@ Never record a decision the CEO did not take. An answer must come from the CEO i
    - Put every issue URL in the new record's Links before the commit (the record is immutable once committed).
    - If `gh` fails (not installed, not signed in, no `project` scope), say so, add an A item of kind `{do}` with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, list the intended issue changes in the report, and commit the rest.
 
-10. Commit, in the same turn as the CEO's answer and the issue writes of step 9, before you reply: never wait for the end of the session or for the CEO's next answers. The gate for `hq-commit` is "notice": write one line to the CEO (what, where; for example "Committing to hq main: record 0007 for ACME-D3, queue and state updated."), then commit with a message like `docs: record decision NNNN <slug>` and the attribution lines required by the session. Do not wait for an OK. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
+10. Check, then commit. The lines this run changed in `company/state.md` (and in a `status.md`) are rewritten to the current fact, never appended to, with the history that matters in the log; measure them with the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time"; Grep and `wc -c`, not the script) before the commit. Commit in the same turn as the CEO's answer and the issue writes of step 9, before you reply: never wait for the end of the session or for the CEO's next answers. The gate for `hq-commit` is "notice": write one line to the CEO (what, where; for example "Committing to hq main: record 0007 for ACME-D3, queue and state updated."), then commit with a message like `docs: record decision NNNN <slug>` and the attribution lines required by the session. Do not wait for an OK. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
 
 11. Report in chat language, briefly: record created (number and title), what moved in the queue and pending list, issues created, updated or closed and the status set (with links), follow-ups with codes, and anything superseded.
 
