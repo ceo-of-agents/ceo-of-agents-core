@@ -41,6 +41,7 @@ Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_RO
    State the route in one short line, then execute. Do not ask for OKs the gate table does not require.
    If the work spans several sessions or departments, open an initiative for it with the `initiatives` skill (or use the current one that covers it) and name its folder in every brief. Work that one department finishes in one go needs none.
    A department task or a decision about work in a registered repo also gets its issue (see "Issue route"), unless one already exists.
+   Held work: when you open an issue or a follow-up and do not route it in this turn (cost, priority, capacity), add `- <ORG_ID>-A<n> [urgency] {ok}: start <issue or task>, <who would do it> (since YYYY-MM-DD)` to "Waiting on the CEO" in the same turn and increment `next_action`. The CEO's OK starts it; work already routed and running gets no item.
 
 4. For each handoff note, read it fully, then:
    - Update `company/state.md` where facts changed: Products and status, Key numbers (only with source and date; never invent a number), Risks (with owner). Sensitive detail (tax, personal legal, personal finance) stays out of state.md; keep it in the department folder.
