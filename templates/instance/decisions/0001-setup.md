@@ -21,6 +21,7 @@ Each question offered the framework's listed choices or a custom answer. The ans
 | 2 | Org name and id | {{ORG_NAME}} / {{ORG_ID}} |
 | 3 | What the org is about | see `company/vision.md`; stage {{STAGE}} in `company/strategy.md` |
 | 4 | Chat language / file language | {{CHAT_LANGUAGE}} / {{FILE_LANGUAGE}} |
+| - | Your profile (technical or not) | {{CEO_PROFILE}} |
 | 5 | Departments | {{SETUP_DEPARTMENTS}} |
 | 6 | Names or personas (CoS, departments, CEO) | {{SETUP_PERSONAS}} |
 | 7 | Approval gates | {{SETUP_GATES}} |
