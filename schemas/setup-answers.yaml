@@ -1,0 +1,350 @@
+# Schema: setup answers file (`setup-answers/1`)
+#
+# Every answer the setup wizard (skills/init-fleet/SKILL.md) collects, in one YAML file, so
+# a front-end or a script that already has them can pass them in one go and get the same
+# hq as the interactive path. The file is read by `/ceo-of-agents:init-fleet <file>`, and
+# `/ceo-of-agents:init-fleet <file> --dry-run` renders the hq without git, commits, remotes
+# or installs. Annotated example below is itself a valid answers file. Samples, one per
+# purpose: examples/setup-answers/. Owner: the setup wizard.
+#
+# How the wizard uses the file
+#   - It validates every answer with the rules of the matching question and asks only for
+#     what is missing or invalid, all at once, then shows the same summary as the
+#     interactive path and asks for the same confirmation. The generated files are the same.
+#   - A key that is absent is "not answered" (the wizard asks). Nothing is preselected and
+#     nothing is assumed from a missing key. The one exception is `services`, where absent
+#     means no.
+#   - Unknown keys are errors, so a typo never silently drops an answer.
+#
+# Conventions
+#   - `none` and `later` are plain strings. `later` is an explicit deferral and is allowed
+#     only where the key says [later] below: the same places where the wizard accepts
+#     "later". `none` means the CEO has nothing to give for that question.
+#   - Lists are YAML lists of strings. Free-text answers (`about.what`, `about.why` and
+#     every item of a list of text) are kept as given; multi-line strings (`|`) and bulleted
+#     lines are fine.
+#   - Use action ids, catalog ids and file-level values (`opus`, `en`), not the plain words
+#     of the chat questions.
+#   - A YAML 1.1 reader turns an unquoted `no` into false. Both mean "no".
+#
+# Required keys (always): schema, language, org (purpose, id, name), ceo, about, departments,
+#   names, gates, models, remote (hq), attribution, enable_plugin
+# Required by purpose and level:
+#   org.level            when purpose is company (optional otherwise, then it must be company)
+#   policy               level company, purpose product, startup or company
+#   employer_rules       purpose job
+#   remote.hosted_on     purpose job
+#   policies_repo        level holding
+#   repos, roadmap       level company, purpose not personal (never in a holding or a personal hq)
+#   issues_home          when repos is a list
+# Keys that are never allowed outside their case are reported as errors.
+#
+# Allowed values and rules
+#   schema                  exactly "setup-answers/1"
+#   language.chat           ISO 639-1 code: the language the wizard and the CoS use with the CEO
+#   language.files          ISO 639-1 code: the language of every file in hq
+#   org.purpose             job | product | startup | company | personal
+#   org.level               company | holding. holding requires purpose company; job, product,
+#                           startup and personal require company
+#   services                [later is not allowed] `no`, or absent. Reading the services the CEO
+#                           already uses needs the CEO's confirmation per service in the chat,
+#                           so a file never starts it
+#   org.id                  2-8 characters, A-Z and 0-9, starts with a letter
+#   org.name                free text, non-empty
+#   ceo.profile             technical | non-technical: the answer to the wizard's question about
+#                           whether the user is a technical person
+#   about.what              required free text (the first of the three "what the org is about"
+#                           answers); "not decided yet" is valid and kept as given
+#   about.why               required free text (the second answer); same rule
+#   about.stage             the third answer, one of (by purpose and level):
+#                             product, startup, company (company level): idea | building | live
+#                             job: new in the role | settled | in transition
+#                             company at holding level: starting | growing | steady
+#                             personal: setting up | running
+#   departments             list; [] (no department) is valid. Ids are unique. Every item has
+#                           `from`: catalog | custom | own, and `id`. The four ways to build them:
+#     from: catalog         the catalog entry as it is (way 1). id is a catalog id:
+#                           engineering, design-brand, business, growth-social, legal, finance,
+#                           tax, operations; health, money and paperwork only with purpose personal
+#       changes             optional; its presence makes it "catalog plus changes" (way 2). At
+#                           least one of these keys, each a list:
+#         scope_add           things to cover (strings)
+#         scope_drop          things to drop: {item, owner}; owner is the department or the CEO
+#                             that covers it then
+#         never               things it must never do: {item, owner}; owner does them instead
+#         abilities_add       {ability, reason}: ability is Bash | Agent(worker) | WebSearch |
+#                             WebFetch, reason is one line (the reason for the grant).
+#                             Agent(worker) only together with Bash (in the catalog entry or
+#                             added here). Never Bash or Agent(worker) for an advisory entry
+#                             (legal, finance, tax, health, money, paperwork); a catalog
+#                             ability cannot be added twice
+#         abilities_drop      Bash | Agent | WebSearch | WebFetch, only what the catalog entry
+#                             has (Agent drops its Agent(...) entry)
+#     from: custom          a department from scratch (way 3). Keys, all required:
+#       id                    kebab-case: ^[a-z0-9]+(-[a-z0-9]+)*$
+#       role                  role name
+#       purpose               one line
+#       scope                 list: what it covers (each item kept as given)
+#       triggers              list: when the CoS routes work to it
+#       exclusions            list of {item, owner}: what it must not do or handle, and who does it
+#       core_job              one single-line sentence
+#       commands              {needed: true | false, reason: <one line, required when needed>}:
+#                             whether it needs to run commands, and what for
+#     from: own             an agent or skill the CEO already has, used as it is (way 4). Keys,
+#                           all required:
+#       id                    kebab-case, as for custom; propose the replaced department's id
+#       name                  its name as Claude Code knows it, for example reviewer or
+#                             some-plugin:reviewer; no spaces. It is its agent name
+#       kind                  agent | skill
+#       location              where it lives (a path, "my own agents" or the plugin it comes from)
+#       purpose               what it is for, in one sentence
+#       use_when              list: when the CoS should use it
+#       must_not              list of {item, owner}: what it must not do, and who does it instead
+#       replaces              a catalog id of the same list (the replaced entry is then not
+#                             generated and must not appear as from catalog), or none
+#   names.cos               required, non-empty: "Chief of staff" or a persona name
+#   names.ceo               [later] the CEO display name, or `later`
+#   names.departments       required: a mapping from every department id to its display name
+#                           (the role name or a persona name); no other keys
+#   names.agents            optional: a mapping from a department id to an explicit agent name,
+#                           only to resolve a clash. Otherwise the agent name is derived:
+#                           the department id when the display name equals the role name
+#                           (ignoring case), else the persona slug (accents removed, lowercase,
+#                           other characters become one hyphen). It matches ^[a-z][a-z0-9-]*$,
+#                           differs from every other department's agent name and id and from
+#                           reader and worker. A brought-in one keeps its own name
+#   gates                   `accept` (the table of gates/default.md as it is), or a mapping with
+#                           one or both of:
+#     stricter              mapping: action id -> tier (notice | ok), each toward ok
+#     looser                mapping: action id -> tier (free | notice), each toward free; listed
+#                           apart on purpose, because it means less warning for the CEO
+#                           Every action id is one of gates/default.md. file-or-sign and
+#                           make-payment can never move. An action is listed once, and moves to
+#                           a tier different from its own
+#   models.cos              opus | sonnet | haiku
+#   models.departments      opus | sonnet | haiku
+#   models.overrides        optional: mapping from a department id to a tier. Never for a
+#                           brought-in department (its own file decides)
+#   models.top_workers      optional: list of department ids with "top model, workers included":
+#                           they run on opus and their workers on opus too. A listed department
+#                           must not have another model in overrides, and is never a brought-in one
+#   policy                  [later] purpose product, startup or company at company level.
+#                           `none`, `later`, or a mapping: repo (the policies repo git remote,
+#                           or "" when it has none yet), local (the CEO's local clone path,
+#                           read-only for this org), pin (a commit sha, 7 to 40 hex characters)
+#   employer_rules          [later] purpose job. `none`, `later`, or a pointer (a URL or a path)
+#                           to the employer's rules on data, AI tools and accounts. Never read
+#                           during setup
+#   remote.hq               [later] `none`, `later`, or the hq git remote URL
+#   remote.hosted_on        purpose job: personal | employer | undecided (where the hq remote
+#                           lives)
+#   policies_repo           level holding. A mapping:
+#     path                  required: absolute path (starts with /) outside the hq folder
+#     remote              [later] `none`, `later`, or a URL
+#     ceiling             optional: {cos, departments, workers}, each a tier. Absent = the
+#                           wizard's proposal, shown in the summary for confirmation
+#   repos                   [later] level company, purpose not personal. `none`, `later`, or a
+#                           list of mappings:
+#     slug                  owner/name, ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$, unique
+#     role                  short free text: code, site, docs, ...
+#     visibility            public | private
+#     protected             true | false: true = other people work there, so agents ask the CEO
+#                           before every write there ("not sure" is true)
+#     exists                true | false: false records the repo as planned
+#   issues_home             required when repos is a list: a slug from the list, or `hq` (needs
+#                           a hq remote URL on GitHub; the hq is then added with role hq,
+#                           private, not protected)
+#   roadmap                 [later] same condition as repos. `none`, `later`, or a mapping:
+#                           url (https://github.com/orgs/<owner>/projects/<number> or
+#                           https://github.com/users/<owner>/projects/<number>), status_field
+#   attribution             [later] default | none | later | a mapping with commit and pr (the
+#                           texts, kept as given; use the same text twice for "the same for both")
+#   enable_plugin           true | false: whether to write .claude/settings.json enabling the
+#                           plugin for this repo. Ignored (and may be absent) when that file
+#                           already enables it
+
+schema: setup-answers/1
+language:
+  chat: en
+  files: en
+org:
+  purpose: product
+  level: company
+  id: ACME
+  name: Acme
+services: no
+ceo:
+  profile: technical
+about:
+  what: |
+    - A mobile app that helps small shops plan their week
+    - For shop owners with fewer than ten employees
+  why: Shop owners lose hours every week to planning on paper.
+  stage: building
+departments:
+  - from: catalog
+    id: engineering
+  - from: catalog
+    id: legal
+    changes:
+      scope_add:
+        - Review of app store terms
+      never:
+        - item: Never contacts app store reviewers
+          owner: ceo
+      abilities_drop:
+        - WebFetch
+  - from: custom
+    id: support
+    role: Customer support
+    purpose: Answer shop owners and keep a list of recurring questions.
+    scope:
+      - Replies to incoming support email
+      - A list of the most frequent questions
+    triggers:
+      - A shop owner writes in
+      - A question comes up more than twice
+    exclusions:
+      - item: Refunds and payments
+        owner: ceo
+    core_job: Keep shop owners answered and turn repeated questions into help pages.
+    commands:
+      needed: false
+  - from: own
+    id: reviewer
+    name: some-plugin:reviewer
+    kind: agent
+    location: the plugin some-plugin
+    purpose: Review pull requests for style and risk.
+    use_when:
+      - A pull request is ready for review
+    must_not:
+      - item: Merging pull requests
+        owner: ceo
+    replaces: none
+names:
+  cos: Chief of staff
+  ceo: later
+  departments:
+    engineering: Mike
+    legal: Legal
+    support: Sam
+    reviewer: Reviewer
+gates: accept
+models:
+  cos: opus
+  departments: opus
+  overrides:
+    support: sonnet
+  top_workers:
+    - engineering
+policy: none
+remote:
+  hq: https://github.com/acme/hq.git
+repos:
+  - slug: acme/acme-app
+    role: code
+    visibility: public
+    protected: false
+    exists: true
+  - slug: acme/acme-site
+    role: site
+    visibility: private
+    protected: true
+    exists: false
+issues_home: hq
+roadmap:
+  url: https://github.com/orgs/acme/projects/1
+  status_field: Status
+attribution: default
+enable_plugin: true
+
+# Other forms of the same keys (not part of the example above):
+#
+# gates, a stricter and a looser move:
+# gates:
+#   stricter:
+#     merge: ok
+#     deploy: ok
+#   looser:
+#     publish: notice
+#
+# policy, with a holding policy; or deferred:
+# policy:
+#   repo: https://git.example.com/acme/policies.git
+#   local: /home/me/acme/policies
+#   pin: 3f2a9c1
+# policy: later
+#
+# employer_rules, job only:
+# employer_rules: https://intranet.example.com/rules-on-data-and-ai
+#
+# remote for a job hq:
+# remote:
+#   hq: none
+#   hosted_on: personal
+#
+# policies_repo, level holding only:
+# policies_repo:
+#   path: /home/me/acme/policies
+#   remote: none
+#   ceiling:
+#     cos: opus
+#     departments: opus
+#     workers: sonnet
+#
+# repos and roadmap, none or deferred:
+# repos: none
+# roadmap: later
+#
+# attribution, your own text, or none:
+# attribution:
+#   commit: "Co-Authored-By: My Agents <agents@example.com>"
+#   pr: "Written with my agents"
+# attribution: none
+#
+# A department that replaces a catalog entry, and a catalog change that adds an ability:
+#   - from: own
+#     id: design-brand
+#     name: brand-designer
+#     kind: agent
+#     location: my own agents
+#     purpose: Look after the visual identity.
+#     use_when:
+#       - A visual asset is needed
+#     must_not:
+#       - item: Publishing assets
+#         owner: ceo
+#     replaces: design-brand
+#   - from: catalog
+#     id: operations
+#     changes:
+#       abilities_add:
+#         - ability: Bash
+#           reason: It runs the weekly export script.
+
+# Validation checklist (scripts/ci/check_setup_answers.py checks the example above and every
+# file in examples/setup-answers/)
+#   - Parses as YAML; schema is "setup-answers/1"; no unknown key at any level.
+#   - Every required key is present; a key outside its case (policy for a job, repos for a
+#     holding, and so on) is absent.
+#   - org.id matches ^[A-Z][A-Z0-9]{1,7}$. Level holding requires purpose company; job, product,
+#     startup and personal require level company. language codes are two lowercase letters.
+#   - about.stage is allowed for the purpose and level; about.what and about.why are non-empty.
+#   - services is no or absent. later appears only where marked [later].
+#   - Department ids are unique; catalog ids are known; health, money and paperwork appear
+#     only with purpose personal; every item has the keys of its way and no other.
+#   - Changes: abilities exist, advisory entries never gain Bash or Agent(worker), Agent(worker)
+#     comes with Bash, drops are in the catalog entry, adds are not.
+#   - A brought-in department that replaces a catalog entry appears next to no copy of it.
+#   - names.departments has exactly one entry per department id; derived agent names match
+#     ^[a-z][a-z0-9-]*$ and are unique, differ from every department id, reader and worker.
+#   - Gate action ids are known; file-or-sign and make-payment never move; stricter moves go
+#     toward ok and looser moves toward free; no action moves twice.
+#   - Models are in [opus, sonnet, haiku]; overrides and top_workers name chosen departments that
+#     are not brought-in ones; a top_workers department has no other model.
+#   - policy: repo, local and pin when given; pin is a sha. A personal or job hq has no policy.
+#   - repos: slugs match and are unique; exactly one issues home (a listed slug, or hq with a
+#     GitHub remote URL); a personal hq or a holding has no repos, issues_home or roadmap.
+#   - roadmap url matches the project address and has a status_field.
+#   - attribution is default, none, later, or has commit and pr.
