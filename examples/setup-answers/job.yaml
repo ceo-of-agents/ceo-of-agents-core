@@ -1,0 +1,56 @@
+# Sample answers: purpose job (the CEO's own work at an employer), company level.
+# A job hq has employer rules and says where its remote lives, never a holding policy. The
+# hq remote is deferred. Departments: a catalog entry and a custom one. Attribution: none.
+# Validate: python3 scripts/ci/check_setup_answers.py --file examples/setup-answers/job.yaml
+schema: setup-answers/1
+language:
+  chat: en
+  files: en
+org:
+  purpose: job
+  level: company
+  id: ACMEJOB
+  name: Acme job
+services: no
+ceo:
+  profile: technical
+about:
+  what: I lead the platform team and work with the product and support teams.
+  why: Good work here means fewer incidents and clear plans for the next quarter.
+  stage: settled
+departments:
+  - from: catalog
+    id: operations
+  - from: custom
+    id: meeting-notes
+    role: Meeting notes
+    purpose: Turn meeting notes into decisions and follow-ups.
+    scope:
+      - Notes of my own meetings
+      - A list of follow-ups with owners
+    triggers:
+      - I paste or save the notes of a meeting
+    exclusions:
+      - item: Sharing notes with other people
+        owner: ceo
+    core_job: Turn the notes of each meeting into decisions and follow-ups.
+    commands:
+      needed: false
+names:
+  cos: Chief of staff
+  ceo: later
+  departments:
+    operations: Operations
+    meeting-notes: Meeting notes
+gates: accept
+models:
+  cos: opus
+  departments: sonnet
+employer_rules: https://intranet.example.com/rules-on-data-and-ai
+remote:
+  hq: later
+  hosted_on: undecided
+repos: none
+roadmap: none
+attribution: none
+enable_plugin: true

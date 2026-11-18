@@ -1,0 +1,77 @@
+# Sample answers: purpose startup, company level.
+# Departments: a catalog entry as it is, a catalog entry that gains an ability, and a custom
+# department that runs commands. Gates: one stricter and one looser move. Deferred: the holding
+# policy. Repos: one public repo, a personal board. Attribution: the CEO's own text.
+# Validate: python3 scripts/ci/check_setup_answers.py --file examples/setup-answers/startup.yaml
+schema: setup-answers/1
+language:
+  chat: en
+  files: en
+org:
+  purpose: startup
+  level: company
+  id: BOLT
+  name: Bolt
+services: no
+ceo:
+  profile: non-technical
+about:
+  what: A delivery service that brings spare parts to repair shops within the hour.
+  why: Repair shops lose customers while they wait days for a part.
+  stage: idea
+departments:
+  - from: catalog
+    id: business
+  - from: catalog
+    id: engineering
+    changes:
+      abilities_add:
+        - ability: WebSearch
+          reason: It compares routing libraries before choosing one.
+  - from: custom
+    id: data-export
+    role: Data export
+    purpose: Produce the weekly delivery report from the order files.
+    scope:
+      - The weekly delivery report
+    triggers:
+      - It is Monday morning
+    exclusions:
+      - item: Sending the report to partners
+        owner: business
+    core_job: Turn the order files into one weekly report.
+    commands:
+      needed: true
+      reason: It runs the script that reads the order files and writes the report.
+names:
+  cos: Robin
+  ceo: Alex
+  departments:
+    business: Business
+    engineering: Engineering
+    data-export: Data export
+gates:
+  stricter:
+    dispatch-pushing-department: ok
+  looser:
+    publish: notice
+models:
+  cos: opus
+  departments: sonnet
+policy: later
+remote:
+  hq: none
+repos:
+  - slug: bolt/bolt-web
+    role: code
+    visibility: public
+    protected: false
+    exists: true
+issues_home: bolt/bolt-web
+roadmap:
+  url: https://github.com/users/bolt/projects/2
+  status_field: Status
+attribution:
+  commit: "Co-Authored-By: Bolt agents <agents@example.com>"
+  pr: "Written with the Bolt agents"
+enable_plugin: true
