@@ -2,7 +2,7 @@
 name: product-repos
 description: Keep the product repos registry and the roadmap board of a ceo-of-agents hq. Registers a repo or a GitHub Project board in org.yaml, handles repos that do not exist yet, asks for local clone paths on this computer, and holds the gh rules. Use when the CEO names a new repo or board, when a planned repo may now exist, when a clone path is missing, or before the first gh call of a session.
 user-invocable: false
-allowed-tools: Read Grep Glob Edit Write Bash(git remote:*) Bash(git status:*) Bash(git diff:*) Bash(git add:*) Bash(git commit:*) Bash(git push:*) Bash(ls:*) Bash(date:*) Bash(gh auth status:*) Bash(gh repo view:*) Bash(gh project view:*) Bash(gh project field-list:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(ls:*) Bash(date:*) Bash(gh auth status) Bash(gh repo view:*) Bash(gh project view:*) Bash(gh project field-list:*)
 ---
 
 # product-repos: the repos registry and the roadmap board
@@ -47,6 +47,6 @@ Write the answers to `repo_paths:` in that file, creating it if missing (each sl
 
 ## Tools
 
-Use `gh` with `-R <slug>` right after the subcommand for a repo (`gh issue comment -R <slug> 12 --body "..."`; the permission rules in `.claude/settings.json` match that form, so free writes on a repo that is not protected run without a prompt) and `gh project <subcommand> --owner <owner>` for the tracker. If `gh` is missing, not signed in, or lacks the `project` scope (`gh auth status` shows it), say so once, add an A item of kind `{do}` with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, and carry on without tracker writes. Never guess what the tracker holds.
+Use `gh` with one `-R <slug>` right after the subcommand for a repo, and for a write its text inline in single quotes, never `--body-file` or `-F` (`gh issue comment -R <slug> 12 --body '...'`). Claude Code asks before every write on GitHub, also a free one: no permission rule can hold such a command to one repo or to its text, so the prompt shows both; the `ask` rules for protected repos match this form. Use `gh project <subcommand> --owner <owner>` for the tracker. If `gh` is missing, not signed in, or lacks the `project` scope (`gh auth status` shows it), say so once, add an A item of kind `{do}` with the exact command for the CEO (for example `gh auth refresh -s project`) unless one is already open, and carry on without tracker writes. Never guess what the tracker holds.
 
 Issue and tracker writes themselves follow the `intake` skill (issue route) and the `record-decision` skill.

@@ -2,7 +2,7 @@
 name: departments
 description: Add, change or remove a department of a ceo-of-agents hq, or grant one a new tool or connector, through a decision card. Holds the grant review (a one-line reason for every elevated grant), the account checks and the files to write once the CEO decides, including moving a removed department's folder to the archive. Use when the CEO asks for a new department, a change to one, or access for one, and when recurring work suggests a new department.
 user-invocable: false
-allowed-tools: Read Grep Glob Edit Write Bash(git status:*) Bash(git diff:*) Bash(git log:*) Bash(git ls-files:*) Bash(git mv:*) Bash(mkdir:*) Bash(ls:*) Bash(date:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git status:*) Bash(git ls-files:*) Bash(git mv:*) Bash(mkdir:*) Bash(ls:*) Bash(date:*)
 ---
 
 # departments: add, change or remove a department, or grant access
