@@ -56,9 +56,10 @@ The answers may come in one message, or in a file passed as the argument, follow
    - no `git init`, no commit and no `git remote add` (the remote URLs are still written to `org.yaml` and the setup record), in the hq and in the policies repo;
    - no plugin install check and no install (skip the section "Plugin installed for this folder");
    - no reading of services;
-   - the policy read check (question 9) runs only if the `local` path of the policy exists. Otherwise it is "skipped (dry run)" in the summary, and `{{SETUP_POLICY}}` is `<repo> @ <short pin> (check: skipped (dry run))`;
+   - the policy read check (question 9) never fetches: `git -C <local> fetch` uses the network and writes refs outside the current directory. It runs only `git -C <local> show <pin>:policy.yaml`, and only if the `local` path exists. Otherwise it is "skipped (dry run)" in the summary, and `{{SETUP_POLICY}}` is `<repo> @ <short pin> (check: skipped (dry run))`;
    - the holding's policies repo is rendered into `./policies-repo.dry-run/` inside the current directory, not at the path of the answers (`org.yaml` still records that path; the post-generation checks of the policies repo use this directory); no `mkdir` or write goes anywhere outside the current directory;
    - the question about the first commit of the policies repo (Generation step 10) and the commit question in the section "Git" are not asked.
+   - the whole section "Git" is skipped: no `git init`, no `git remote add`, no `git status`, no commit question;
 5. `.claude/` writes follow the rule in Generation: if one is denied, do not retry; list the missing files in the report.
 6. Run the Post-generation checks that apply. End with a report instead of the section "End": the files written (every path, relative to the current directory), each post-generation check and its result, and what was skipped (each difference above that applied). Say that `scripts/check-dry-run.py <this folder> <answers file>` in the plugin folder compares the result with the answers.
 
@@ -192,7 +193,7 @@ Ask whether this company follows a holding policy. It is optional. If yes, ask f
 - the CEO's local clone path of that policies repo (read-only for this org),
 - the pin (a commit sha).
 
-If given, verify read-only, reading only the policy file. Optionally fetch first (it may fail offline; that is not an error):
+If given, verify read-only, reading only the policy file. Optionally fetch first (it may fail offline; that is not an error; never in a dry run, see "Dry run"):
 ```
 git -C <local> fetch --quiet
 git -C <local> show <pin>:policy.yaml
