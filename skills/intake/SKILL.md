@@ -9,6 +9,8 @@ allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Ba
 
 Reply to the CEO in the chat language set in `org.yaml` (`language.chat`); write every file in the file language (`language.files`).
 
+Closed org: when `org.status` in `org.yaml` is `closed`, do not frame or route new work. Say that the org is closed and that the CEO can reopen it (`close-org` skill). Leave handoff notes in `inbox/` unprocessed.
+
 Only the chief of staff (CoS) runs this skill. A department agent must not process or delete `inbox/` notes, nor edit `company/state.md` or `company/decision-queue.md`; it leaves a handoff instead.
 
 Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/decision-card.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/handoff.md`.

@@ -5,6 +5,7 @@ org:
   name: {{ORG_NAME}}
   level: {{LEVEL}}              # company | holding
   purpose: {{PURPOSE}}          # job | product | startup | company | personal
+  status: open                  # open | closed; closed = read-only, see the close-org skill
 ceo:
   role_id: {{CEO_ROLE_ID}}      # the CEO is a role, not a hard-coded person
   display_name: "{{CEO_DISPLAY_NAME}}"   # optional

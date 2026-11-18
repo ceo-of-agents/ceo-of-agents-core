@@ -9,6 +9,8 @@ allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Ba
 
 Reply to the CEO in the chat language set in `org.yaml` (`language.chat`); write every file in the file language (`language.files`).
 
+Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is closed and read-only, and stop: this skill writes nothing. Only the Reopen procedure of the `close-org` skill writes in a closed org.
+
 Only the chief of staff (CoS) runs this skill. Departments write documents into an initiative's folder and add their lines to its `README.md`, but never edit its `status.md`: that rule is in the "Documents" section of the hq's `CLAUDE.md`, which departments read.
 
 Formats: `${CLAUDE_PLUGIN_ROOT}/schemas/initiative.md` (the folder, `status.md`, the indexes, the line in `company/state.md`) and `${CLAUDE_PLUGIN_ROOT}/schemas/document.md` (document frontmatter, folder indexes, archiving).

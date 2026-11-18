@@ -24,6 +24,10 @@
 #                             personal: the CEO's own personal life (company level
 #                             only); personal data lives in the git-ignored private/
 #                             folder of the hq, never in tracked files
+#   org.status              optional: open | closed. Absent means open. closed = read-only:
+#                           the CoS answers from the hq and takes no new work, and nothing
+#                           is deleted. Changed only by a closing or reopening decision
+#                           record, through the close-org skill
 #   ceo.role_id             role id for the CEO (for example "ceo"); a role, not a person
 #   ceo.display_name        optional free text, may be ""
 #   ceo.profile             optional: technical | non-technical; absent means technical.
@@ -139,6 +143,7 @@ org:
   name: Acme
   level: company
   purpose: product
+  status: open
 ceo:
   role_id: ceo
   display_name: ""
@@ -222,6 +227,8 @@ employer_rules: null
 #     never registered in a holding portfolio.yaml.
 #   - Purpose personal requires repos [] and tracker none. Catalog ids health, money and
 #     paperwork appear only with purpose personal.
+#   - org.status, when present, is open or closed. A closed org has a closing decision
+#     record in decisions/ that the last reopening record, if any, does not follow.
 #   - cos.display_name is present and non-empty.
 #   - ceo.profile, when present, is technical or non-technical.
 #   - employer_rules is null unless org.purpose is job.
