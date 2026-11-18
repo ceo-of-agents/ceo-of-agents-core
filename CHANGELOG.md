@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.15.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.14.0...v0.15.0) (2026-11-18)
+
+
+### Features
+
+* derive permission rules from the gates and record outward writes in the same turn ([#67](https://github.com/iamgiolaga/ceo-of-agents/issues/67)) ([28104e1](https://github.com/iamgiolaga/ceo-of-agents/commit/28104e145720bfae6fe267758c34cee7edef8440))
+
 ## [0.14.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.13.0...v0.14.0) (2026-11-17)
 
 
