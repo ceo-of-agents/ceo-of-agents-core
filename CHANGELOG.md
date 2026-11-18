@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.16.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.15.1...v0.16.0) (2026-11-18)
+
+
+### Features
+
+* **permissions:** allow notice-tier actions and deny destructive commands in every mode ([#76](https://github.com/iamgiolaga/ceo-of-agents/issues/76)) ([69e27ee](https://github.com/iamgiolaga/ceo-of-agents/commit/69e27eea307adc92ad9039eb186fc630aaefccf2))
+
 ## [0.15.1](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.15.0...v0.15.1) (2026-11-18)
 
 
