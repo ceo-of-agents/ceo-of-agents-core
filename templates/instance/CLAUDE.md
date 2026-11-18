@@ -119,7 +119,7 @@ Departments run on **{{MODEL_DEPARTMENTS}}** (see `org.yaml` for per-department 
 - Departments never commit hq main. In your session they leave edits in the working tree for you to commit. In a direct session they work on a branch or leave edits plus an `inbox/` note; you review and merge.
 <!-- END IF -->
 - Keep `company/state.md` current at the end of every meaningful session: update `last_updated` and the sections that changed.
-- Keep the files read at every session start small: each line in `company/state.md` stays one line (under 300 characters) and links a note for the detail. The `session-start` skill reports a file over its budget.
+- Keep the files read at every session start small: rewrite a line of `company/state.md` (or an initiative's `status.md`) to the current fact, never append to it; it stays under 300 characters and links a note. History goes to `company/log.md` (or the initiative's `log.md`). The skills check before each commit.
 <!-- IF not-personal -->
 - hq never holds secrets or personal data. Sensitive detail (tax, personal legal, personal finance) stays out of `company/state.md`.
 <!-- END IF -->
@@ -133,11 +133,10 @@ Departments run on **{{MODEL_DEPARTMENTS}}** (see `org.yaml` for per-department 
 <!-- IF product-repos -->
 ## Product repos and roadmap
 
-`repos:` in `org.yaml` lists the org's product repos (GitHub slug, role, visibility, and the issues home for cross-cutting issues); `tracker:` names the roadmap, a GitHub Project, or `none`. Local clones are per machine, under `repo_paths` in `accounts.local.yaml`. Everyone reads the registry there: no charter, agent file or note copies the list. While `repos` is `[]` and `tracker` is `none`, this section does not apply. To register a repo or a roadmap, handle a repo that does not exist yet, ask for a clone path or run `gh` on a repo or the tracker, use the `product-repos` skill.
+`repos:` in `org.yaml` lists the org's product repos (GitHub slug, role, visibility, and the issues home for cross-cutting issues); `tracker:` names the roadmap, a GitHub Project, or `none`. Local clones are per machine, under `repo_paths` in `accounts.local.yaml`. Everyone reads the registry there: no charter, agent file or note copies the list. While `repos` is `[]` and `tracker` is `none`, this section does not apply. To register a repo or a roadmap, handle a repo that does not exist yet (`planned: true`), ask for a clone path or run `gh` on a repo or the tracker, use the `product-repos` skill: it holds the `gh` conventions.
 
 - **The roadmap stays current.** Every change checks and updates the tracker and its issues: when work is asked, starts, ships or is dropped, when a decision is recorded, when a PR opens or merges. Each piece of work has an issue in the repo it touches (cross-cutting work: in the issues home), the issue is on the tracker, its `status_field` matches reality, and stale issues are closed with a one-line note. With `tracker: none`, keep the issues current and skip the Project steps.
-- **Tracking writes are free** on a repo that is not protected (see Approval gates). Creating, editing and closing issues, adding Project items and setting their fields, labels, milestones and comments are free (`issues-and-labels`, `comments`): do them and mention them in one line. Write `gh` commands with one `-R <slug>` right after the subcommand and a write's text inline in single quotes, never `--body-file` (`gh issue comment -R <slug> 12 --body '...'`): Claude Code asks before each write on GitHub, and the prompt shows the repo and the text. Changing a Project's or a repo's settings, including its built-in workflows, is `org-or-repo-settings`.
-- **Planned repos.** A repo marked `planned: true` does not exist yet: no issue or tracker write goes to it until it does (the `product-repos` skill checks and asks the CEO to create it).
+- **Tracking writes are free** on a repo that is not protected (see Approval gates). Creating, editing and closing issues, adding Project items and setting their fields, labels, milestones and comments are free (`issues-and-labels`, `comments`): do them and mention them in one line. Changing a Project's or a repo's settings, including its built-in workflows, is `org-or-repo-settings`.
 - **Product repos own their technical facts.** Before any work or analysis in a repo, read its own `CLAUDE.md` and `CONTRIBUTING` (if present) and use its latest default branch. They win over hq on stack, commands, conventions and release flow; do not restate them in hq.
 - **Public repos stay clean.** A repo with `visibility: public` receives nothing from hq: no internal names (personas, department names), no `{{ORG_ID}}-` codes, no hq content. Write its issues, PRs and comments as an outside contributor would, and link the other way: the hq record or note holds the issue or PR URL. A private repo, or an issues home that is the hq, may carry the code (for example `Decision: {{ORG_ID}}-D3`).
 
@@ -156,7 +155,7 @@ Principles:
 <!-- IF product-repos -->
 - **Protected repos.** A repo with `protected: true` in `repos:` (other people work there) gets no write without the CEO's explicit OK, whatever the tier above: no issue, label, milestone, comment, pull request or branch push, and no action of the ok tier. Reads stay free. Ask before writing, naming the repo and each write, or batch the writes into one A item per repo and piece of work. A repo that has no item in `repos:` and matches no owner pattern (`owner/*`) counts as protected. The hq is never protected.
 <!-- END IF -->
-- Claude Code's permission rules in `.claude/settings.json` follow this table and `repos:` (see `operating-model.md`): free and notice actions run without a prompt, except writes on GitHub (issues, comments, pull requests), which always prompt because no rule can hold them to one repo; ok actions always prompt, in every mode; a short list of destructive commands (force push, deleting a remote branch, rewriting history, `git clean` with force, deleting a repo or a release, a `gh api` DELETE) is refused in every mode. When the gates or the repos change, write the rules again in the same commit. A permission prompt the CEO approves is not the OK a gate asks for.
+- Permission rules in `.claude/settings.json` follow this table and `repos:` (how: `operating-model.md`, "Permission rules"); write them again in the same commit when either changes. A permission prompt the CEO approves is not the OK a gate asks for.
 - If the harness blocks an approved action: always try the action yourself first. Only if it is actually blocked, tell the CEO plainly what was blocked and give the exact command the CEO can run (in Claude Code, with the `!` prefix). Never hand the CEO a command preemptively, and never work around a block.
 <!-- IF departments -->
 - Advisory departments ({{ADVISORY_DEPARTMENTS}}) never file, sign or pay. No configuration lowers this.
@@ -191,7 +190,7 @@ superseded_by: <path>    # only when status is superseded
 - **Indexes.** Each folder of documents has a `README.md` with one line per document, newest first: `- [<file>](<file>): <what it answers>`, with ` (superseded)` when it is; an archived document leaves it. Read the index first and open only the documents you need. Whoever adds, supersedes or archives a document updates the index of its folder in the same change. `initiatives/README.md` and each `status.md` are the CoS's.
 - When a newer document replaces one, set `status: superseded` and `superseded_by` on the old one, and leave its body as it is.
 - An archived document moves to `archive/`, keeping its path (for example `archive/departments/<id>/<file>`), with `status: archived`. Archive only when the CEO asks or agrees; the move is an hq commit. `.ignore` keeps `archive/` out of default searches: search it only when old material is needed, by naming `archive/` as the path.
-- Files with a format of their own keep it and get no such frontmatter: decision records, `company/` files, briefs, charters, agent files, `inbox/` notes, indexes and `status.md`.
+- Files with a format of their own keep it and get no such frontmatter: decision records, `company/` files, briefs, charters, agent files, `inbox/` notes, indexes, logs and `status.md`.
 
 ## Numbers and metrics
 
@@ -266,6 +265,7 @@ This org is a holding: a registry, not a product company.
 | Briefs | `company/briefs/` |
 | Metric definitions | `metrics/README.md` |
 | Work across sessions or departments | `initiatives/` (index: `initiatives/README.md`) |
+| History behind state and initiative pages | `company/log.md`, `initiatives/<slug>/log.md` |
 | Old documents, out of default searches | `archive/` |
 <!-- IF personal -->
 | Personal data (this computer only, git-ignored) | `private/` |

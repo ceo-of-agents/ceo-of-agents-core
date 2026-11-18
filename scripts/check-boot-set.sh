@@ -23,6 +23,12 @@ accounts.local.yaml 2048
 TOTAL 40960'
 # BUDGETS END
 
+# Budget of one initiative page, initiatives/<slug>/status.md. Pages are not in
+# the boot set, but drift the same way, so their size and their lines over 300
+# characters are reported too ("Initiative pages" in schemas/boot-set.md; the CI
+# check keeps this number in sync).
+STATUS_BUDGET=4096
+
 dir=${1:-.}
 if [ ! -d "$dir" ]; then
   echo "usage: sh check-boot-set.sh [hq-dir]" >&2
@@ -68,6 +74,47 @@ else
   verdict=ok
 fi
 echo "whole boot set: $total bytes, budget $total_budget: $verdict"
+
+# Initiative pages: printed only when at least one exists, so an hq without
+# initiatives reads as before. Paths are shown relative to the hq.
+npages=0
+big=0
+long=0
+quotes=""
+for page in "$dir"/initiatives/*/status.md; do
+  [ -f "$page" ] || continue
+  npages=$((npages + 1))
+  name=${page#"$dir"/}
+  size=$(wc -c < "$page" | tr -d ' \t\n')
+  if [ "$size" -gt "$STATUS_BUDGET" ]; then
+    big=$((big + 1))
+    quotes="$quotes
+B   $name: $size bytes, over by $((size - STATUS_BUDGET)) bytes"
+  fi
+  # Characters, not bytes: the same count as for company/state.md below.
+  found=$(LC_ALL=C awk -v name="$name" '
+    function chars(s,   t) { t = s; gsub(/[\200-\277]/, "", t); return length(t) }
+    function first8(s,   n, a, i, out) {
+      n = split(s, a, /[ \t]+/); out = ""
+      for (i = 1; i <= n && i <= 8; i++) if (a[i] != "") out = out (out == "" ? "" : " ") a[i]
+      return out
+    }
+    { sub(/\r$/, ""); c = chars($0); if (c > 300) print "L   " name " line " NR " (" c " characters): " first8($0) }' "$page")
+  if [ -n "$found" ]; then
+    long=$((long + $(printf '%s\n' "$found" | wc -l | tr -d ' \t\n')))
+    quotes="$quotes
+$found"
+  fi
+done
+if [ "$npages" -gt 0 ]; then
+  issues=$((issues + big + long))
+  echo "initiative pages over $STATUS_BUDGET bytes: $big"
+  printf '%s\n' "$quotes" | sed -n 's/^B //p' | sed -n '1,3p'
+  [ "$big" -gt 3 ] && echo "  and $((big - 3)) more"
+  echo "initiative page lines over 300 characters: $long"
+  printf '%s\n' "$quotes" | sed -n 's/^L //p' | sed -n '1,3p'
+  [ "$long" -gt 3 ] && echo "  and $((long - 3)) more"
+fi
 
 state="$dir/company/state.md"
 if [ ! -f "$state" ]; then

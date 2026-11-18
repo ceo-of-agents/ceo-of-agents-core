@@ -49,7 +49,7 @@ Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_RO
 
 5. Escalation (company level, purpose product, startup or company; the `escalate:` line does not exist in a holding, a job or a personal queue): if a decision touches money, personal liability or the portfolio, set `escalate: holding` on the card and append ` [escalate: holding]` to its line in "Open decisions". The holding reads it on its next portfolio brief. Never write to the holding repo. Tell the CEO the card is flagged and that the answer is still recorded here.
 
-6. Finish state.md: set `last_updated` to today (`date +%F`), keep the five H2 sections in order, `- none` for empty ones. Keep each line to the formats in the schema.
+6. Finish state.md: set `last_updated` to today (`date +%F`), keep the five H2 sections in order, `- none` for empty ones. Keep each line to the formats in the schema: rewrite a line to the current fact, never append to it, and put the history that matters in `company/log.md`. Then run the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time") on what this run touched, before the commit of step 8.
 
 7. Delete each processed note (`git rm` or remove the file) in the same hq commit as the updates. Git history keeps them. Do not delete a note you could not fully process; say why.
 

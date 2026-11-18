@@ -30,6 +30,8 @@ An empty section body is the single line `- none`.
 
 Every line stays at most 300 characters, frontmatter included (budget: `schemas/boot-set.md`). An item that needs more keeps one line and links a note for the detail.
 
+Rewrite, do not append: when a fact changes, the line is rewritten to the current fact. The history goes to `company/log.md` (`schemas/log.md`), and the line may end with `; history in company/log.md`. The skills check each line they touch before their commit (`schemas/boot-set.md`, "Check at write time").
+
 Products and status:
 `- <product>: <status in one line> (as of YYYY-MM-DD)`
 `- <initiative title>: <state in a few words>, see initiatives/<slug>/status.md (as of YYYY-MM-DD)` (one line per open initiative; `schemas/initiative.md`)

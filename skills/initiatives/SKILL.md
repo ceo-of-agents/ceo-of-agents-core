@@ -37,7 +37,7 @@ Do not open one for work that one department finishes in one go: it stays in `de
 
 When a handoff names the initiative (`initiative: <slug>`, or a path under its folder), a decision record concerns it, an issue or pull request in its Links changes, or the CEO changes its direction:
 
-- Update `status.md`: State, Next step, Links, `departments`, and `updated` to today. Keep it to one page; the detail goes in a document that it links.
+- Update `status.md`: State, Next step, Links, `departments`, and `updated` to today. Rewrite State and Next step to where the work stands now; never append a work log to them. What they said before goes, when it is worth keeping, to `initiatives/<slug>/log.md` as a new dated entry, verbatim (create the file the first time, as in `${CLAUDE_PLUGIN_ROOT}/schemas/log.md`). Keep the page within its budget; the detail goes in a document that it links.
 - Check that the documents the handoff names have their line in the folder's `README.md`; add a missing line yourself.
 - Update its line in `initiatives/README.md` and in `company/state.md` when the state changed.
 - Pending items stay in "Waiting on the CEO" in `company/state.md`, the one list; `status.md` names their codes only.
@@ -55,7 +55,7 @@ When the CEO says the work is done or dropped:
 
 ## Commit
 
-Every step above is an hq write. Commit with notice (`hq-commit`): one line to the CEO, then a message like `docs: open initiative <slug>`, `docs: update initiative <slug>` or `chore: archive initiative <slug>`, with the attribution lines required by the session. When this skill runs inside `intake` or `record-decision`, its edits go in that skill's commit. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
+Every step above is an hq write. Before committing, run the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time") on the page and the `company/state.md` line this run touched. Commit with notice (`hq-commit`): one line to the CEO, then a message like `docs: open initiative <slug>`, `docs: update initiative <slug>` or `chore: archive initiative <slug>`, with the attribution lines required by the session. When this skill runs inside `intake` or `record-decision`, its edits go in that skill's commit. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
 
 ## Rules
 

@@ -23,6 +23,21 @@ Every budget is in bytes, as `wc -c` counts them; the KiB figure (1 KiB = 1,024 
 
 Every line of `company/state.md` is at most 300 characters (characters, not bytes), frontmatter included. An item that needs more keeps its one line (what, status, date) and links a note (for example `departments/<id>/YYYY-MM-DD-<slug>.md`) for the detail.
 
+Rewrite, do not append. When a fact changes, the line is rewritten to the current fact; it never grows, session after session, into a work log. The history goes to `company/log.md`, an append-only log that is not in the boot set (`schemas/log.md`), and the line may point there.
+
+## Initiative pages
+
+An initiative's `status.md` is not in the boot set, but it is read every time its work comes up and it drifts the same way, so it has a budget too: at most 4 KiB per page (4,096 bytes, as `wc -c` counts them), and every line at most 300 characters. Its State and Next step are rewritten to where the work stands now; the history goes to `initiatives/<slug>/log.md` (`schemas/log.md`), and the detail to documents the page links. The check script below reports the pages over budget and their long lines; it prints nothing about pages when there is none.
+
+## Check at write time
+
+The session start reports a file over budget after the damage is done. So every skill that writes `company/state.md` or a `status.md` (`intake`, `record-decision`, `initiatives`, `hq-version`, `weekly-brief`, and `session-start` when it fixes a line) does this before its commit:
+
+1. Rewrite each line or section it touches to the current fact; never append to it. If the old text held detail that matters and is kept nowhere else (a decision record, an issue, a document), add that detail verbatim to the log, as a new dated entry (`schemas/log.md`).
+2. Run the check script (below). Claude Code asks before it runs: no permission rule can allow it (`gates/permissions.md`).
+3. If it reports a line over 300 characters or a page over its budget that this run wrote or touched, fix it as in step 1 and run the script again. Fix only what this run touched; other findings are reported as the session start does and left to the CEO.
+4. Commit. If the script cannot run (the prompt is denied, or there is no `sh`), say `Write-time check skipped: <reason>` in one line, keep step 1, and commit.
+
 ## Check
 
 The plugin ships the check as a script, so the verdict never depends on which part of this file was read or on arithmetic done by hand:
@@ -33,7 +48,7 @@ sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-boot-set.sh"
 
 Run from the hq root (or pass the hq folder as the only argument). It prints, per file, its size, its budget and `ok` or `over by N bytes`; the same for the whole boot set; the lines of `company/state.md` over 300 characters (line number, length, first words); and the lines of "Waiting on the CEO" that lack a kind or do not follow the line format of `schemas/state.md`. The last line is `verdict: ok` or `verdict: N issue(s)`. It changes nothing and always exits 0 on an hq. The budgets in the script and in the table above are the same numbers; a CI check in the plugin repo keeps them in sync.
 
-The `session-start` skill runs the script and, when the verdict is not `ok`, adds one line to the status from its output: each offending file with its size and budget, and at most three long or malformed lines by their first words. It proposes moving the detail to linked notes (or fixing the pending lines) and does it only when the CEO agrees. It adds no A item and never trims on its own.
+The `session-start` skill runs the script and, when the verdict is not `ok`, adds one line to the status from its output: each offending file with its size and budget, and at most three long or malformed lines by their first words. It proposes rewriting the lines and moving their history to the log (or fixing the pending lines) and does it only when the CEO agrees. It adds no A item and never trims on its own.
 
 The `weekly-brief` skill runs the same script in its hygiene step, so a file over budget also shows up in the brief.
 
