@@ -25,7 +25,9 @@
 #     lines are fine.
 #   - Use action ids, catalog ids and file-level values (`opus`, `en`), not the plain words
 #     of the chat questions.
-#   - A YAML 1.1 reader turns an unquoted `no` into false. Both mean "no".
+#   - A YAML 1.1 reader turns an unquoted `no` into false. For `services`, both mean "no".
+#     Quote any other value that YAML could read as a boolean or a number: the language
+#     `"no"` (Norwegian), an org id such as `"ON"` or `"NO"`, a pin made only of digits.
 #
 # Required keys (always): schema, language, org (purpose, id, name), ceo, about, departments,
 #   names, gates, models, remote (hq), attribution, enable_plugin
