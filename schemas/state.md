@@ -64,6 +64,7 @@ Every line has exactly one kind. An A item is `ok` or `do`; a D item is always `
 ## Codes
 
 - `<ORG_ID>-A<n>` is an action for the CEO; `<ORG_ID>-D<n>` is a decision. Every decision card has its own D code.
+- `<ORG_ID>-T<n>` is a task the CEO owns personally (reply to someone, chase an answer). T items live only in the optional `company/todo.md` (`schemas/todo.md`), with their own counter `next_todo` there; they never go in state.md, so "Waiting on the CEO" keeps only A and D items. A reader may show open T items next to them.
 - Numbers are monotonic per org and never reused, even after an item is removed. The next numbers live in `next_action` and `next_decision`; increment them when a code is issued.
 - Urgency is `high`, `normal` or `low`.
 - Remove an item as soon as it is done; do not keep a "done" log (history lives in git and decision records).
