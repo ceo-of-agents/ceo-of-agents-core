@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="200" viewBox="0 0 760 200" role="img" aria-labelledby="lockup-title lockup-desc">
+  <title id="lockup-title">ceo-of-agents</title>
+  <desc id="lockup-desc">The ceo-of-agents logo: a violet node (you, the CEO) above a teal node (the chief of staff), whose three branches land as commits on the teal hq git line, followed by the name ceo-of-agents.</desc>
+
+  <!-- Solid background with a 1px border: identical in GitHub light and dark mode. -->
+  <rect x="0.5" y="0.5" width="759" height="199" rx="24" fill="#0F172A" stroke="#334155"/>
+
+  <!-- Mark at 120 px tall. Padding 40 px on every side; gap mark to name 38 px. -->
+  <g transform="translate(40 40) scale(0.2054795) translate(-220 -223)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#64748B" stroke-width="24">
+      <path d="M512 362 L512 434"/>
+      <path d="M512 558 C512 636 312 612 312 688"/>
+      <path d="M512 558 L512 688"/>
+      <path d="M512 558 C512 636 712 612 712 688"/>
+    </g>
+    <g stroke="#2DD4BF" stroke-width="24">
+      <path d="M232 736 L266 736"/>
+      <path d="M358 736 L466 736"/>
+      <path d="M558 736 L666 736"/>
+      <path d="M758 736 L792 736"/>
+      <circle cx="312" cy="736" r="44"/>
+      <circle cx="512" cy="736" r="44"/>
+      <circle cx="712" cy="736" r="44"/>
+    </g>
+    <circle cx="512" cy="496" r="62" fill="#2DD4BF"/>
+    <circle cx="512" cy="300" r="62" fill="#A78BFA"/>
+  </g>
+
+  <!-- Name: live text in the system monospace stack, 60 px bold (half the mark's height). About 10% free width after it. -->
+  <text x="198" y="118" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="60" font-weight="700" fill="#F8FAFC">ceo-of-agents</text>
+</svg>

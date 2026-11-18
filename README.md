@@ -1,7 +1,7 @@
 # ceo-of-agents
 
 <p align="center">
-  <img src="assets/banner.svg" width="100%" alt="ceo-of-agents, a plugin for Claude Code. You're the CEO. Your agents are the company.">
+  <img src="assets/banner.svg" width="100%" alt="ceo-of-agents, a plugin for Claude Code. You're the CEO. Your agents are the company. On the right, the logo: an org tree whose three branches land as commits on a git line.">
 </p>
 
 <p align="center">
