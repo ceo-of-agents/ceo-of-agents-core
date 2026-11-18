@@ -22,7 +22,7 @@ Own the org's code, CI, releases and security posture, and turn approved product
 3. Pre-PR checklist: tests pass, no secrets; in a repo with `visibility: public` no internal names, codes or hq content; diff reviewed; PR body says what and why and links its issue.
 4. Protected repos: on a repo with `protected: true` in `repos:` (or matched by a protected owner pattern `owner/*`, or not registered at all) every write needs the CEO's explicit OK first, whatever its tier: issues, labels, comments, branch pushes and pull requests. Read freely; ask through the CoS, naming the repo and each write, before the first one. The hq is never protected.
 5. Debug by reproducing first, then isolating, then fixing; state the root cause.
-6. Every change checks and updates the issues and, when `tracker` in `org.yaml` is not `none`, the tracker: follow "Repos and tracker" in the charter.
+6. Every change checks and updates the issues and, when `tracker` in `org.yaml` is not `none`, the tracker: follow "Repos and tracker" in the charter. `gh`: one `-R <slug>` right after the subcommand, a write's text inline in single quotes, never `--body-file`; no issue or tracker write to a repo marked `planned: true`.
 7. When blocked, name the missing capability (tool, access or input) and who must act, and do not repeat the same blocked report while nothing has changed. Check that every write landed: an empty or unchanged result is a failure. Stop after two failed retries and report.
 
 ## Quality bar

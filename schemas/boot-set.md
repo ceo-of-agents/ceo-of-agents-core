@@ -31,12 +31,12 @@ An initiative's `status.md` is not in the boot set, but it is read every time it
 
 ## Check at write time
 
-The session start reports a file over budget after the damage is done. So every skill that writes `company/state.md` or a `status.md` (`intake`, `record-decision`, `initiatives`, `hq-version`, `weekly-brief`, and `session-start` when it fixes a line) does this before its commit:
+The session start reports a file over budget after the damage is done. So every skill that writes `company/state.md` or a `status.md` (`intake`, `record-decision`, `initiatives`, `hq-version`, `weekly-brief`, and `session-start` when it fixes a line) does this before its commit. It uses only tools that run without a prompt; the check script stays for the session start, the weekly brief and migrations, because Claude Code asks before it runs.
 
-1. Rewrite each line or section it touches to the current fact; never append to it. If the old text held detail that matters and is kept nowhere else (a decision record, an issue, a document), add that detail verbatim to the log, as a new dated entry (`schemas/log.md`).
-2. Run the check script (below). Claude Code asks before it runs: no permission rule can allow it (`gates/permissions.md`).
-3. If it reports a line over 300 characters or a page over its budget that this run wrote or touched, fix it as in step 1 and run the script again. Fix only what this run touched; other findings are reported as the session start does and left to the CEO.
-4. Commit. If the script cannot run (the prompt is denied, or there is no `sh`), say `Write-time check skipped: <reason>` in one line, keep step 1, and commit.
+1. Rewrite each line or section you touch to the current fact; never append to it. If the old text held detail that matters and is kept nowhere else (a decision record, an issue, a document), copy it verbatim into the log as a new dated entry (`schemas/log.md`). A rewritten line keeps its `(as of YYYY-MM-DD)` date unless you checked the fact today; a pending line keeps its code and its `{kind}`; a page gets `updated` set to today.
+2. Measure the files you touched. Lines: search each with the Grep tool for `^.{301,}$` (it counts characters, not bytes); every match is a line over 300 characters. Size: `wc -c <file>`, against 8,192 bytes for `company/state.md` and 4,096 for a `status.md`.
+3. If a line this run wrote or touched is over 300 characters, or the file went over its budget with this run, fix it as in step 1 and measure again. Fix only what this run touched; other findings are left to the session start, which reports them to the CEO.
+4. Commit. If the measuring cannot run, say `Write-time check skipped: <reason>` in one line and commit: a skipped check still means rewrite, not append, so step 1 always applies.
 
 ## Check
 

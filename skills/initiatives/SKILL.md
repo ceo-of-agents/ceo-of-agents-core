@@ -2,7 +2,7 @@
 name: initiatives
 description: Open, update, close and archive an initiative in a ceo-of-agents hq, a folder initiatives/<slug>/ with a one-page status.md and an index of its documents, for work that spans several sessions or departments. Use when the CEO starts such a piece of work, when intake routes one, when a handoff or a decision touches an open initiative, or when the CEO says one is done or dropped.
 user-invocable: false
-allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(mkdir:*) Bash(ls:*) Bash(date:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(mkdir:*) Bash(ls:*) Bash(wc:*) Bash(date:*)
 ---
 
 # initiatives: one folder per piece of work
@@ -55,7 +55,7 @@ When the CEO says the work is done or dropped:
 
 ## Commit
 
-Every step above is an hq write. Before committing, run the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time") on the page and the `company/state.md` line this run touched. Commit with notice (`hq-commit`): one line to the CEO, then a message like `docs: open initiative <slug>`, `docs: update initiative <slug>` or `chore: archive initiative <slug>`, with the attribution lines required by the session. When this skill runs inside `intake` or `record-decision`, its edits go in that skill's commit. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
+Every step above is an hq write. Before committing, measure the page and the `company/state.md` line this run touched with the check at write time (`${CLAUDE_PLUGIN_ROOT}/schemas/boot-set.md`, "Check at write time"; Grep and `wc -c`, not the script), and set `updated` on the page. Commit with notice (`hq-commit`): one line to the CEO, then a message like `docs: open initiative <slug>`, `docs: update initiative <slug>` or `chore: archive initiative <slug>`, with the attribution lines required by the session. When this skill runs inside `intake` or `record-decision`, its edits go in that skill's commit. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
 
 ## Rules
 

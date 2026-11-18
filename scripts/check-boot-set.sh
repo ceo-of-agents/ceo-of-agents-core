@@ -97,7 +97,16 @@ B   $name: $size bytes, over by $((size - STATUS_BUDGET)) bytes"
     function first8(s,   n, a, i, out) {
       n = split(s, a, /[ \t]+/); out = ""
       for (i = 1; i <= n && i <= 8; i++) if (a[i] != "") out = out (out == "" ? "" : " ") a[i]
-      return out
+      return cut(out)
+    }
+    # At most 80 characters; never splits a UTF-8 character.
+    function cut(s,   i, n, b) {
+      n = 0
+      for (i = 1; i <= length(s); i++) {
+        b = substr(s, i, 1)
+        if (b !~ /[\200-\277]/ && ++n > 77) return substr(s, 1, i - 1) "..."
+      }
+      return s
     }
     { sub(/\r$/, ""); c = chars($0); if (c > 300) print "L   " name " line " NR " (" c " characters): " first8($0) }' "$page")
   if [ -n "$found" ]; then
@@ -129,7 +138,16 @@ else
     function first8(s,   n, a, i, out) {
       n = split(s, a, /[ \t]+/); out = ""
       for (i = 1; i <= n && i <= 8; i++) if (a[i] != "") out = out (out == "" ? "" : " ") a[i]
-      return out
+      return cut(out)
+    }
+    # At most 80 characters; never splits a UTF-8 character.
+    function cut(s,   i, n, b) {
+      n = 0
+      for (i = 1; i <= length(s); i++) {
+        b = substr(s, i, 1)
+        if (b !~ /[\200-\277]/ && ++n > 77) return substr(s, 1, i - 1) "..."
+      }
+      return s
     }
     function add(g, text) {
       count[g]++
