@@ -14,6 +14,8 @@ Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is clo
 
 Only the chief of staff (CoS) runs this skill. Record format: `${CLAUDE_PLUGIN_ROOT}/schemas/decision-record.md`; card format: `${CLAUDE_PLUGIN_ROOT}/schemas/decision-card.md`; state format: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Hard rule
 
 Never record a decision the CEO did not take. An answer must come from the CEO in this conversation. A recommendation, a draft, or silence is not a decision. If the CEO's words are ambiguous or only partly answer the card, ask one clarifying question before writing anything. If the CEO only says "ok" to a long list, confirm which codes and options you understood.

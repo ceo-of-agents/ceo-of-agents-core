@@ -4,7 +4,7 @@ One complete answers file per purpose, in the format of [schemas/setup-answers.y
 
 - [job.yaml](job.yaml): purpose `job`; employer rules, where the remote lives, a deferred hq remote, no repos, attribution none.
 - [product.yaml](product.yaml): purpose `product`; all four ways to build departments, a planned and protected repo, a roadmap board, attribution default.
-- [startup.yaml](startup.yaml): purpose `startup`; a catalog entry that gains an ability, a custom department that runs commands, a stricter and a looser gate, a deferred holding policy, your own attribution text.
+- [startup.yaml](startup.yaml): purpose `startup`; a catalog entry that gains an ability, a custom department, a stricter and a looser gate, a deferred holding policy, your own attribution text.
 - [company.yaml](company.yaml): purpose `company`, level company; a pinned holding policy, an own agent that replaces a catalog entry, an agent name set apart to resolve a clash, a protected repo.
 - [holding.yaml](holding.yaml): purpose `company`, level holding; the policies repo path and ceilings, a deferred attribution answer.
 - [personal.yaml](personal.yaml): purpose `personal`; health, money and paperwork, no repos and no roadmap, attribution none.

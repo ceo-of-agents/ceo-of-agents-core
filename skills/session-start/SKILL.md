@@ -15,6 +15,8 @@ Why a skill: this routine runs once per session, so it does not need to sit in `
 
 Run the steps in order. A step marked "only when" is skipped silently when its condition is false.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Steps
 
 1. **Pull.** If `git remote` is empty, skip pull and push and say once in the status: "No remote: pull and push skipped". Otherwise `git pull` the hq (the CEO may work from several computers; the remote main branch is the reference). If the pull fails, say so in the status and continue with the local copy.

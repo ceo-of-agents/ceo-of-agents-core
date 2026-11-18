@@ -15,6 +15,8 @@ Only the chief of staff (CoS) runs this skill. A department agent must not proce
 
 Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/decision-card.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/handoff.md`, and `${CLAUDE_PLUGIN_ROOT}/schemas/todo.md` for the optional CEO todo list.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Inputs
 
 1. Handoff notes: every file in `inbox/` except `README.md` (`inbox/YYYY-MM-DD-<from>-to-<to>-<slug>.md`, frontmatter `from`, `to`, `date`, `needs_ceo_decision`, `proposed_card` and the optional `initiative`, sections `Ask or finding`, `Done`, `Links`).

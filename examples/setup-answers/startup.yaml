@@ -1,6 +1,6 @@
 # Sample answers: purpose startup, company level.
 # Departments: a catalog entry as it is, a catalog entry that gains an ability, and a custom
-# department that runs commands. Gates: one stricter and one looser move. Deferred: the holding
+# department. Gates: one stricter and one looser move. Deferred: the holding
 # policy. Repos: one public repo, a personal board. Attribution: the CEO's own text.
 # Validate: python3 scripts/ci/check_setup_answers.py --file examples/setup-answers/startup.yaml
 schema: setup-answers/1
@@ -40,9 +40,6 @@ departments:
       - item: Sending the report to partners
         owner: business
     core_job: Turn the order files into one weekly report.
-    commands:
-      needed: true
-      reason: It runs the script that reads the order files and writes the report.
 names:
   cos: Robin
   ceo: Alex
