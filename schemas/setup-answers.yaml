@@ -142,7 +142,7 @@
 #                           lives)
 #   policies_repo           level holding. A mapping:
 #     path                  required: absolute path (starts with /) outside the hq folder
-#     remote              [later] `none`, `later`, or a URL
+#     remote              [later] required: `none`, `later`, or a URL
 #     ceiling             optional: {cos, departments, workers}, each a tier. Absent = the
 #                           wizard's proposal, shown in the summary for confirmation
 #   repos                   [later] level company, purpose not personal. `none`, `later`, or a
