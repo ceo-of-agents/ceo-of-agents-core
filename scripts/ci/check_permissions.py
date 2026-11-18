@@ -415,6 +415,7 @@ DENY_COMMANDS = [
     "git push origin -d x", "git push origin :x", "git push --mirror", "git push origin --prune",
     "git -C repo push --force", "git -c a=b push -f origin x", "git -C repo push origin --delete x",
     "git push origin ':x'", 'git push origin ":x"',
+    "git -C /x push origin :x", "git -C /x push origin ':x'", 'git -c a=b push origin ":x"',
     "git filter-branch --tree-filter x", "git filter-repo --path x", "git reflog expire --all",
     "git reflog delete HEAD@{1}", "git clean -fdx", "git clean -f", "git clean -n -fd", "git clean --force",
     "gh repo delete acme/app --yes", "gh release delete v1", "gh release delete-asset v1 a.zip",
@@ -580,14 +581,15 @@ def check(groups, retired):
     if [g["rules"] for g in groups if g["name"] == "github-api-write"] != [API_GUARDS]:
         errors.append(f"github-api-write rules are not exactly {API_GUARDS}")
     # deny baseline: the rules of the design must be there
-    if len(base) != 32:
-        errors.append(f"deny baseline: expected 32 rules, got {len(base)}")
+    if len(base) != 35:
+        errors.append(f"deny baseline: expected 35 rules, got {len(base)}")
     if any("-*f*" in r and "clean" not in r for r in base):
         errors.append("deny baseline: a -*f* rule would match `git push -u origin feature`")
     if "removed from `ask` only" not in DOC.read_text(encoding="utf-8"):
         errors.append("gates/permissions.md: the retired git push rule must say it is removed from `ask` only")
     for must in ("Bash(git * push *--force*)", "Bash(git * push -f*)", "Bash(git * push * -f*)",
                  "Bash(git * push *--delete*)", "Bash(git push * ':**)", 'Bash(git push * ":**)',
+                 "Bash(git * push * :**)", "Bash(git * push * ':**)", 'Bash(git * push * ":**)',
                  "Bash(git push *--force*)", "Bash(git push -f*)", "Bash(git push * -f*)", "Bash(git push * +*)",
                  "Bash(git push *--delete*)", "Bash(git push -d*)", "Bash(git push * -d*)", "Bash(git push * :**)",
                  "Bash(git push *--mirror*)", "Bash(git push *--prune*)", "Bash(git filter-branch*)",

@@ -108,7 +108,7 @@ These rules are written to `deny` in every org, whatever its gates: no gate lets
 | Group | Scope | Actions | When free | Rules |
 |---|---|---|---|---|
 | force-push | hq | - | deny | `Bash(git push *--force*)`, `Bash(git push -f*)`, `Bash(git push * -f*)`, `Bash(git push * +*)`, `Bash(git * push *--force*)`, `Bash(git * push -f*)`, `Bash(git * push * -f*)` |
-| remote-delete | hq | - | deny | `Bash(git push *--delete*)`, `Bash(git push -d*)`, `Bash(git push * -d*)`, `Bash(git push * :**)`, `Bash(git push * ':**)`, `Bash(git push * ":**)`, `Bash(git * push *--delete*)`, `Bash(git push *--mirror*)`, `Bash(git push *--prune*)` |
+| remote-delete | hq | - | deny | `Bash(git push *--delete*)`, `Bash(git push -d*)`, `Bash(git push * -d*)`, `Bash(git push * :**)`, `Bash(git push * ':**)`, `Bash(git push * ":**)`, `Bash(git * push *--delete*)`, `Bash(git * push * :**)`, `Bash(git * push * ':**)`, `Bash(git * push * ":**)`, `Bash(git push *--mirror*)`, `Bash(git push *--prune*)` |
 | history-rewrite | hq | - | deny | `Bash(git filter-branch*)`, `Bash(git filter-repo*)`, `Bash(git reflog expire*)`, `Bash(git reflog delete*)` |
 | git-clean | hq | - | deny | `Bash(git clean *-*f*)`, `Bash(git clean *--force*)` |
 | gh-delete | hq | - | deny | `Bash(gh repo delete*)`, `Bash(gh release delete*)` |
@@ -118,7 +118,7 @@ These rules are written to `deny` in every org, whatever its gates: no gate lets
 What each covers, and why:
 
 - **Force push.** `--force` also matches `--force-with-lease` and `--force-if-includes`. `-f` is matched at the start and after another argument. A `+` before a refspec (`git push origin +main`) forces too. The `git * push` forms cover a git option before the subcommand (`git -C repo push --force`, `git -c k=v push -f origin x`). There is no rule for `-f` inside other short flags (`-*f*`): it would also match `-u origin feature`.
-- **Remote deletion.** `--delete` (also after a git option, `git -C repo push origin --delete x`), `-d`, an empty source (`git push origin :branch`, also quoted, `':branch'` and `":branch"`), and `--mirror` and `--prune`, which delete remote refs that the local repo does not have.
+- **Remote deletion.** `--delete` (also after a git option, `git -C repo push origin --delete x`), `-d`, an empty source (`git push origin :branch`, also quoted, `':branch'` and `":branch"`, and after a git option, `git -C x push origin :branch`), and `--mirror` and `--prune`, which delete remote refs that the local repo does not have.
 - **History rewrites.** `git filter-branch`, `git filter-repo`, and the reflog commands that make lost commits unrecoverable.
 - **`git clean` with force.** `git clean` does nothing without force. With it, it deletes untracked and ignored files, such as an hq's local-only settings, local account files and private folders, which git cannot restore. A dry run (`-n`) is not matched, unless a later word contains an `f` after a dash (a path such as `my-file`): then it is refused too. Run it by hand.
 - **`gh repo delete` and `gh release delete`.** The second also covers `delete-asset`. They moved here from the delete group, which keeps the other deletes in `ask`.
@@ -147,7 +147,7 @@ The old `Bash(gh api *)` in `ask` is not a retired rule of its own: the same tex
 
 ## Examples
 
-All examples use the repos `acme/app` (not protected), `acme/hq` (the hq, issues home) and `partner/site` (protected), with a Project `acme` number `3`. Every example also has the deny baseline in `deny` (the groups under "Never, in any mode", 32 rules in all) and `Bash(git reset --hard*)` and `Bash(git reset * --hard*)` in `ask`; these are not repeated below. `scripts/ci/check_permissions.py` generates each example and checks it against the exact lists.
+All examples use the repos `acme/app` (not protected), `acme/hq` (the hq, issues home) and `partner/site` (protected), with a Project `acme` number `3`. Every example also has the deny baseline in `deny` (the groups under "Never, in any mode", 35 rules in all) and `Bash(git reset --hard*)` and `Bash(git reset * --hard*)` in `ask`; these are not repeated below. `scripts/ci/check_permissions.py` generates each example and checks it against the exact lists.
 
 **1. The default table** (`gates/default.md`), `merge` in `ok`:
 
