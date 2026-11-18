@@ -50,6 +50,7 @@ The card in decision-queue.md carries the same fact as `- proposed_by: <dept-id|
 
 Waiting on the CEO (THE pending list: every open A item and every open D item):
 `- ACME-A2 [high] {ok}: <what the CoS will do once the CEO approves> (since YYYY-MM-DD)`
+`- ACME-A3 [normal] {ok}: start <issue or task>, <who would do it> (since YYYY-MM-DD)` (open work the CoS holds: not started, not routed; the OK starts it; work already running is not listed)
 `- ACME-A4 [normal] {do}: <exact action the CEO performs: where, what, link> (since YYYY-MM-DD)`
 `- ACME-D3 [normal] {decide}: decide <question>, see decision queue (since YYYY-MM-DD)`
 

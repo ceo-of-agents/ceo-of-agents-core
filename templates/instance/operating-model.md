@@ -66,6 +66,8 @@ An org can end. When the CEO asks, the CoS lists what is still open, asks for co
 
 "Waiting on the CEO" in `company/state.md` is the one list. Actions are `{{ORG_ID}}-A<n>`, decisions are `{{ORG_ID}}-D<n>`. Numbers grow monotonically and are never reused. Each line also says what it needs from the CEO: `{ok}` (approve, then the CoS does it), `{do}` (the CEO does it) or `{decide}` (a decision card).
 
+Open work the CoS holds instead of routing it (not started, not assigned) is on the list too, as one `{ok}` item `start <issue or task>, <who would do it>`: your OK starts it. Work already routed and running is not listed.
+
 Tasks you own yourself (reply to someone, follow up on a review) can go on an optional todo list, `company/todo.md`, as `{{ORG_ID}}-T<n>` items. Ask the CoS to track one and it creates the file; say "`{{ORG_ID}}-T3` done" when you finish. They stay out of the pending list, so `company/state.md` holds only what the org needs from you.
 
 ## What lives where
