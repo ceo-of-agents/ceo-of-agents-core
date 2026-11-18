@@ -79,3 +79,5 @@ next_todo: 5
 - No section is empty: use `- none`.
 - Every Open line follows `- <ORG_ID>-T<n> [high|normal|low]: <task> (since YYYY-MM-DD)`, with an optional `. Status: <status>` before the date; every Done line ends with `(done YYYY-MM-DD)`. `scripts/check-boot-set.sh` in the plugin reports the lines that do not, when the file exists.
 - Every T number is less than `next_todo`, and no code appears twice in the file.
+
+The script checks only the item lines of the two sections (code, urgency, text, and the `since` or `done` date). It does not check the frontmatter, the headings and their order, `- none` in an empty section, the 300-character line limit, the numbers against `next_todo`, or duplicate codes: the CoS keeps those by the rules above.

@@ -1,6 +1,8 @@
-# Migration 0.16.0 to 0.17.0
+# Unreleased: optional CEO todo list
 
-Version 0.17.0 adds an optional CEO todo list:
+Folded into the migration of the next release (see migrations/README.md). Issue: #77.
+
+This change adds an optional CEO todo list:
 
 - **Tasks the CEO owns.** Work the CEO does on their own account (reply to someone, follow up on a review, chase an answer) can be tracked in `company/todo.md` as `<ORG_ID>-T<n>` items, with sections `## Open` and `## Done (last 7 days)` and a `next_todo` counter (`schemas/todo.md`). T codes are namespaced and never reused, like A and D codes, and never go in `company/state.md`: "Waiting on the CEO" keeps only what the org needs from the CEO. A reader, such as a front-end, may show open T items next to the A and D items.
 - **Opt-in.** The file is not created by this migration, nor by setup: the CoS creates it from the plugin template the first time the CEO asks to track a task (`intake`, route "CEO task"). An hq without it behaves as before.
@@ -9,12 +11,6 @@ Version 0.17.0 adds an optional CEO todo list:
 No schema changes: `org.yaml` stays `org/5` and `company/state.md` stays `state/1`. The new file has its own schema, `todo/1`.
 
 Apply the sections below in order. In the hq the template placeholders are already rendered: where a fragment below says `<ORG_ID>`, write the hq's `org.id` from `org.yaml`. Where a fragment is not found exactly (the CEO edited that part), do not guess: show the CEO the current text and the intended result, and ask.
-
-## Version
-
-`org.yaml`: `framework_version: 0.16.0` becomes `framework_version: 0.17.0`.
-
-`company/state.md`: frontmatter `framework_version: 0.16.0` becomes `framework_version: 0.17.0`.
 
 ## 1. `CLAUDE.md`
 
@@ -58,8 +54,7 @@ In the summary to the CEO, add one plain line: tasks you do yourself can now be 
 
 ## Check after applying
 
-- `framework_version: 0.17.0` in `org.yaml` and in `company/state.md`.
 - `grep -c "company/todo.md" CLAUDE.md` prints 2; `grep -c "company/todo.md" operating-model.md` prints 1.
 - `company/state.md` holds no `-T` code: `grep -cE -- "-T[0-9]+ " company/state.md` prints 0.
 - No `company/todo.md` was created by this migration (`git status --short company/todo.md` prints nothing).
-- `git status --short` shows only `org.yaml`, `company/state.md`, `CLAUDE.md` and `operating-model.md`.
+- Of the files this note touches, `git status --short` shows only `CLAUDE.md` and `operating-model.md`.
