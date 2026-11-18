@@ -118,7 +118,7 @@ def load_retired():
 API_GUARDS = ["Bash(gh api *-X*)", "Bash(gh api *--method*)", "Bash(gh api -f*)", "Bash(gh api * -f*)",
               "Bash(gh api -F*)", "Bash(gh api * -F*)", "Bash(gh api *--field*)", "Bash(gh api *--raw-field*)",
               "Bash(gh api *--input*)"]
-MERGE_GUARDS = ["Bash(gh pr merge *--admin*)", "Bash(gh pr merge -R * -R *)", "Bash(gh pr merge *--repo*)",
+MERGE_GUARDS = ["Bash(gh pr merge *--admin*)", "Bash(gh pr merge * -R*)", "Bash(gh pr merge *--repo*)",
                 "Bash(gh pr merge *://*)"]
 API_ALLOW = "Bash(gh api *)"
 MERGE_ALLOW = re.compile(r"^Bash\(gh pr merge -R [A-Za-z0-9-]+/[A-Za-z0-9._-]+ \*\)$")
@@ -251,6 +251,15 @@ def per_repo(rule, slug):
     return rule.replace("<slug>", slug)
 
 
+def hq_target(g, org, tier):
+    """Where the rules of an hq group go: "allow", "ask" or None (nowhere). The one
+    place to extend: a later option could return "ask" for push-current when `repos:`
+    has any `protected: true` entry (not implemented)."""
+    if g["when_free"] == "allow" and tier in ("free", "notice"):
+        return "allow"
+    return "ask" if tier == "ok" else None
+
+
 def group_rules(g, org):
     """(allow, ask, deny) rules of one group for an org: the tier mapping."""
     tier = tier_of(g["actions"], org["gates"])
@@ -267,9 +276,10 @@ def group_rules(g, org):
     allowed = mode == "allow" and tier in ("free", "notice")
     allow, ask = [], []
     if g["scope"] == "hq":
-        if allowed:
+        target = hq_target(g, org, tier)
+        if target == "allow":
             allow += g["rules"]
-        elif tier == "ok":
+        elif target == "ask":
             ask += g["rules"]
     elif g["scope"] == "repo":
         if allowed:
@@ -312,8 +322,13 @@ def dedupe(items):
     return out
 
 
-def managed_patterns(groups, retired):
-    pats = [re.escape(SKILL_RULE)] + [re.escape(r) for r in retired]
+# Retired rules that are removed from `ask` only: in `allow` or `deny` they may
+# be the user's own rules, so the merge leaves them and the CEO is warned.
+ASK_ONLY_RETIRED = ["Bash(git push *)"]
+
+
+def managed_patterns(groups, retired, key="ask"):
+    pats = [re.escape(SKILL_RULE)] + [re.escape(r) for r in retired if key == "ask" or r not in ASK_ONLY_RETIRED]
     for g in groups:
         for rule in g["rules"]:
             for form in {rule, general(rule)}:
@@ -326,11 +341,11 @@ def managed_patterns(groups, retired):
 
 def merge(settings, org, groups, retired):
     allow, ask, deny = generate(org, groups)
-    managed = managed_patterns(groups, retired)
     out = copy.deepcopy(settings)
     perms = out.setdefault("permissions", {})
     for key, new in (("allow", allow), ("ask", ask), ("deny", deny)):
         # a forbidden connector in deny is only ever added, never removed
+        managed = managed_patterns(groups, retired, key)
         kept = [r for r in perms.get(key, []) if not managed.match(r) or r in new]
         kept += [r for r in new if r not in kept]
         if kept:
@@ -372,7 +387,7 @@ ALL_FREE_ORG["gates"] = {"free": sorted({a for t in DEFAULT_ORG["gates"].values(
 
 ORGS = (("default", DEFAULT_ORG), ("merge-notice", MERGE_NOTICE_ORG), ("strict", STRICT_ORG), ("all-free", ALL_FREE_ORG))
 
-PUSH_CURRENT = ["Bash(git push)", "Bash(git push origin)", "Bash(git push origin HEAD)", "Bash(git push -u origin HEAD)"]
+PUSH_CURRENT = ["Bash(git push origin HEAD)", "Bash(git push -u origin HEAD)"]
 RESET_ASK = ["Bash(git reset --hard*)", "Bash(git reset * --hard*)"]
 
 # Real spellings, and what Claude Code must do with each (deny > ask > allow).
@@ -381,6 +396,8 @@ DENY_COMMANDS = [
     "git push --force-if-includes", "git push -f", "git push origin -f", "git push origin main -f",
     "git push origin +main", "git push --delete origin x", "git push origin --delete x", "git push -d origin x",
     "git push origin -d x", "git push origin :x", "git push --mirror", "git push origin --prune",
+    "git -C repo push --force", "git -c a=b push -f origin x", "git -C repo push origin --delete x",
+    "git push origin ':x'", 'git push origin ":x"',
     "git filter-branch --tree-filter x", "git filter-repo --path x", "git reflog expire --all",
     "git reflog delete HEAD@{1}", "git clean -fdx", "git clean -f", "git clean -n -fd", "git clean --force",
     "gh repo delete acme/app --yes", "gh release delete v1", "gh release delete-asset v1 a.zip",
@@ -388,7 +405,9 @@ DENY_COMMANDS = [
     "gh api repos/a/b --method=DELETE", "gh api -X delete repos/a/b", "gh api repos/a/b --method=delete",
 ]
 RESET_COMMANDS = ["git reset --hard", "git reset --hard HEAD~1", "git reset HEAD~1 --hard"]
-PUSH_OK_COMMANDS = ["git push -u origin HEAD", "git push origin HEAD", "git push origin", "git push"]
+PUSH_OK_COMMANDS = ["git push -u origin HEAD", "git push origin HEAD"]
+# No rule at all: Claude Code's own prompt (never allow, never deny).
+PUSH_DEFAULT_COMMANDS = ["git push", "git push origin", "git push -u origin feature", "git push origin main"]
 API_READ_COMMANDS = ["gh api repos/acme/app/pulls/3", "gh api /user --jq .login", "gh api repos/acme/app/issues --paginate"]
 API_WRITE_COMMANDS = [
     "gh api -X POST repos/a/b/issues", "gh api repos/a/b -X PATCH", "gh api repos/a/b -XPUT",
@@ -401,6 +420,8 @@ MERGE_ALLOWED_COMMANDS = ["gh pr merge -R acme/app 12 --squash --delete-branch",
 MERGE_ASKED_COMMANDS = [
     "gh pr merge -R acme/app 12 --admin", "gh pr merge -R acme/app --admin 12",
     "gh pr merge -R acme/app 12 -R partner/site", "gh pr merge -R acme/app 12 --repo partner/site",
+    "gh pr merge -R acme/app 12 -R other/x", "gh pr merge -R acme/app 12 -Rother/x",
+    "gh pr merge -R acme/app 12 -R=other/x", "gh pr merge 12 -R other/x",
     "gh pr merge -R acme/app https://github.com/partner/site/pull/3", "gh pr merge -R partner/site 12",
 ]
 
@@ -533,7 +554,15 @@ def check(groups, retired):
     if [g["rules"] for g in groups if g["name"] == "github-api-write"] != [API_GUARDS]:
         errors.append(f"github-api-write rules are not exactly {API_GUARDS}")
     # deny baseline: the rules of the design must be there
-    for must in ("Bash(git push *--force*)", "Bash(git push -f*)", "Bash(git push * -f*)", "Bash(git push * +*)",
+    if len(base) != 32:
+        errors.append(f"deny baseline: expected 32 rules, got {len(base)}")
+    if any("-*f*" in r and "clean" not in r for r in base):
+        errors.append("deny baseline: a -*f* rule would match `git push -u origin feature`")
+    if "removed from `ask` only" not in DOC.read_text(encoding="utf-8"):
+        errors.append("gates/permissions.md: the retired git push rule must say it is removed from `ask` only")
+    for must in ("Bash(git * push *--force*)", "Bash(git * push -f*)", "Bash(git * push * -f*)",
+                 "Bash(git * push *--delete*)", "Bash(git push * ':*)", 'Bash(git push * ":*)',
+                 "Bash(git push *--force*)", "Bash(git push -f*)", "Bash(git push * -f*)", "Bash(git push * +*)",
                  "Bash(git push *--delete*)", "Bash(git push -d*)", "Bash(git push * -d*)", "Bash(git push * :*)",
                  "Bash(git push *--mirror*)", "Bash(git push *--prune*)", "Bash(git filter-branch*)",
                  "Bash(git filter-repo*)", "Bash(git reflog expire*)", "Bash(git reflog delete*)",
@@ -601,6 +630,10 @@ def check(groups, retired):
             got = verdict(c, allow, ask, deny)
             if got != want:
                 errors.append(f"{label}: {c!r} is {got}, expected {want}")
+        for c in PUSH_DEFAULT_COMMANDS:
+            got = verdict(c, allow, ask, deny)
+            if got != "default":
+                errors.append(f"{label}: {c!r} is {got}, expected default (no rule)")
         research = tier_of(["research"], org["gates"])
         for c in API_READ_COMMANDS:
             got = verdict(c, allow, ask, deny)
@@ -669,13 +702,20 @@ def check(groups, retired):
         errors.append("merge kept a managed rule for an unregistered repo")
     if "Bash(gh issue create -R acme/app *)" in p["allow"] or "Bash(gh project item-add 3 --owner acme *)" in p["allow"]:
         errors.append("merge kept a 0.15.0 allow rule for a GitHub write")
-    left = [r for r in p.get("allow", []) + p.get("ask", []) if r in retired]
+    if "Bash(git push *)" not in p["allow"]:
+        errors.append("merge removed a user's own Bash(git push *) from allow")
+    kept_user = merge({"permissions": {"allow": ["Bash(git push *)"], "deny": ["Bash(git push *)"]}}, org, groups, retired)["permissions"]
+    if "Bash(git push *)" not in kept_user["allow"] or "Bash(git push *)" not in kept_user["deny"]:
+        errors.append("a user's Bash(git push *) in allow or deny did not survive regeneration")
+    left = [r for r in p.get("allow", []) + p.get("ask", []) if r in retired and r not in ASK_ONLY_RETIRED]
     if left:
         errors.append(f"merge kept retired rules: {left}")
     if "Bash(gh api *)" in p["ask"] or "Bash(gh api *)" not in p["allow"]:
         errors.append("merge did not move Bash(gh api *) from ask to allow")
     if "Bash(git push *)" in p["ask"]:
         errors.append("merge kept Bash(git push *) in ask")
+    if "Bash(git push *)" in once["permissions"].get("ask", []) or merge({"permissions": {"ask": ["Bash(git push *)"]}}, org, groups, retired)["permissions"].get("ask", []).count("Bash(git push *)"):
+        errors.append("merge kept the retired Bash(git push *) in ask")
     if p["allow"].count(SKILL_RULE) != 1:
         errors.append("merge: Skill rule not exactly once")
     if p["deny"][:1] != ["mcp__other"] or "mcp__work" not in p["deny"] or any(r not in p["deny"] for r in base):
