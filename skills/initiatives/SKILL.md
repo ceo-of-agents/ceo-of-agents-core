@@ -55,7 +55,7 @@ When the CEO says the work is done or dropped:
 
 ## Commit
 
-Every step above is an hq write. Commit with notice (`hq-commit`): one line to the CEO, then a message like `docs: open initiative <slug>`, `docs: update initiative <slug>` or `chore: archive initiative <slug>`, with the attribution lines required by the session. When this skill runs inside `intake` or `record-decision`, its edits go in that skill's commit. Never push unless the CEO asks, and never without a remote.
+Every step above is an hq write. Commit with notice (`hq-commit`): one line to the CEO, then a message like `docs: open initiative <slug>`, `docs: update initiative <slug>` or `chore: archive initiative <slug>`, with the attribution lines required by the session. When this skill runs inside `intake` or `record-decision`, its edits go in that skill's commit. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
 
 ## Rules
 

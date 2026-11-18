@@ -22,7 +22,7 @@ The registry is a list of facts, not a decision: no decision card and no new rec
 3. A repo that does not exist yet gets `planned: true` (see "Planned repos").
 4. The first repo of the list also needs an issues home: the repo that holds issues touching several repos (one of the listed repos, or the hq itself when it has a GitHub remote, then added with role `hq`, private). Exactly one item has `issues_home: true`.
 5. A board: its address (`https://github.com/orgs/<owner>/projects/<number>` or `https://github.com/users/<owner>/projects/<number>`) and the name of its status field (often "Status"). Write `kind: github-project`, `owner`, `number` (an integer) and `status_field`.
-6. Confirm the entry to the CEO in one line, edit `org.yaml`, write the permission rules in `.claude/settings.json` again (`${CLAUDE_PLUGIN_ROOT}/gates/permissions.md`, section "Write the rules"), and commit both with notice (`chore: register <slug>`). Push if `git remote` is not empty.
+6. Confirm the entry to the CEO in one line, edit `org.yaml`, write the permission rules in `.claude/settings.json` again (`${CLAUDE_PLUGIN_ROOT}/gates/permissions.md`, section "Write the rules"), and commit both with notice (`chore: register <slug>`). Push with `git push origin HEAD` if `git remote` is not empty.
 7. For a repo that exists and is not the hq, ask for its clone path on this computer (see "Clone paths").
 
 ## Protected repos

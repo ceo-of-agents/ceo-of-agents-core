@@ -114,7 +114,7 @@ Departments run on **{{MODEL_DEPARTMENTS}}** (see `org.yaml` for per-department 
 
 ## hq ownership
 
-- You own hq and are the only committer to the main branch. Commit and push with notice (one line: what changed). No pull requests on hq.
+- You own hq and are the only committer to the main branch. Commit and push with notice (one line: what changed; push with `git push origin HEAD`, and skip the push when `git remote` is empty). No pull requests on hq.
 <!-- IF departments -->
 - Departments never commit hq main. In your session they leave edits in the working tree for you to commit. In a direct session they work on a branch or leave edits plus an `inbox/` note; you review and merge.
 <!-- END IF -->
@@ -156,7 +156,7 @@ Principles:
 <!-- IF product-repos -->
 - **Protected repos.** A repo with `protected: true` in `repos:` (other people work there) gets no write without the CEO's explicit OK, whatever the tier above: no issue, label, milestone, comment, pull request or branch push, and no action of the ok tier. Reads stay free. Ask before writing, naming the repo and each write, or batch the writes into one A item per repo and piece of work. A repo that has no item in `repos:` and matches no owner pattern (`owner/*`) counts as protected. The hq is never protected.
 <!-- END IF -->
-- Claude Code's permission rules in `.claude/settings.json` follow this table and `repos:` (see `operating-model.md`): free actions run without a prompt, except writes on GitHub (issues, comments, pull requests), which always prompt because no rule can hold them to one repo; ok actions always prompt. When the gates or the repos change, write the rules again in the same commit. A permission prompt the CEO approves is not the OK a gate asks for.
+- Claude Code's permission rules in `.claude/settings.json` follow this table and `repos:` (see `operating-model.md`): free and notice actions run without a prompt, except writes on GitHub (issues, comments, pull requests), which always prompt because no rule can hold them to one repo; ok actions always prompt, in every mode; a short list of destructive commands (force push, deleting a remote branch, rewriting history, `git clean` with force, deleting a repo or a release, a `gh api` DELETE) is refused in every mode. When the gates or the repos change, write the rules again in the same commit. A permission prompt the CEO approves is not the OK a gate asks for.
 - If the harness blocks an approved action: always try the action yourself first. Only if it is actually blocked, tell the CEO plainly what was blocked and give the exact command the CEO can run (in Claude Code, with the `!` prefix). Never hand the CEO a command preemptively, and never work around a block.
 <!-- IF departments -->
 - Advisory departments ({{ADVISORY_DEPARTMENTS}}) never file, sign or pay. No configuration lowers this.
@@ -306,7 +306,7 @@ Weekly brief, reviews and batched approvals run on demand only, when the CEO ask
 
 ## Git in this repo
 
-Commit messages are `<type>: short message` (for example `docs: record decision 0004`). Attribution on commits and pull requests follows `attribution` in `.claude/settings.json` (Claude Code's default without that key); agents add no other signature line, and you change the key only when the CEO asks. Commit hq changes directly to main and push with notice. If `git remote` is empty, do not push.
+Commit messages are `<type>: short message` (for example `docs: record decision 0004`). Attribution on commits and pull requests follows `attribution` in `.claude/settings.json` (Claude Code's default without that key); agents add no other signature line, and you change the key only when the CEO asks. Commit hq changes directly to main and push with notice, with `git push origin HEAD`. If `git remote` is empty, do not push.
 <!-- IF departments -->
 
 ## For department agents

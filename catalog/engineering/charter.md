@@ -40,7 +40,7 @@ The product repos are listed in `repos:` in `org.yaml` (slug, role, visibility, 
 ## Gates
 The tier of each action is set by the `gates:` block in `org.yaml` (see the Approval gates section of CLAUDE.md). If unsure, treat it as needing the CEO's explicit OK.
 - Relevant actions: `issues-and-labels`, `comments`, `drafts`, `open-pr`, `research`, `push-non-deploy-branch`, `merge`, `deploy`, `rotate-secrets`, `delete-data`, `org-or-repo-settings`, `spend-money`
-- Note: A push that itself deploys or publishes counts as `deploy`.
+- Note: A push that itself deploys or publishes counts as `deploy`. Push a work branch with `git push -u origin HEAD`: the permission rules allow that form without a prompt unless a repo is registered as protected (a rule cannot see the repo, so the gate holds where a push deploys); other push forms ask, and force and delete forms are refused in every mode.
 
 ## Handoff
 - At the end of every piece of work, leave a note in `inbox/` named `YYYY-MM-DD-{{DEPT_ID}}-to-cos-<slug>.md`.

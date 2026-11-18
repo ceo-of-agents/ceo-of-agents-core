@@ -53,7 +53,7 @@ Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_RO
 
 7. Delete each processed note (`git rm` or remove the file) in the same hq commit as the updates. Git history keeps them. Do not delete a note you could not fully process; say why.
 
-8. Commit, in the same turn as the writes above and before you reply. The gate for `hq-commit` is "notice": write one line to the CEO before committing (what, where, content; for example "Committing to hq main: 2 notes processed, ACME-D4 added, state.md updated."), then commit on the current branch with a message like `chore: process inbox (<codes>)` and the attribution lines required by the session. Do not wait for an OK. Never push unless the CEO asks; a push is a separate notice-tier action, and never happens without a remote.
+8. Commit, in the same turn as the writes above and before you reply. The gate for `hq-commit` is "notice": write one line to the CEO before committing (what, where, content; for example "Committing to hq main: 2 notes processed, ACME-D4 added, state.md updated."), then commit on the current branch with a message like `chore: process inbox (<codes>)` and the attribution lines required by the session. Do not wait for an OK. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
 
 9. Reply with a short summary in the chat language: notes processed, new codes (A and D, with one-line meaning), escalations, and anything blocked or ambiguous. Cite codes, do not paste cards. If nothing was in the inbox and the CEO gave no request, say so in one line.
 
