@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="584" height="584" viewBox="220 223 584 584" role="img" aria-labelledby="mark-title mark-desc">
+  <title id="mark-title">ceo-of-agents logo</title>
+  <desc id="mark-desc">The ceo-of-agents logo: a violet node (you, the CEO) above a teal node (the chief of staff), whose three branches land as commits on the teal hq git line.</desc>
+
+  <!-- Transparent: for dark backgrounds only (#0F172A, #1E293B, GitHub dark). On light pages use logo-lockup.svg or an image with its own dark background. -->
+  <!-- Clear space: keep at least the diameter of the top node (124 units, 21% of the height) free on every side. Minimum size: 32 px tall. -->
+  <g id="tree" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g id="connectors" stroke="#64748B" stroke-width="24">
+      <path d="M512 362 L512 434"/>
+      <path d="M512 558 C512 636 312 612 312 688"/>
+      <path d="M512 558 L512 688"/>
+      <path d="M512 558 C512 636 712 612 712 688"/>
+    </g>
+    <!-- hq git line, broken at each commit so the rings stay open. -->
+    <g id="hq-line" stroke="#2DD4BF" stroke-width="24">
+      <path d="M232 736 L266 736"/>
+      <path d="M358 736 L466 736"/>
+      <path d="M558 736 L666 736"/>
+      <path d="M758 736 L792 736"/>
+    </g>
+    <g id="commits" stroke="#2DD4BF" stroke-width="24">
+      <circle cx="312" cy="736" r="44"/>
+      <circle cx="512" cy="736" r="44"/>
+      <circle cx="712" cy="736" r="44"/>
+    </g>
+    <circle id="cos" cx="512" cy="496" r="62" fill="#2DD4BF" stroke="none"/>
+    <circle id="you" cx="512" cy="300" r="62" fill="#A78BFA" stroke="none"/>
+  </g>
+</svg>
