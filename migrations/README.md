@@ -17,6 +17,14 @@ Each schema carries its own version in the file (`state/1`, `org/5`, `portfolio/
 
 How long a holding keeps reading the previous schema version of a company `state.md` is an open question (design spec, section 11). Until resolved, a reader should accept the version it knows and report any other as "unreadable schema" rather than guess.
 
+## Unreleased changes
+
+A release can bundle several pull requests, and its version number is known only when the release pull request is opened. So a pull request that needs a migration does not create `<from>-to-<to>.md` itself: it adds a note to `migrations/unreleased/`, named `<issue>-<slug>.md` (for example `57-user-profile.md`). Pull requests then never compete for the same file name and can merge in any order.
+
+A note has the shape of a migration without the version step: a title `# Unreleased: <what>`, what changes and why, the schema line (which schema versions stay or change), the exact edits, the plain summary line for the CEO, and a "Check after applying" section. A plugin-only change still adds a short note, so the release's migration can say what changed.
+
+When the release pull request `chore: release X.Y.Z` is open, the pull request `docs: add migration <previous> to X.Y.Z` (see `CONTRIBUTING.md`, "How releases happen") folds every note in `migrations/unreleased/` into `migrations/<previous>-to-X.Y.Z.md`: one "Version" section first (`framework_version` in `org.yaml` and `company/state.md`), then the edits of each note as numbered sections, then one "Check after applying" that joins the checks of all notes. Where two notes edit the same file, apply them in issue order and check that each fragment is still found. If a pull request already wrote that versioned file directly (the way before this convention), fold the notes into it instead of starting a new one. The same pull request adds the "Current status" paragraph below and deletes the folded notes. `scripts/ci/check_migrations.py` lists the notes still waiting, and fails on the release pull request until the version's migration file exists.
+
 ## Current status
 
 Migrations are documents, not scripts. Framework version `0.1.0` was the first release.
