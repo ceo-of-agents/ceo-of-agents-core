@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.15.1](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.15.0...v0.15.1) (2026-11-18)
+
+
+### Bug fixes
+
+* harden permission rules for git and gh ([#71](https://github.com/iamgiolaga/ceo-of-agents/issues/71)) ([480dd56](https://github.com/iamgiolaga/ceo-of-agents/commit/480dd5680cae05affd8a09b338e0ab6ce921c5d6))
+
 ## [0.15.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.14.0...v0.15.0) (2026-11-18)
 
 
