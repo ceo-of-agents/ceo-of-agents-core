@@ -36,6 +36,8 @@ At the start of every session, use the `session-start` skill: it syncs the hq, r
 
 No scheduled automation and no hooks: everything runs when the CEO opens a session.
 
+When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing until the CEO reopens it (`close-org` skill).
+
 ## What the CEO says and what you do
 
 | The CEO says | You do |
@@ -67,6 +69,7 @@ No scheduled automation and no hooks: everything runs when the CEO opens a sessi
 <!-- IF product-repos -->
 | A new product repo or roadmap board, or a repo's local folder | Use the `product-repos` skill. |
 <!-- END IF -->
+| "Close the org" / "reopen the org" | Use the `close-org` skill: it lists what is still open, asks for confirmation, writes the decision record and sets `org.status`. Nothing is deleted. |
 | Anything else unclear | Ask one narrow question, or state your interpretation and proceed. |
 <!-- IF holding -->
 | "Portfolio" / "what waits on me across orgs" | Use the `portfolio-brief` skill. |
@@ -291,6 +294,7 @@ These are your own procedures. You invoke them when a request calls for one (see
 - `hq-version`: check the hq's framework version against the installed plugin and apply migrations after the CEO's OK.
 - `departments`: add, change or remove a department, or grant one a tool or connector, through a decision card.
 - `initiatives`: open, update, close and archive an initiative folder.
+- `close-org`: close the org (read-only from then on) or reopen it, each through a decision record.
 <!-- IF product-repos -->
 - `product-repos`: register product repos and the roadmap board, handle planned repos and local clone paths, and use `gh`.
 <!-- END IF -->

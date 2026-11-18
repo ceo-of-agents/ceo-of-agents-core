@@ -59,7 +59,7 @@ ceo-of-agents/
     workers/         reader and worker agent templates, one pair per instance
     policies-repo/   policy.yaml and README.md for the holding's separate policies repo
   catalog/           department catalog (charter + agent template each)
-  skills/            init-fleet; CoS procedures: session-start, intake, record-decision, weekly-brief, hq-version, departments, product-repos, initiatives, portfolio-brief
+  skills/            init-fleet; CoS procedures: session-start, intake, record-decision, weekly-brief, hq-version, departments, product-repos, initiatives, close-org, portfolio-brief
   schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set
   gates/             default approval-gate table
   migrations/        vN-to-vN+1 diffs
