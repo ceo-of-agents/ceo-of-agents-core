@@ -125,6 +125,7 @@ def check_org_yaml(org, answers, report):
     gates = org.get("gates") or {}
     for tier in sa.GATE_TIERS:
         report.expect(f"gates.{tier}", sorted(gates.get(tier) or []), sorted(final[tier]))
+    report.expect("gates.destructive", gates.get("destructive") or "deny", answers.get("destructive") or "deny")
 
     tiers = models.get("tiers") or list(sa.TIERS)
     want = expected_departments(answers, tiers)

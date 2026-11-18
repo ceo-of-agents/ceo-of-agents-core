@@ -20,9 +20,10 @@ it, generates the rules for fixture orgs, and checks:
   fixture, no rule is in both `allow` and `ask`, and no generated `allow` rule
   matches a `deny` rule;
 - the push-current rules are exact (no wildcard);
-- the deny baseline is in every generated `deny`; real command spellings are
-  refused, asked or allowed as the section "Never, in any mode" says;
-- the default, merge-notice, stricter and all-free example orgs produce
+- the deny baseline is in every generated `deny` (in `ask` instead, and not in
+  `deny`, with `gates.destructive: ask`); real command spellings are refused,
+  asked or allowed as the section "Never, in any mode" says;
+- the default, merge-notice, stricter, all-free and destructive-ask example orgs produce
   exactly the lists of the "Examples" section;
 - merging keeps every other key and every rule that is not of this file,
   removes the retired rules, adds the baseline, and a second merge changes
@@ -280,6 +281,9 @@ def group_rules(g, org):
     repos = [r for r in (org.get("repos") or []) if not r.get("planned")]
     tracker = org.get("tracker")
     if mode == "deny":
+        # gates.destructive: ask moves the baseline from deny to ask; absent or deny keeps it in deny
+        if destructive(org) == "ask":
+            return [], list(g["rules"]), []
         return [], [], list(g["rules"])
     if mode == "guard":
         return [], list(g["rules"]), []
@@ -313,6 +317,11 @@ def group_rules(g, org):
 
 
 GROUPS_FOR_DEP = []
+
+
+def destructive(org):
+    """The org's choice for the destructive baseline: `deny` (default) or `ask`."""
+    return (org.get("gates") or {}).get("destructive") or "deny"
 
 
 def generate(org, groups):
@@ -402,7 +411,12 @@ OWN_REPOS_ORG["repos"] = [r for r in DEFAULT_ORG["repos"] if not r["protected"]]
 ALL_FREE_ORG = copy.deepcopy(DEFAULT_ORG)
 ALL_FREE_ORG["gates"] = {"free": sorted({a for t in DEFAULT_ORG["gates"].values() for a in t}), "notice": [], "ok": []}
 
-ORGS = (("default", DEFAULT_ORG), ("own-repos", OWN_REPOS_ORG), ("merge-notice", MERGE_NOTICE_ORG), ("strict", STRICT_ORG), ("all-free", ALL_FREE_ORG))
+# The default table with gates.destructive: ask: the baseline goes to ask instead of deny.
+ASK_BASELINE_ORG = copy.deepcopy(DEFAULT_ORG)
+ASK_BASELINE_ORG["gates"]["destructive"] = "ask"
+
+ORGS = (("default", DEFAULT_ORG), ("own-repos", OWN_REPOS_ORG), ("merge-notice", MERGE_NOTICE_ORG), ("strict", STRICT_ORG),
+        ("all-free", ALL_FREE_ORG), ("destructive-ask", ASK_BASELINE_ORG))
 
 PUSH_CURRENT = ["Bash(git push origin HEAD)", "Bash(git push -u origin HEAD)"]
 RESET_ASK = ["Bash(git reset --hard*)", "Bash(git reset * --hard*)"]
@@ -484,7 +498,9 @@ def examples(groups):
     all_free = (base + repo_rules(groups, {"merge"}, ["acme/app", "acme/hq"]),
                 repo_rules(groups, {"issues", "comments", "pull-requests", "merge"}, ["partner/site"]) + push
                 + expected(groups, {"merge-guards"}) + guards)
-    return {"default": default, "own-repos": own_repos, "merge-notice": merge_notice, "strict": strict, "all-free": all_free}
+    destructive_ask = (default[0], default[1] + baseline(groups))
+    return {"default": default, "own-repos": own_repos, "merge-notice": merge_notice, "strict": strict, "all-free": all_free,
+            "destructive-ask": destructive_ask}
 
 
 def check(groups, retired):
@@ -627,9 +643,14 @@ def check(groups, retired):
             for r, rx in deny_res:
                 if rx.match(rule[5:-1] if rule.startswith("Bash(") else rule):
                     errors.append(f"{label}: allow rule {rule} matches deny rule {r}")
-        missing = [r for r in base if r not in deny]
+        if destructive(org) not in ("deny", "ask"):
+            errors.append(f"{label}: gates.destructive is {destructive(org)!r}, not deny or ask")
+        home, other = (ask, deny) if destructive(org) == "ask" else (deny, ask)
+        missing = [r for r in base if r not in home]
         if missing:
-            errors.append(f"{label}: deny baseline incomplete: {missing}")
+            errors.append(f"{label}: deny baseline incomplete in {destructive(org)}: {missing}")
+        if any(r in other for r in base):
+            errors.append(f"{label}: a baseline rule is in both deny and ask")
         for r in RESET_ASK:
             if r not in ask:
                 errors.append(f"{label}: {r} not in ask")
@@ -646,8 +667,8 @@ def check(groups, retired):
                 errors.append(f"{label}: push-current rule {r} is not in {want} (tier {tier})")
         # real spellings
         for c in DENY_COMMANDS:
-            if verdict(c, allow, ask, deny) != "deny":
-                errors.append(f"{label}: {c!r} is not refused")
+            if verdict(c, allow, ask, deny) != destructive(org):
+                errors.append(f"{label}: {c!r} is not {'refused' if destructive(org) == 'deny' else 'asked'}")
         for c in RESET_COMMANDS:
             if verdict(c, allow, ask, deny) != "ask":
                 errors.append(f"{label}: {c!r} does not ask")
@@ -690,7 +711,7 @@ def check(groups, retired):
         want_allow, want_ask = want_lists[label]
         diff_lists(errors, f"{label} example allow", allow, want_allow)
         diff_lists(errors, f"{label} example ask", ask, want_ask)
-        diff_lists(errors, f"{label} example deny", deny, base)
+        diff_lists(errors, f"{label} example deny", deny, [] if destructive(org) == "ask" else base)
     allow, ask, _ = generate(DEFAULT_ORG, groups)
     if any(r in allow for r in expected(groups, {"merge"})):
         errors.append("default example: merge (ok) has an allow rule")
@@ -773,6 +794,22 @@ def check(groups, retired):
     back = merge(notice_after, org, groups, retired)
     if "Bash(gh pr merge -R acme/app *)" in back["permissions"]["allow"] or "Bash(gh pr merge *--admin*)" in back["permissions"]["ask"]:
         errors.append("regeneration back to merge ok kept merge allow rules or the merge guards")
+    # gates.destructive: moving to ask takes the baseline out of deny; a second merge changes
+    # nothing; an hq that already moved the baseline to ask by hand keeps it there; back to deny.
+    to_ask = merge(once, ASK_BASELINE_ORG, groups, retired)
+    if any(r in to_ask["permissions"].get("deny", []) or r not in to_ask["permissions"]["ask"] for r in base):
+        errors.append("regeneration with gates.destructive: ask did not move the baseline from deny to ask")
+    if "Bash(my own deny)" not in to_ask["permissions"]["deny"] or "mcp__work" not in to_ask["permissions"]["deny"]:
+        errors.append("regeneration with gates.destructive: ask dropped an own deny rule or a forbidden connector")
+    if merge(to_ask, ASK_BASELINE_ORG, groups, retired) != to_ask:
+        errors.append("merge with gates.destructive: ask is not idempotent")
+    by_hand = {"permissions": {"ask": list(base)}}
+    kept = merge(by_hand, ASK_BASELINE_ORG, groups, retired)["permissions"]
+    if kept.get("deny") or any(r not in kept["ask"] for r in base):
+        errors.append("an hq with the baseline in ask did not keep it there under gates.destructive: ask")
+    back_deny = merge(to_ask, DEFAULT_ORG, groups, retired)["permissions"]
+    if any(r in back_deny["ask"] or r not in back_deny["deny"] for r in base):
+        errors.append("regeneration back to gates.destructive: deny did not move the baseline to deny")
     return errors
 
 

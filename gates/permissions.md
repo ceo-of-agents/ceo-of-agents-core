@@ -1,6 +1,6 @@
 # Permission rules from the gates
 
-The approval gates in `org.yaml` say what the agents may do on their own. Claude Code has its own permission rules (`permissions.allow`, `ask` and `deny` in `.claude/settings.json`). This file turns the first into the second, so that Claude Code stops asking about work the gates leave free or ask to be told about (the free and notice tiers), keeps asking about work the gates hold back (the ok tier), and refuses a short list of destructive commands in every mode. Setup writes the rules (`init-fleet`, generation step 13), migration `0.14.0-to-0.15.0` adds them to an existing hq, migration `0.15.0-to-0.15.1` narrows them (section "Retired rules"), migration `0.15.1-to-0.16.0` maps the notice tier to `allow` and adds the deny baseline, and the chief of staff writes them again whenever `gates:`, `repos:`, `tracker:` or `accounts.forbidden_connectors` change (section "Write the rules again").
+The approval gates in `org.yaml` say what the agents may do on their own. Claude Code has its own permission rules (`permissions.allow`, `ask` and `deny` in `.claude/settings.json`). This file turns the first into the second, so that Claude Code stops asking about work the gates leave free or ask to be told about (the free and notice tiers), keeps asking about work the gates hold back (the ok tier), and refuses a short list of destructive commands in every mode (or, if the org chooses, asks about them in every mode). Setup writes the rules (`init-fleet`, generation step 13), migration `0.14.0-to-0.15.0` adds them to an existing hq, migration `0.15.0-to-0.15.1` narrows them (section "Retired rules"), migration `0.15.1-to-0.16.0` maps the notice tier to `allow` and adds the deny baseline, and the chief of staff writes them again whenever `gates:`, `repos:`, `tracker:` or `accounts.forbidden_connectors` change (section "Write the rules again").
 
 The rules lower the number of prompts. They are not a sandbox: a rule matches the text of a command, so it cannot see which branch a push goes to, which repo a checkout belongs to or whether a command really only reads. The written gates in `CLAUDE.md` still bind every agent, and a Claude Code prompt that the CEO approves is not the OK a gate asks for.
 
@@ -35,7 +35,7 @@ More sources, whatever the tiers:
 - **Protected repos.** For every item of `repos:` with `protected: true` (an exact repo or an owner pattern `owner/*`), the per-repo rules of every repo group go to `ask`, with that slug. A repo group whose rules already go to `ask` in their general form (below) needs no per-repo rule. A repo that is not registered gets no rule, so Claude Code asks by default.
 - **Pushes in an org with a protected repo.** When any item of `repos:` has `protected: true` (an exact repo, an owner pattern or a planned repo), the push-current rules go to `ask` instead of `allow`, the hq's own push included: a push carries no repo name, so a rule cannot tell a push to a protected repo from a push to the hq, and the org is asked on every push rather than risk an unasked push where other people work. An org with no protected repo keeps them in `allow`. A repo that is not registered also counts as protected in the gates, but only a registered `protected: true` item triggers this rule: the rules cannot know about a repo the org has not listed.
 - **Forbidden connectors.** Each entry of `accounts.forbidden_connectors` goes to `deny` as it is written (for example `mcp__<server>`); Claude Code accepts a server name, `mcp__<server>__*` or a single tool there.
-- **The deny baseline and the guards.** The groups under "Never, in any mode" go to `deny` (and one to `ask`) in every org, whatever its gates. The groups marked `guard` go to `ask` in every org; a group marked `guard if <group>` goes to `ask` only when that group writes an `allow` rule.
+- **The deny baseline and the guards.** The groups under "Never, in any mode" go to `deny` (and one to `ask`) in every org, whatever its gates; with `destructive: ask` under `gates:` in `org.yaml`, the `deny` groups go to `ask` instead (see "Deny or ask"). The groups marked `guard` go to `ask` in every org; a group marked `guard if <group>` goes to `ask` only when that group writes an `allow` rule.
 
 And one fixed rule: `Skill(ceo-of-agents:*)` stays in `allow` (since 0.14.0), so the plugin's own procedures run without a prompt. The procedures follow the gates themselves.
 
@@ -103,7 +103,7 @@ Why each group is where it is:
 
 ## Never, in any mode
 
-These rules are written to `deny` in every org, whatever its gates: no gate lets an agent do these without the CEO, and Claude Code refuses them in every permission mode, auto mode included. They are a backstop: the gates still bind, and a deny rule covers the usual spellings only. The CEO can run any of them by hand in a terminal outside Claude Code.
+These rules are written to `deny` in every org, whatever its tiers (or to `ask`, when the org chooses it: see "Deny or ask" below): no gate lets an agent do these without the CEO, and Claude Code refuses them in every permission mode, auto mode included. They are a backstop: the gates still bind, and a deny rule covers the usual spellings only. The CEO can run any of them by hand in a terminal outside Claude Code.
 
 | Group | Scope | Actions | When free | Rules |
 |---|---|---|---|---|
@@ -127,6 +127,15 @@ What each covers, and why:
 
 Limits, stated plainly: deny rules match the usual spellings, not every one. Not caught: combined short flags such as `-uf`, a `+` refspec or a `:branch` delete written after a git option before `push` (`git -C repo push origin +main`; such a command has no allow rule, so Claude Code asks, except in auto mode, which may run it when the user's message asks for it), an alias, a script, a command built in a shell variable. They are a backstop; the gates still bind every agent.
 
+### Deny or ask
+
+An org chooses where the baseline goes with `destructive` under `gates:` in `org.yaml`: `deny` (the default, also when the key is absent) or `ask`. Setup asks once, in plain words; changing it later is a decision, like any gate.
+
+- **`deny`.** Claude Code refuses these commands in every mode, also after the CEO has said yes in chat. The CEO runs them by hand: in a terminal, or in Claude Code with the `!` prefix. A front end that drives `claude -p` has no `!` prefix, so there the only way is a terminal.
+- **`ask`.** The baseline goes to `ask` instead, and nothing of it stays in `deny`. Every such command prompts in every mode, auto mode included. The actions stay in the `ok` tier of the gates, so the CEO's explicit OK comes first, then the prompt. The trade-off: a prompt approved by mistake runs the command, and some of these cannot be undone (a force push over other work, a deleted repo or release, files removed by `git clean`).
+
+`git reset --hard` asks in both cases. Agents cannot switch this themselves: Claude Code refuses an agent editing its own permission rules, so the choice goes through `org.yaml` and "Write the rules".
+
 ## Retired rules
 
 Rules that an earlier version wrote and that are no longer in the tables. "Write the rules" removes them from `allow` and `ask` like any other rule of this file:
@@ -147,7 +156,7 @@ The old `Bash(gh api *)` in `ask` is not a retired rule of its own: the same tex
 
 ## Examples
 
-All examples use the repos `acme/app` (not protected), `acme/hq` (the hq, issues home) and `partner/site` (protected), with a Project `acme` number `3`. Every example also has the deny baseline in `deny` (the groups under "Never, in any mode", 35 rules in all) and `Bash(git reset --hard*)` and `Bash(git reset * --hard*)` in `ask`; these are not repeated below. `scripts/ci/check_permissions.py` generates each example and checks it against the exact lists.
+All examples use the repos `acme/app` (not protected), `acme/hq` (the hq, issues home) and `partner/site` (protected), with a Project `acme` number `3`. Every example also has the deny baseline in `deny` (the groups under "Never, in any mode", 35 rules in all; in `ask` instead in example 5) and `Bash(git reset --hard*)` and `Bash(git reset * --hard*)` in `ask`; these are not repeated below. `scripts/ci/check_permissions.py` generates each example and checks it against the exact lists.
 
 **1. The default table** (`gates/default.md`), `merge` in `ok`:
 
@@ -169,14 +178,16 @@ All examples use the repos `acme/app` (not protected), `acme/hq` (the hq, issues
 
 **4. Every action free** (checked by the script, not a recommended setting): as example 2, with `ask` holding only the `partner/site` rules (issues, comments, pull requests, merge), the two push-current rules (the protected repo), the merge-guards and the github-api-write guards.
 
+**5. The default table with `destructive: ask`.** As example 1, except: the 35 rules of the deny baseline are in `ask`, and `deny` holds none of them (only the forbidden connectors, if any).
+
 ## Write the rules
 
 Merge into `.claude/settings.json`, never replace it:
 
-1. Read `gates:`, `repos:`, `tracker:` and `accounts.forbidden_connectors` from `org.yaml`, and compute the three lists from the tables above, in table order, groups first, then repos in the order of `repos:`. The deny baseline and the guards do not depend on the gates: they are in every org's lists.
+1. Read `gates:` (with `gates.destructive`), `repos:`, `tracker:` and `accounts.forbidden_connectors` from `org.yaml`, and compute the three lists from the tables above, in table order, groups first, then repos in the order of `repos:`. The deny baseline and the guards do not depend on the tiers: they are in every org's lists, the baseline in `deny`, or in `ask` with `destructive: ask`.
 2. If `.claude/settings.json` does not exist, write `{ "permissions": { "allow": [...], "ask": [...], "deny": [...] } }`, leaving out an empty list. If it exists, keep every key (`enabledPlugins`, `attribution`, `permissions.defaultMode`, `permissions.additionalDirectories` and any other) and every rule that is not a rule of this file. A rule of this file is any rule in the tables above (the deny baseline and the guards included), with any slug, owner or number in place of `<slug>`, `<owner>` and `<number>`, or a rule of "Retired rules", in `allow`, `ask` or `deny`. One exception: the retired `Bash(git push *)` counts as a rule of this file in `ask` only. In `allow` or `deny` it may be the user's own rule, so it is never removed there.
 3. In `allow`, `ask` and `deny`, remove each rule of this file that the new lists do not hold, then append each rule of the new lists that is missing, so each appears once. The exception is a forbidden connector in `deny`: it is only added, and one removed from `org.yaml` loses its deny rule by hand, through the decision that removes it.
-4. Check: the file parses as JSON; every key it had before is still there; `permissions.allow` holds `Skill(ceo-of-agents:*)` once; no rule of an `ok` group, and no rule of a group marked `ask` under "When free", is in `allow`; no rule is both in `allow` and in `ask`; every guarded wildcard in `allow` (`Bash(gh api *)`, `Bash(gh pr merge -R <slug> *)`) has all its guards in `ask`; `permissions.deny` holds every rule of the baseline; no retired rule is left, except a `Bash(git push *)` in `allow` or `deny`, which stays (step 3).
+4. Check: the file parses as JSON; every key it had before is still there; `permissions.allow` holds `Skill(ceo-of-agents:*)` once; no rule of an `ok` group, and no rule of a group marked `ask` under "When free", is in `allow`; no rule is both in `allow` and in `ask`; every guarded wildcard in `allow` (`Bash(gh api *)`, `Bash(gh pr merge -R <slug> *)`) has all its guards in `ask`; every rule of the baseline is in `permissions.deny` (with `destructive: ask`: in `permissions.ask`, and none of them in `deny`); no retired rule is left, except a `Bash(git push *)` in `allow` or `deny`, which stays (step 3).
 
 `.claude/settings.local.json` (per computer, not tracked) is never written. Read it, and the `allow` list of `.claude/settings.json`, for allow rules that a new `ask` or `deny` rule overrides (the same command, for example a local `Bash(gh pr merge *)` when `merge` is `ok`), and tell the CEO in one plain line per rule that the command will ask again, or be refused; the CEO who wants it free changes the gate, through a decision. Change nothing there: these are warnings only. A `Bash(git push *)` in either place gets its own line: it lets every push form run without a prompt (the deny rules still refuse the force and delete forms they cover), so it may let through more than the gates intend, and removing it is up to the CEO.
 

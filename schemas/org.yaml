@@ -169,6 +169,7 @@ gates:
   free: [issues-and-labels, comments, drafts, open-pr, research, hq-write]
   notice: [push-non-deploy-branch, hq-commit, dispatch-pushing-department]
   ok: [merge, deploy, publish, contact-people, spend-money, rotate-secrets, delete-data, org-or-repo-settings, change-brand-rules, change-policy-rules, file-or-sign, make-payment]
+  destructive: deny   # optional: deny (default when absent) | ask; where the destructive-command baseline goes in .claude/settings.json (gates/permissions.md, "Deny or ask")
 accounts:
   forbidden_connectors: []
 repos:
