@@ -45,7 +45,7 @@ CI runs on every pull request and on `main`:
 | Plugin manifest and marketplace file are valid and agree; every skill has a name and description; every marked version line matches `plugin.json` | `scripts/ci/check_manifest.py` |
 | Every version has its migration file and its entry in `migrations/README.md` | `scripts/ci/check_migrations.py` |
 | The boot-set check script keeps its budgets in sync with `schemas/boot-set.md` and passes its behaviour tests | `scripts/ci/check_boot_set.py` |
-| The permission rule groups in `gates/permissions.md` use known action ids and rule forms, never allow an ok-tier group, and give the documented lists for the example orgs | `scripts/ci/check_permissions.py` |
+| The permission rule groups in `gates/permissions.md` use known action ids and rule forms, never allow an ok-tier group, never allow a rule whose wildcard can carry a shell, an interpreter, a file write, a risky git option or a GitHub write (also checked in the skills' `allowed-tools`), and give the documented lists for the example orgs | `scripts/ci/check_permissions.py` |
 | Relative links and anchors in Markdown resolve (external links are not checked, to keep CI stable) | `scripts/ci/check_links.py` |
 
 Run them locally before pushing (Python 3.9 or later and PyYAML):

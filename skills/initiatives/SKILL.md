@@ -2,7 +2,7 @@
 name: initiatives
 description: Open, update, close and archive an initiative in a ceo-of-agents hq, a folder initiatives/<slug>/ with a one-page status.md and an index of its documents, for work that spans several sessions or departments. Use when the CEO starts such a piece of work, when intake routes one, when a handoff or a decision touches an open initiative, or when the CEO says one is done or dropped.
 user-invocable: false
-allowed-tools: Read Grep Glob Edit Write Bash(git remote:*) Bash(git pull:*) Bash(git status:*) Bash(git diff:*) Bash(git log:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(mkdir:*) Bash(ls:*) Bash(date:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(mkdir:*) Bash(ls:*) Bash(date:*)
 ---
 
 # initiatives: one folder per piece of work
