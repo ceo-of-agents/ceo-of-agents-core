@@ -54,3 +54,7 @@ jobs:
       - name: Relative links in Markdown
         if: ${{ !cancelled() }}
         run: python scripts/ci/check_links.py
+
+      - name: Setup answers format and samples
+        if: ${{ !cancelled() }}
+        run: python scripts/ci/check_setup_answers.py

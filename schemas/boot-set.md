@@ -17,7 +17,7 @@ Every budget is in bytes, as `wc -c` counts them; the KiB figure (1 KiB = 1,024 
 | `accounts.local.yaml` | 2 KiB (2,048 bytes) | Clone paths only |
 | Whole boot set | 40 KiB (40,960 bytes) | The sum of the files above |
 
-`inbox/` is listed at session start, not read; its notes are read by the `intake` skill and deleted once processed. Folder indexes (`departments/<id>/README.md`, `initiatives/README.md`) and initiative pages (`initiatives/<slug>/status.md`) are not in the boot set either: they are read when the work needs them. An open initiative costs one line in `company/state.md`.
+`inbox/` is listed at session start, not read; its notes are read by the `intake` skill and deleted once processed. Folder indexes (`departments/<id>/README.md`, `initiatives/README.md`) and initiative pages (`initiatives/<slug>/status.md`) are not in the boot set either: they are read when the work needs them. Nor is the optional CEO todo list, `company/todo.md` (`schemas/todo.md`): the skills that use it read it. An open initiative costs one line in `company/state.md`.
 
 ## Line budget
 
@@ -46,7 +46,7 @@ The plugin ships the check as a script, so the verdict never depends on which pa
 sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-boot-set.sh"
 ```
 
-Run from the hq root (or pass the hq folder as the only argument). It prints, per file, its size, its budget and `ok` or `over by N bytes`; the same for the whole boot set; the lines of `company/state.md` over 300 characters (line number, length, first words); and the lines of "Waiting on the CEO" that lack a kind or do not follow the line format of `schemas/state.md`. The last line is `verdict: ok` or `verdict: N issue(s)`. It changes nothing and always exits 0 on an hq. The budgets in the script and in the table above are the same numbers; a CI check in the plugin repo keeps them in sync.
+Run from the hq root (or pass the hq folder as the only argument). It prints, per file, its size, its budget and `ok` or `over by N bytes`; the same for the whole boot set; the lines of `company/state.md` over 300 characters (line number, length, first words); and the lines of "Waiting on the CEO" that lack a kind or do not follow the line format of `schemas/state.md`. When `company/todo.md` exists, it also prints its item lines that do not follow `schemas/todo.md` (the file has no size budget; when it is missing, nothing about it is printed). The last line is `verdict: ok` or `verdict: N issue(s)`. It changes nothing and always exits 0 on an hq. The budgets in the script and in the table above are the same numbers; a CI check in the plugin repo keeps them in sync.
 
 The `session-start` skill runs the script and, when the verdict is not `ok`, adds one line to the status from its output: each offending file with its size and budget, and at most three long or malformed lines by their first words. It proposes rewriting the lines and moving their history to the log (or fixing the pending lines) and does it only when the CEO agrees. It adds no A item and never trims on its own.
 

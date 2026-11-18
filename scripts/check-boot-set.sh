@@ -5,8 +5,9 @@
 #
 # Prints the size of each boot file against its budget, the lines of
 # company/state.md longer than 300 characters, and the lines of the section
-# "Waiting on the CEO" that do not follow the line format of schemas/state.md.
-# The last line is "verdict: ok" or "verdict: N issue(s)". Changes nothing on
+# "Waiting on the CEO" that do not follow the line format of schemas/state.md,
+# and, only when the optional company/todo.md exists (not part of the boot
+# set), its item lines that do not follow schemas/todo.md. The last line is "verdict: ok" or "verdict: N issue(s)". Changes nothing on
 # disk and exits 0, except exit 2 when the argument is not a directory.
 #
 # The budgets below must match the table in schemas/boot-set.md; the CI check
@@ -184,6 +185,40 @@ else
   extra=$(printf '%s\n' "$report" | sed -n 's/^T //p')
   issues=$((issues + extra))
   printf '%s\n' "$report" | sed -n -e 's/^N //p' -e 's/^Q //p'
+fi
+
+# The CEO todo list is optional and outside the boot set: no size budget, and
+# nothing is printed when it is missing, so an hq without it reads as before.
+todo="$dir/company/todo.md"
+if [ -f "$todo" ]; then
+  report=$(LC_ALL=C awk '
+    function first8(s,   n, a, i, out) {
+      n = split(s, a, /[ \t]+/); out = ""
+      for (i = 1; i <= n && i <= 8; i++) if (a[i] != "") out = out (out == "" ? "" : " ") a[i]
+      return out
+    }
+    BEGIN { item = "^- [A-Za-z0-9]+-T[0-9]+ \\[(high|normal|low)\\]: [^ ].* \\(" }
+    {
+      sub(/\r$/, "")
+      if ($0 ~ /^## /) {
+        sect = ($0 == "## Open") ? "open" : ($0 == "## Done (last 7 days)") ? "done" : ""
+        next
+      }
+      if (sect == "" || $0 !~ /^- / || $0 == "- none") next
+      date = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\\)$"
+      if (sect == "open" && $0 ~ (item "since " date)) next
+      if (sect == "done" && $0 ~ (item "done " date)) next
+      n++
+      if (n <= 3) print "Q   line " NR ": " first8($0)
+    }
+    END {
+      if (n > 3) print "Q   and " (n - 3) " more"
+      print "T " (n + 0)
+    }' "$todo")
+  extra=$(printf '%s\n' "$report" | sed -n 's/^T //p')
+  issues=$((issues + extra))
+  echo "company/todo.md lines not in the line format: $extra"
+  printf '%s\n' "$report" | sed -n 's/^Q //p'
 fi
 
 if [ "$issues" -eq 0 ]; then

@@ -58,9 +58,15 @@ Gates live in `org.yaml` and are summarized in `CLAUDE.md`. Three tiers: free (d
 
 Claude Code asks before a command unless a rule allows it. `.claude/settings.json` holds rules that follow the gates in `org.yaml`: what the gates leave free or notice runs without a prompt (reading and `gh api` reads, the plugin's own procedures, editing this hq, committing, pushing the current branch to its origin with `git push origin HEAD` or `git push -u origin HEAD` (unless a registered repo is protected: then every push asks, since a rule cannot tell a push to that repo from a push to this hq), and, when `merge` is not in the ok tier, merging on repos that are not protected), except writes on GitHub (issues, comments, pull requests), which always ask because a rule cannot hold them to one repo or to their text; what needs the CEO's OK always asks, in every permission mode (releases, settings, secrets, deletes, a merge when `merge` is in the ok tier, other `gh api` calls that write, and any write on a protected repo). A short list of destructive commands is refused in every mode whatever the gates (force push, deleting a remote branch, rewriting history, `git clean` with force, deleting a repo or a release, a `gh api` DELETE), and `git reset --hard` always asks; you can run them yourself in a terminal outside Claude Code. A stricter gate gives a stricter rule. A rule cannot see the branch or the repo: a push from a checkout that deploys on push is still `deploy` by the gates, and the gates, not the rules, hold there. The CoS writes the rules again when the gates, the repos or the roadmap board change. Rules of your own for this computer go in `.claude/settings.local.json`, which is not tracked; an ask rule from the gates still wins over them. The rules spare prompts; they do not replace the gates.
 
+## Closing the org
+
+An org can end. When the CEO asks, the CoS lists what is still open, asks for confirmation and for where each item goes, writes a closing decision record and sets `org.status: closed` in `org.yaml`. A closed org is read-only: the CoS answers from the hq and takes no new work until the CEO reopens it, which is a new decision record. Nothing is ever deleted.
+
 ## The pending list and codes
 
 "Waiting on the CEO" in `company/state.md` is the one list. Actions are `{{ORG_ID}}-A<n>`, decisions are `{{ORG_ID}}-D<n>`. Numbers grow monotonically and are never reused. Each line also says what it needs from the CEO: `{ok}` (approve, then the CoS does it), `{do}` (the CEO does it) or `{decide}` (a decision card).
+
+Tasks you own yourself (reply to someone, follow up on a review) can go on an optional todo list, `company/todo.md`, as `{{ORG_ID}}-T<n>` items. Ask the CoS to track one and it creates the file; say "`{{ORG_ID}}-T3` done" when you finish. They stay out of the pending list, so `company/state.md` holds only what the org needs from you.
 
 ## What lives where
 
@@ -93,7 +99,7 @@ Full support: Claude Code on your own machine with the plugin installed for this
 
 ## Plugin requirement
 
-The `ceo-of-agents` plugin must be installed for this hq's folder (`claude plugin install ceo-of-agents@ceo-of-agents --scope project`, run in the folder; repeat it on each computer and after moving the folder). Enabled in `.claude/settings.json` alone, it does not load. `.claude/settings.json` also allows `Skill(ceo-of-agents:*)`, so the procedures run without a prompt, also in non-interactive runs (`claude -p`). Claude Code applies that rule only once the folder is trusted: open it once in an interactive Claude Code session and accept the trust prompt (setup does this for the folder it runs in; a fresh clone needs it once). The CoS procedures (`session-start`, `intake`, `record-decision`, `weekly-brief`, `hq-version`, `departments`, `product-repos`, `initiatives`) come from it. They are hidden from the `/` menu: the CEO never types them, the CoS invokes them.
+The `ceo-of-agents` plugin must be installed for this hq's folder (`claude plugin install ceo-of-agents@ceo-of-agents --scope project`, run in the folder; repeat it on each computer and after moving the folder). Enabled in `.claude/settings.json` alone, it does not load. `.claude/settings.json` also allows `Skill(ceo-of-agents:*)`, so the procedures run without a prompt, also in non-interactive runs (`claude -p`). Claude Code applies that rule only once the folder is trusted: open it once in an interactive Claude Code session and accept the trust prompt (setup does this for the folder it runs in; a fresh clone needs it once). The CoS procedures (`session-start`, `intake`, `record-decision`, `weekly-brief`, `hq-version`, `departments`, `product-repos`, `initiatives`, `close-org`) come from it. They are hidden from the `/` menu: the CEO never types them, the CoS invokes them.
 <!-- IF holding -->
 The holding also uses the `portfolio-brief` procedure.
 <!-- END IF -->

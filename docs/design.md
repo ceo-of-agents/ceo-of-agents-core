@@ -42,7 +42,7 @@ The pattern was proven in one running instance (the reference instance, the auth
 | Decision card | A pending question: context, options, recommendation, and who proposes it (or "needs analysis by <department>") |
 | Decision record | A numbered, immutable file in `decisions/` recording an answered card |
 | Approval gate | A rule saying which actions are free, need notice, or need the CEO's explicit OK |
-| CEO pending list | The one list of what waits on the CEO: actions (`A`) and decisions (`D`), with codes and a kind (`{ok}` approve, `{do}` the CEO does it, `{decide}` a card) that a script or a front-end can read. Lives in `company/state.md` under "Waiting on the CEO" |
+| CEO pending list | The one list of what waits on the CEO: actions (`A`) and decisions (`D`), with codes and a kind (`{ok}` approve, `{do}` the CEO does it, `{decide}` a card) that a script or a front-end can read. Lives in `company/state.md` under "Waiting on the CEO". Tasks the CEO owns personally (`T` codes) live apart, in the optional `company/todo.md` |
 
 ## 4. Framework vs instance
 
@@ -60,7 +60,7 @@ ceo-of-agents/
     policies-repo/   policy.yaml and README.md for the holding's separate policies repo
   catalog/           department catalog (charter + agent template each)
   skills/            init-fleet; CoS procedures: session-start, intake, record-decision, weekly-brief, hq-version, departments, product-repos, initiatives, portfolio-brief
-  schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set
+  schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set, CEO todo list
   gates/             default approval-gate table
   migrations/        vN-to-vN+1 diffs
 ```
@@ -77,6 +77,7 @@ There is no `agents/` dir: Claude Code auto-registers every `.md` under a plugin
   company/
     state.md                    living snapshot, fixed schema (see 5)
     decision-queue.md           open decision cards
+    todo.md                     optional: tasks the CEO owns (T codes), not in the boot set
     briefs/                     dated briefs
   decisions/README.md           index of decision records
   decisions/NNNN-<slug>.md      numbered decision records
@@ -95,7 +96,7 @@ There is no `agents/` dir: Claude Code auto-registers every `.md` under a plugin
 
 **Keeping the hq lean.** An hq grows every day, but most of it is read on demand and costs nothing until needed. What every session pays for is the boot set: the files the CoS reads at session start (`CLAUDE.md`, `org.yaml`, `company/vision.md`, `strategy.md`, `state.md`, `decision-queue.md`, `accounts.local.yaml`). These rules keep it small and easy to search:
 
-- `CLAUDE.md` holds identity, gates, house rules and a map. Procedures needed only sometimes are hidden plugin skills loaded on demand: `session-start` (the start-of-session routine), `departments` (adding, changing or granting access to a department), `product-repos` (registry, planned repos, clone paths, `gh`), next to `intake`, `record-decision`, `weekly-brief` and `hq-version`. Departments cannot load skills, so every rule a department needs stays in `CLAUDE.md` or in its own files.
+- `CLAUDE.md` holds identity, gates, house rules and a map. Procedures needed only sometimes are hidden plugin skills loaded on demand: `session-start` (the start-of-session routine), `departments` (adding, changing or granting access to a department), `product-repos` (registry, planned repos, clone paths, `gh`), `close-org` (closing a finished org, read-only from then on, and reopening it, each through a decision record; nothing is deleted), next to `intake`, `record-decision`, `weekly-brief` and `hq-version`. Departments cannot load skills, so every rule a department needs stays in `CLAUDE.md` or in its own files.
 - A budget per boot file and for the whole set (`schemas/boot-set.md`). Budgets are stated in bytes. The plugin ships `scripts/check-boot-set.sh`, which measures the set and also checks the pending lines; the `session-start` skill and the weekly brief report its output (one status line naming the offending files and lines) instead of doing the arithmetic themselves.
 - Summaries are rewritten, history is logged. A line of `state.md` and the State and Next step of an initiative's `status.md` say what is true now and are rewritten when it changes; what they said before goes, verbatim and dated, to an append-only log outside the boot set (`company/log.md`, `initiatives/<slug>/log.md`; `schemas/log.md`). Initiative pages get a budget of their own, and every skill that writes `state.md` or a `status.md` measures the lines and the file it touched before its commit (with Grep and `wc -c`, which need no prompt) and fixes them, so a summary does not turn into a work log between two session starts.
 - Analyses and notes carry lifecycle frontmatter (`status`, `as_of`, `source_commit`, `superseded_by`; `schemas/document.md`). Archived documents move to `archive/`, which `.ignore` keeps out of default searches while git still tracks it.

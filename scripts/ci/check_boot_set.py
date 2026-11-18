@@ -9,7 +9,8 @@ Rules:
   (B bytes") and STATUS_BUDGET in the script are the same number, and the
   script reports pages over it and their long lines (nothing without pages).
 - The script behaves as documented on small fixture hqs (budgets, long lines in
-  characters, pending line groups, missing files, exit codes).
+  characters, pending line groups, missing files, exit codes, and the line
+  format of the optional company/todo.md, silent when that file is missing).
 """
 import re
 import subprocess
@@ -122,12 +123,20 @@ def hq(state=GOOD_STATE, **extra):
     return files
 
 
+GOOD_TODO = (
+    "---\nschema: todo/1\nlast_updated: 2026-01-15\nnext_todo: 5\n---\n\n# CEO todo list\n\n## Open\n"
+    "- ACME-T3 [high]: Review the vendor contract. Status: waiting on Legal (since 2026-01-10)\n"
+    "- ACME-T4 [normal]: Reply to the beta tester (since 2026-01-14)\n\n"
+    "## Done (last 7 days)\n- ACME-T2 [low]: Renew the domain (done 2026-01-12)\n"
+)
+
+
 def pending(*lines):
     return "## Waiting on the CEO\n" + "".join(line + "\n" for line in lines) + "\n## Next\n"
 
 
 def behaviour(errors):
-    def case(label, files, checks, code=0):
+    def case(label, files, checks, code=0, absent=()):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             build(root, files)
@@ -137,8 +146,19 @@ def behaviour(errors):
         for needle in checks:
             if needle not in out:
                 errors.append(f"{label}: output lacks {needle!r}")
+        for needle in absent:
+            if needle in out:
+                errors.append(f"{label}: output has {needle!r}")
 
-    case("clean hq", hq(), ["verdict: ok", "pending lines not in the line format: 0"])
+    case("clean hq", hq(), ["verdict: ok", "pending lines not in the line format: 0"], absent=["company/todo.md"])
+    case("good todo list", hq(**{"company/todo.md": GOOD_TODO}),
+         ["company/todo.md lines not in the line format: 0", "verdict: ok"])
+    case("empty todo list", hq(**{"company/todo.md": "## Open\n- none\n\n## Done (last 7 days)\n- none\n"}),
+         ["company/todo.md lines not in the line format: 0", "verdict: ok"])
+    case("bad todo lines", hq(**{"company/todo.md": GOOD_TODO.replace("## Done", "- ACME-T5: no urgency (since 2026-01-14)\n"
+                                                                  "- ACME-A6 [low]: an A code (since 2026-01-14)\n\n## Done")
+                                 + "- ACME-T7 [low]: still open (since 2026-01-12)\n"}),
+         ["company/todo.md lines not in the line format: 3", "line 13: - ACME-T5: no urgency", "verdict: 3 issue(s)"])
     case("at budget", hq(**{"org.yaml": "a" * 6144}), ["org.yaml: 6144 bytes, budget 6144: ok"])
     case("one byte over", hq(**{"org.yaml": "a" * 6145}), ["over by 1 bytes", "verdict: 1 issue(s)"])
     case("300 characters", hq(state=GOOD_STATE + "é" * 300 + "\n"), ["lines over 300 characters: 0"])

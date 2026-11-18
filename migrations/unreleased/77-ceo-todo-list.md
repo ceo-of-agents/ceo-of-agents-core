@@ -1,0 +1,60 @@
+# Unreleased: optional CEO todo list
+
+Folded into the migration of the next release (see migrations/README.md). Issue: #77.
+
+This change adds an optional CEO todo list:
+
+- **Tasks the CEO owns.** Work the CEO does on their own account (reply to someone, follow up on a review, chase an answer) can be tracked in `company/todo.md` as `<ORG_ID>-T<n>` items, with sections `## Open` and `## Done (last 7 days)` and a `next_todo` counter (`schemas/todo.md`). T codes are namespaced and never reused, like A and D codes, and never go in `company/state.md`: "Waiting on the CEO" keeps only what the org needs from the CEO. A reader, such as a front-end, may show open T items next to the A and D items.
+- **Opt-in.** The file is not created by this migration, nor by setup: the CoS creates it from the plugin template the first time the CEO asks to track a task (`intake`, route "CEO task"). An hq without it behaves as before.
+- **Readers.** The `weekly-brief` skill lists open T items at the end of "Waiting on the CEO" and counts old ones as long-open. `scripts/check-boot-set.sh` reports T lines that do not follow the format, only when the file exists. The file is not in the boot set and has no size budget.
+
+No schema changes: `org.yaml` stays `org/5` and `company/state.md` stays `state/1`. The new file has its own schema, `todo/1`.
+
+Apply the sections below in order. In the hq the template placeholders are already rendered: where a fragment below says `<ORG_ID>`, write the hq's `org.id` from `org.yaml`. Where a fragment is not found exactly (the CEO edited that part), do not guess: show the CEO the current text and the intended result, and ask.
+
+## 1. `CLAUDE.md`
+
+Section "The CEO pending list". After the line:
+
+```
+- Batch: prepare approvals so the CEO can clear several in one pass.
+```
+
+add:
+
+```
+- Tasks the CEO owns personally (reply to someone, chase an answer) are not on this list: they are `<ORG_ID>-T<n>` items in the optional `company/todo.md` (format in the plugin's `schemas/todo.md`). Create it the first time the CEO asks you to track one; on "`<ORG_ID>-T3` done", move the line to Done.
+```
+
+Section "Where things are". After the row:
+
+```
+| Current state and the pending list | `company/state.md` |
+```
+
+add:
+
+```
+| The CEO's own tasks (optional) | `company/todo.md` |
+```
+
+## 2. `operating-model.md`
+
+Section "The pending list and codes". After its paragraph (it ends with `or `{decide}` (a decision card).`), add a blank line and:
+
+```
+Tasks you own yourself (reply to someone, follow up on a review) can go on an optional todo list, `company/todo.md`, as `<ORG_ID>-T<n>` items. Ask the CoS to track one and it creates the file; say "`<ORG_ID>-T3` done" when you finish. They stay out of the pending list, so `company/state.md` holds only what the org needs from you.
+```
+
+## 3. An existing todo list
+
+If the hq already has a `company/todo.md` made by hand, leave it as it is and tell the CEO in one line that the plugin now has a format for it (`schemas/todo.md`), which the CoS can apply when the CEO agrees. Other ad-hoc task files are left alone too.
+
+In the summary to the CEO, add one plain line: tasks you do yourself can now be tracked in an optional todo list, apart from the pending list; ask the CoS to track one to start it.
+
+## Check after applying
+
+- `grep -c "company/todo.md" CLAUDE.md` prints 2; `grep -c "company/todo.md" operating-model.md` prints 1.
+- `company/state.md` holds no `-T` code: `grep -cE -- "-T[0-9]+ " company/state.md` prints 0.
+- No `company/todo.md` was created by this migration (`git status --short company/todo.md` prints nothing).
+- Of the files this note touches, `git status --short` shows only `CLAUDE.md` and `operating-model.md`.

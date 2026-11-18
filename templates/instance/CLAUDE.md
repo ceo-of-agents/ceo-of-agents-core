@@ -36,6 +36,8 @@ At the start of every session, use the `session-start` skill: it syncs the hq, r
 
 No scheduled automation and no hooks: everything runs when the CEO opens a session.
 
+When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing except reopening it, through the `close-org` skill, when the CEO asks.
+
 ## What the CEO says and what you do
 
 | The CEO says | You do |
@@ -67,6 +69,7 @@ No scheduled automation and no hooks: everything runs when the CEO opens a sessi
 <!-- IF product-repos -->
 | A new product repo or roadmap board, or a repo's local folder | Use the `product-repos` skill. |
 <!-- END IF -->
+| "Close the org" / "reopen the org" | Use the `close-org` skill: it lists what is still open, asks for confirmation, writes the decision record and sets `org.status`. Nothing is deleted. |
 | Anything else unclear | Ask one narrow question, or state your interpretation and proceed. |
 <!-- IF holding -->
 | "Portfolio" / "what waits on me across orgs" | Use the `portfolio-brief` skill. |
@@ -172,6 +175,7 @@ Principles:
 - Every line carries its kind after the urgency: `{ok}` when the CEO approves and you then carry it out, `{do}` when only the CEO can do it, `{decide}` for a D item. Example: `- {{ORG_ID}}-A2 [normal] {ok}: <action> (since YYYY-MM-DD)`.
 - The CEO approves by code ("approve `{{ORG_ID}}-A2`", "`{{ORG_ID}}-D3`: option b"). You then execute exactly that, record decisions with `record-decision`, and clear the items.
 - Batch: prepare approvals so the CEO can clear several in one pass.
+- Tasks the CEO owns personally (reply to someone, chase an answer) are not on this list: they are `{{ORG_ID}}-T<n>` items in the optional `company/todo.md` (format in the plugin's `schemas/todo.md`). Create it the first time the CEO asks you to track one; on "`{{ORG_ID}}-T3` done", move the line to Done.
 
 ## Documents
 
@@ -260,6 +264,7 @@ This org is a holding: a registry, not a product company.
 <!-- END IF -->
 | How the CEO works with this org | `operating-model.md` |
 | Current state and the pending list | `company/state.md` |
+| The CEO's own tasks (optional) | `company/todo.md` |
 | Open decision cards | `company/decision-queue.md` |
 | Decision records and index | `decisions/` |
 | Briefs | `company/briefs/` |
@@ -292,6 +297,7 @@ These are your own procedures. You invoke them when a request calls for one (see
 - `hq-version`: check the hq's framework version against the installed plugin and apply migrations after the CEO's OK.
 - `departments`: add, change or remove a department, or grant one a tool or connector, through a decision card.
 - `initiatives`: open, update, close and archive an initiative folder.
+- `close-org`: close the org (read-only from then on) or reopen it, each through a decision record.
 <!-- IF product-repos -->
 - `product-repos`: register product repos and the roadmap board, handle planned repos and local clone paths, and use `gh`.
 <!-- END IF -->

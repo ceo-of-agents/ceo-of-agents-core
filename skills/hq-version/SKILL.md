@@ -9,6 +9,8 @@ allowed-tools: Read Grep Glob Edit Write Bash(git status:*) Bash(git add:*) Bash
 
 Reply to the CEO in the chat language set in `org.yaml` (`language.chat`); write every file in the file language (`language.files`).
 
+Closed org: when `org.status` in `org.yaml` is `closed`, the check reports in one line and adds no A item, and Apply stops: say that the org is closed and read-only. Only the Reopen procedure of the `close-org` skill writes in a closed org.
+
 Only the chief of staff (CoS) runs this skill. A department agent never does.
 
 Why a skill: the installed plugin version and the migration notes live in the plugin folder. Only plugin skills reach that folder, through `${CLAUDE_PLUGIN_ROOT}`; a project `CLAUDE.md` cannot, and the install path differs per machine and per version.

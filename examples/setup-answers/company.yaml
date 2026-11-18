@@ -1,0 +1,85 @@
+# Sample answers: purpose company, level company (one company with its own hq and code org).
+# Departments: catalog entries, and an agent the CEO brings that replaces a catalog entry. Two
+# departments share a persona name, so one agent name is set apart. A holding policy pinned.
+# Repos: two, one of them protected. Attribution: Claude Code default.
+# Validate: python3 scripts/ci/check_setup_answers.py --file examples/setup-answers/company.yaml
+schema: setup-answers/1
+language:
+  chat: en
+  files: en
+org:
+  purpose: company
+  level: company
+  id: ACMECO
+  name: Acme Corp
+services: no
+ceo:
+  profile: non-technical
+about:
+  what: |
+    - Acme Corp makes bicycle lights
+    - It sells to bike shops in three countries
+  why: Cyclists need to be seen at night.
+  stage: live
+departments:
+  - from: catalog
+    id: engineering
+  - from: catalog
+    id: finance
+  - from: catalog
+    id: operations
+  - from: catalog
+    id: legal
+  - from: own
+    id: design-brand
+    name: brand-designer
+    kind: agent
+    location: my own agents
+    purpose: Look after the visual identity of the lights and their packaging.
+    use_when:
+      - A visual asset is needed
+      - A page or a package goes to the public
+    must_not:
+      - item: Publishing assets
+        owner: ceo
+    replaces: design-brand
+names:
+  cos: Chief of staff
+  ceo: Sam
+  departments:
+    engineering: Engineering
+    finance: Alex
+    operations: Alex
+    legal: Legal
+    design-brand: Brand designer
+  agents:
+    operations: alex-operations
+gates: accept
+models:
+  cos: opus
+  departments: opus
+  overrides:
+    operations: sonnet
+policy:
+  repo: https://git.example.com/acme/policies.git
+  local: /home/me/acme/policies
+  pin: 3f2a9c1
+remote:
+  hq: https://github.com/acme/acme-corp-hq.git
+repos:
+  - slug: acme/lights-firmware
+    role: code
+    visibility: private
+    protected: true
+    exists: true
+  - slug: acme/lights-docs
+    role: docs
+    visibility: public
+    protected: false
+    exists: true
+issues_home: acme/lights-firmware
+roadmap:
+  url: https://github.com/orgs/acme/projects/3
+  status_field: Status
+attribution: default
+enable_plugin: true
