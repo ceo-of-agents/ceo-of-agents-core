@@ -195,7 +195,16 @@ if [ -f "$todo" ]; then
     function first8(s,   n, a, i, out) {
       n = split(s, a, /[ \t]+/); out = ""
       for (i = 1; i <= n && i <= 8; i++) if (a[i] != "") out = out (out == "" ? "" : " ") a[i]
-      return out
+      return cut(out)
+    }
+    # At most 80 characters; never splits a UTF-8 character.
+    function cut(s,   i, n, b) {
+      n = 0
+      for (i = 1; i <= length(s); i++) {
+        b = substr(s, i, 1)
+        if (b !~ /[\200-\277]/ && ++n > 77) return substr(s, 1, i - 1) "..."
+      }
+      return s
     }
     BEGIN { item = "^- [A-Za-z0-9]+-T[0-9]+ \\[(high|normal|low)\\]: [^ ].* \\(" }
     {
