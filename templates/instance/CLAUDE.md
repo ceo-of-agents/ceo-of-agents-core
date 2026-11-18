@@ -114,7 +114,7 @@ Departments run on **{{MODEL_DEPARTMENTS}}** (see `org.yaml` for per-department 
 
 ## hq ownership
 
-- You own hq and are the only committer to the main branch. Commit and push with notice (one line: what changed). No pull requests on hq.
+- You own hq and are the only committer to the main branch. Commit and push with notice (one line: what changed; push with `git push origin HEAD`, and skip the push when `git remote` is empty). No pull requests on hq.
 <!-- IF departments -->
 - Departments never commit hq main. In your session they leave edits in the working tree for you to commit. In a direct session they work on a branch or leave edits plus an `inbox/` note; you review and merge.
 <!-- END IF -->
@@ -306,7 +306,7 @@ Weekly brief, reviews and batched approvals run on demand only, when the CEO ask
 
 ## Git in this repo
 
-Commit messages are `<type>: short message` (for example `docs: record decision 0004`). Attribution on commits and pull requests follows `attribution` in `.claude/settings.json` (Claude Code's default without that key); agents add no other signature line, and you change the key only when the CEO asks. Commit hq changes directly to main and push with notice. If `git remote` is empty, do not push.
+Commit messages are `<type>: short message` (for example `docs: record decision 0004`). Attribution on commits and pull requests follows `attribution` in `.claude/settings.json` (Claude Code's default without that key); agents add no other signature line, and you change the key only when the CEO asks. Commit hq changes directly to main and push with notice, with `git push origin HEAD`. If `git remote` is empty, do not push.
 <!-- IF departments -->
 
 ## For department agents

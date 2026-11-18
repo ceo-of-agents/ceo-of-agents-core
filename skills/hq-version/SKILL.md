@@ -42,7 +42,7 @@ For each migration in order, one at a time:
 3. Apply the edits exactly as written. Where the migration says to ask the CEO (for example an agent-name clash), ask one plain question and wait. Writes into `.claude/` may raise a permission prompt. If it is denied, do not work around it: stop and list the missing edits.
 4. Run its "Check after applying" section. Fix what fails, or stop and report.
 5. Show a short summary: one line per changed file (from `git status --short`) and one or two plain lines on what it means for the CEO.
-6. Commit with notice (one line to the CEO first): `chore: migrate hq to <to>` with the attribution lines required by the session. Then push with `git push` if `git remote` is not empty.
+6. Commit with notice (one line to the CEO first): `chore: migrate hq to <to>` with the attribution lines required by the session. Then push with `git push origin HEAD` if `git remote` is not empty.
 
 After the last migration: remove the A item, set `last_updated` in `company/state.md`, commit with notice, and say the hq is up to date.
 
