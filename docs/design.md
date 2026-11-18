@@ -42,7 +42,7 @@ The pattern was proven in one running instance (the reference instance, the auth
 | Decision card | A pending question: context, options, recommendation, and who proposes it (or "needs analysis by <department>") |
 | Decision record | A numbered, immutable file in `decisions/` recording an answered card |
 | Approval gate | A rule saying which actions are free, need notice, or need the CEO's explicit OK |
-| CEO pending list | The one list of what waits on the CEO: actions (`A`) and decisions (`D`), with codes and a kind (`{ok}` approve, `{do}` the CEO does it, `{decide}` a card) that a script or a front-end can read. Lives in `company/state.md` under "Waiting on the CEO" |
+| CEO pending list | The one list of what waits on the CEO: actions (`A`) and decisions (`D`), with codes and a kind (`{ok}` approve, `{do}` the CEO does it, `{decide}` a card) that a script or a front-end can read. Lives in `company/state.md` under "Waiting on the CEO". Tasks the CEO owns personally (`T` codes) live apart, in the optional `company/todo.md` |
 
 ## 4. Framework vs instance
 
@@ -60,7 +60,7 @@ ceo-of-agents/
     policies-repo/   policy.yaml and README.md for the holding's separate policies repo
   catalog/           department catalog (charter + agent template each)
   skills/            init-fleet; CoS procedures: session-start, intake, record-decision, weekly-brief, hq-version, departments, product-repos, initiatives, portfolio-brief
-  schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set
+  schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set, CEO todo list
   gates/             default approval-gate table
   migrations/        vN-to-vN+1 diffs
 ```
@@ -77,6 +77,7 @@ There is no `agents/` dir: Claude Code auto-registers every `.md` under a plugin
   company/
     state.md                    living snapshot, fixed schema (see 5)
     decision-queue.md           open decision cards
+    todo.md                     optional: tasks the CEO owns (T codes), not in the boot set
     briefs/                     dated briefs
   decisions/README.md           index of decision records
   decisions/NNNN-<slug>.md      numbered decision records

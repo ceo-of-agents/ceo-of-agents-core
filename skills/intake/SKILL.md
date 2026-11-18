@@ -1,6 +1,6 @@
 ---
 name: intake
-description: Process handoff notes in inbox/ and new CEO requests or ideas in a ceo-of-agents hq. Updates state.md, adds decision cards and action items with namespaced codes, opens issues in registered product repos and adds them to the tracker, flags escalations to the holding, deletes processed notes in the same hq commit. Use at session start when inbox/ has notes, or when the CEO brings a new idea, request or finding.
+description: Process handoff notes in inbox/ and new CEO requests or ideas in a ceo-of-agents hq. Updates state.md, adds decision cards and action items with namespaced codes, tracks tasks the CEO owns in the optional company/todo.md, opens issues in registered product repos and adds them to the tracker, flags escalations to the holding, deletes processed notes in the same hq commit. Use at session start when inbox/ has notes, or when the CEO brings a new idea, request or finding.
 user-invocable: false
 allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(git rm:*) Bash(ls:*) Bash(date:*) Bash(gh issue list:*) Bash(gh project view:*) Bash(gh project field-list:*)
 ---
@@ -13,7 +13,7 @@ Closed org: when `org.status` in `org.yaml` is `closed`, do not frame or route n
 
 Only the chief of staff (CoS) runs this skill. A department agent must not process or delete `inbox/` notes, nor edit `company/state.md` or `company/decision-queue.md`; it leaves a handoff instead.
 
-Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/decision-card.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/handoff.md`.
+Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/decision-card.md`, `${CLAUDE_PLUGIN_ROOT}/schemas/handoff.md`, and `${CLAUDE_PLUGIN_ROOT}/schemas/todo.md` for the optional CEO todo list.
 
 ## Inputs
 
@@ -24,11 +24,12 @@ Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_RO
 
 1. Sync. Run `git remote`. If it prints nothing, skip pull and push and say once: "No remote: pull and push skipped". Otherwise run `git pull`; if it fails, say so in one line and continue with the local copy. Skip this step if the session already synced hq.
 
-2. Orient. Read `org.yaml`, `company/vision.md` and `company/strategy.md` (if present), `company/state.md`, `company/decision-queue.md` and `ls inbox/`. Note the org id, the level and the next codes (`next_action`, `next_decision`). Search `decisions/` and the queue for duplicates and conflicts with the topic (Grep); also `initiatives/README.md` (if present), but only when the topic may span several sessions or departments or the note names an initiative. If `repos` in `org.yaml` is not empty, also search the open issues of the repo the topic touches and of the issues home, read-only (`gh issue list -R <slug> --state open --search "<words>"`); a match is a duplicate: add the new context as a comment (`gh issue comment -R <slug> <number> --body '<text>'`) instead of opening another issue. If the search fails, say so once and continue without it. If a topic is already decided, say so and cite the record rather than reopening it, unless the new input is a reason to supersede it. If a request does not serve the vision or the current focus, say so in one line, then follow the CEO. If this session has not run the version check yet (an hq generated before 0.7.0 has no such step in its `CLAUDE.md`), use the `hq-version` skill once, check only.
+2. Orient. Read `org.yaml`, `company/vision.md` and `company/strategy.md` (if present), `company/state.md`, `company/decision-queue.md` and `ls inbox/`. Note the org id, the level and the next codes (`next_action`, `next_decision`; `next_todo` in `company/todo.md` when the request is a CEO task). Search `decisions/` and the queue for duplicates and conflicts with the topic (Grep); also `initiatives/README.md` (if present), but only when the topic may span several sessions or departments or the note names an initiative. If `repos` in `org.yaml` is not empty, also search the open issues of the repo the topic touches and of the issues home, read-only (`gh issue list -R <slug> --state open --search "<words>"`); a match is a duplicate: add the new context as a comment (`gh issue comment -R <slug> <number> --body '<text>'`) instead of opening another issue. If the search fails, say so once and continue without it. If a topic is already decided, say so and cite the record rather than reopening it, unless the new input is a reason to supersede it. If a request does not serve the vision or the current focus, say so in one line, then follow the CEO. If this session has not run the version check yet (an hq generated before 0.7.0 has no such step in its `CLAUDE.md`), use the `hq-version` skill once, check only.
 
 3. For a new CEO request (no note): restate it in one line. Classify it into exactly one primary route:
    - Decision: a clear choice is needed, so add a card.
    - Action: something only the CEO can do (an exact click, link, signature), so add an A item of kind `{do}`; an approval you then carry out is an A item of kind `{ok}`.
+   - CEO task: work the CEO will do on their own account and wants tracked (reply to someone, follow up on a review, chase an answer), with nothing the org waits on. Add an Open line to `company/todo.md` with the code `<ORG_ID>-T<next_todo>`, then increment `next_todo` and set `last_updated` (format and lifecycle: `${CLAUDE_PLUGIN_ROOT}/schemas/todo.md`). If the file is missing, create it from `${CLAUDE_PLUGIN_ROOT}/templates/instance/company/todo.md` with `{{DATE}}` set to today. Never put a T item in `company/state.md`. When the CEO says a T item is done, changed or dropped, update the file as the schema's Lifecycle says, pruning Done lines older than 7 days.
    - Issue: a concrete piece of work in a registered product repo, with nothing to decide. Only when `repos` in `org.yaml` is not empty; otherwise use another route. See "Issue route" below.
    - Department task: delegate with full context (a self-contained brief; the department leaves a handoff at the end). Dispatch a department by its agent name (`agent` in `org.yaml`; for a department without `agent`, in an hq not yet migrated to 0.7.0, its id). Keep it one task unless it must be split:
      - split only where a part has a different owner, needs different permissions, can really run in parallel, must wait for another part (a hard prerequisite), or is an independent review;
@@ -57,7 +58,7 @@ Formats are fixed: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`, `${CLAUDE_PLUGIN_RO
 
 8. Commit, in the same turn as the writes above and before you reply. The gate for `hq-commit` is "notice": write one line to the CEO before committing (what, where, content; for example "Committing to hq main: 2 notes processed, ACME-D4 added, state.md updated."), then commit on the current branch with a message like `chore: process inbox (<codes>)` and the attribution lines required by the session. Do not wait for an OK. The commit and the push are one `hq-commit` covered by that line: then push with `git push origin HEAD`, and skip the push when `git remote` is empty.
 
-9. Reply with a short summary in the chat language: notes processed, new codes (A and D, with one-line meaning), escalations, and anything blocked or ambiguous. Cite codes, do not paste cards. If nothing was in the inbox and the CEO gave no request, say so in one line.
+9. Reply with a short summary in the chat language: notes processed, new codes (A, D and T, with one-line meaning), escalations, and anything blocked or ambiguous. Cite codes, do not paste cards. If nothing was in the inbox and the CEO gave no request, say so in one line.
 
 ## Issue route
 
