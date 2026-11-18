@@ -2,6 +2,14 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.18.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.17.0...v0.18.0) (2026-11-18)
+
+
+### Features
+
+* let an org choose ask instead of deny for the destructive-command baseline ([#91](https://github.com/iamgiolaga/ceo-of-agents/issues/91)) ([ef498a8](https://github.com/iamgiolaga/ceo-of-agents/commit/ef498a84cdb1d1686b5a7d606650c16d003e0b10))
+* put open work the chief of staff holds on the pending list ([#90](https://github.com/iamgiolaga/ceo-of-agents/issues/90)) ([fe36414](https://github.com/iamgiolaga/ceo-of-agents/commit/fe36414f55b6718c7d044af7d0b8cdb0f511e653))
+
 ## [0.17.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.16.0...v0.17.0) (2026-11-18)
 
 
