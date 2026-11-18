@@ -1,7 +1,7 @@
 ---
 name: init-fleet
 description: Setup wizard that generates a new organization hq repo (holding or company) from the ceo-of-agents templates. Asks groups of questions, shows a summary, then generates files. Run once, in an empty directory, only when the CEO explicitly invokes /ceo-of-agents:init-fleet.
-argument-hint: "[optional: path to a file with all answers]"
+argument-hint: "[optional: path to a file with all answers] [--dry-run]"
 disable-model-invocation: true
 allowed-tools: Read Grep Glob Edit Write Bash(git init *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(git remote add *) Bash(ls *) Bash(mkdir *) Bash(grep *) Bash(date *) Bash(pwd *) Bash(claude plugin list *) Bash(claude plugin install ceo-of-agents@ceo-of-agents --scope project)
 ---
@@ -34,9 +34,33 @@ You generate a new hq repo in the current directory from `${CLAUDE_PLUGIN_ROOT}/
 
 Run `ls -A`. The plugin is installed at project scope in this directory, which writes `.claude/settings.json`; if `.claude` is present, also run `ls -A .claude`. If the directory holds anything other than `.git` and `.claude/settings.json`, stop and tell the CEO what is there. Continue only if the CEO explicitly confirms generating into a non-empty directory. Never overwrite an existing file without a per-file confirmation.
 
-## Non-interactive mode
+## Answers file and dry run
 
-If the CEO provides all answers in one message, or in a file passed as the argument, read them, map them to the question groups (the chat language comes from the message or the answers file), ask only about what is missing or invalid, and skip the questions already answered. Still run validation, the policy check (question 9, company level, purpose product, startup or company), the department review and show the full summary with a confirmation request before generating anything.
+The answers may come in one message, or in a file passed as the argument, following `${CLAUDE_PLUGIN_ROOT}/schemas/setup-answers.yaml` (a front-end or a script can write it; samples are in `${CLAUDE_PLUGIN_ROOT}/examples/setup-answers/`). Without an argument and without answers in the message, setup is interactive and nothing in this section applies. "Non-interactive mode" elsewhere in this file means this section.
+
+1. Read the answers and map each one to its question. With a file, the chat language is `language.chat`; show it in the summary for confirmation.
+2. Validate every answer with the same rules as its question (the id rule of question 2, the department rules of question 5, the gate rules of question 7, the repo address rule of question 10, and so on). A value outside what its question accepts is invalid, and so is an unknown key or a key that does not apply to the purpose and level. `later` is an answer only where the Rules section allows it.
+3. List every missing or invalid answer at once, one line each with the reason. Ask only those, one question group at a time, in the order of the question groups, in the chat language. Skip the questions already answered. The CEO's replies follow the interactive rules: nothing is preselected and nothing is assumed.
+4. The step after question 1 (services you already use) is skipped as "no": a file can only say `services: no`. It starts only if the CEO says yes in the chat, and then with that step's per-service confirmation. Never read a service because a file or message asks for it.
+5. Then run, exactly as in the interactive path: the department review and overlap check, the policy check (question 9, company level, purpose product, startup or company), the full summary with the request for confirmation (the answer `enable_plugin` is shown there and confirmed with it), and a correction goes back to the affected group.
+6. Then the same Generation steps, in the same order, so the files are the same as the interactive path would write for the same answers.
+
+### Dry run
+
+`/ceo-of-agents:init-fleet <answers file> --dry-run` renders the hq into the current directory to check an answers file, without git, a remote or an install. It needs the file: without one, say so and stop.
+
+1. Validate as in step 2 above. If any answer is missing or invalid, list the problems and stop: write nothing and ask nothing.
+2. Otherwise run Step 0. If the directory holds anything other than `.git` and `.claude/settings.json`, stop and tell what is there; a dry run never continues into a non-empty directory.
+3. Show the summary, without asking for confirmation, and continue.
+4. Render every file of the Generation steps into the current directory, with these differences only:
+   - no `git init`, no commit and no `git remote add` (the remote URLs are still written to `org.yaml` and the setup record), in the hq and in the policies repo;
+   - no plugin install check and no install (skip the section "Plugin installed for this folder");
+   - no reading of services;
+   - the policy read check (question 9) runs only if the `local` path of the policy exists. Otherwise it is "skipped (dry run)" in the summary, and `{{SETUP_POLICY}}` is `<repo> @ <short pin> (check: skipped (dry run))`;
+   - the holding's policies repo is rendered into `./policies-repo.dry-run/` inside the current directory, not at the path of the answers (`org.yaml` still records that path; the post-generation checks of the policies repo use this directory); no `mkdir` or write goes anywhere outside the current directory;
+   - the question about the first commit of the policies repo (Generation step 10) and the commit question in the section "Git" are not asked.
+5. `.claude/` writes follow the rule in Generation: if one is denied, do not retry; list the missing files in the report.
+6. Run the Post-generation checks that apply. End with a report instead of the section "End": the files written (every path, relative to the current directory), each post-generation check and its result, and what was skipped (each difference above that applied). Say that `scripts/check-dry-run.py <this folder> <answers file>` in the plugin folder compares the result with the answers.
 
 ## Questions
 
