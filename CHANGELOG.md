@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.19.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.18.0...v0.19.0) (2026-11-18)
+
+
+### Features
+
+* route department file writes through workers and limit Bash ([#96](https://github.com/iamgiolaga/ceo-of-agents/issues/96)) ([76c0289](https://github.com/iamgiolaga/ceo-of-agents/commit/76c0289b5297ff8873129a596f5043b95456e6db))
+
 ## [0.18.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.17.0...v0.18.0) (2026-11-18)
 
 
