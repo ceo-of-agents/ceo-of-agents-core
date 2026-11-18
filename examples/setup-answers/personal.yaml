@@ -45,8 +45,6 @@ departments:
       - item: Booking or paying for anything
         owner: ceo
     core_job: Keep every trip and its documents ready ahead of time.
-    commands:
-      needed: false
 names:
   cos: Chief of staff
   ceo: later

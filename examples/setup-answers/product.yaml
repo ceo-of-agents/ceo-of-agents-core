@@ -50,8 +50,6 @@ departments:
       - item: Refunds and payments
         owner: ceo
     core_job: Keep shop owners answered and turn repeated questions into help pages.
-    commands:
-      needed: false
   # Way 4: an agent the CEO already has, used as it is.
   - from: own
     id: reviewer

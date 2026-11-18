@@ -34,8 +34,6 @@ departments:
       - item: Sharing notes with other people
         owner: ceo
     core_job: Turn the notes of each meeting into decisions and follow-ups.
-    commands:
-      needed: false
 names:
   cos: Chief of staff
   ceo: later

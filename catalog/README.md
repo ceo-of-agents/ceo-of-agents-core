@@ -3,7 +3,7 @@
 The catalog holds starting templates for departments. Each entry has two files:
 
 - `charter.md`: scope, what the department never does, inputs, outputs, gates, handoff.
-- `agent.md`: a Claude Code subagent template with an explicit `tools:` allowlist. Spawning is limited by type: the advisory entries (legal, finance, tax, health, money, paperwork) have no `Agent` tool and no `Bash`; engineering has `Agent(reader, worker)`; every other department has `Agent(reader)`. The type list is enforced in direct `claude --agent` sessions only. When the CoS dispatches a department as a subagent the list is ignored, so the department must still spawn only those types. The `reader` and `worker` agents come from `templates/workers/`.
+- `agent.md`: a Claude Code subagent template with an explicit `tools:` allowlist. Spawning is limited by type: the advisory entries (legal, finance, tax, health, money, paperwork) have no `Agent` tool and no `Bash`, and keep Edit and Write; every other entry has `Agent(reader, worker)` and `Bash` but no Edit or Write, so its file writes go through `worker`. Its `Bash` is limited to git, gh, running tests or builds and single spot checks. The type list is enforced in direct `claude --agent` sessions only. When the CoS dispatches a department as a subagent the list is ignored, so the department must still spawn only those types. The `reader` and `worker` agents come from `templates/workers/`.
 
 | Id | Department | Advisory |
 |---|---|---|

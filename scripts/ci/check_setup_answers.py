@@ -32,6 +32,9 @@ ADVISORY = ("legal", "finance", "tax") + PERSONAL_ONLY
 TIERS = ("opus", "sonnet", "haiku")
 GATE_TIERS = ("free", "notice", "ok")
 NEVER_MOVE = ("file-or-sign", "make-payment")
+# Bash and Agent(worker) are fixed (non-advisory departments have them, advisory ones never
+# gain them): they stay in the lists only to give a clear error.
+FIXED_ABILITIES = ("Bash", "Agent(worker)")
 ABILITIES_ADD = ("Bash", "Agent(worker)", "WebSearch", "WebFetch")
 ABILITIES_DROP = ("Bash", "Agent", "WebSearch", "WebFetch")
 STAGES = {
@@ -342,13 +345,14 @@ class Checker:
                 continue
             if not is_line(am.get("reason")):
                 self.err(f"{p}.reason", "must be one line of text (the reason for the grant)")
-            if dept_id in ADVISORY and ability in ("Bash", "Agent(worker)"):
-                self.err(p, f"`{dept_id}` is advisory and never gains {ability}")
-            if has[ability] or ability in added:
+            if ability in FIXED_ABILITIES:
+                if dept_id in ADVISORY:
+                    self.err(p, f"`{dept_id}` is advisory and never gains {ability}")
+                else:
+                    self.err(p, f"`{ability}` is already there: Bash and Agent(worker) are fixed for non-advisory departments")
+            elif has[ability] or ability in added:
                 self.err(p, f"`{ability}` is already there (in the catalog entry or added twice)")
             added.append(ability)
-        if "Agent(worker)" in added and not (has["Bash"] or "Bash" in added):
-            self.err(f"{path}.abilities_add", "Agent(worker) is allowed only together with Bash")
         dropped = []
         drops = m.get("abilities_drop")
         if drops is not None:
@@ -359,6 +363,9 @@ class Checker:
                 p = f"{path}.abilities_drop[{i}]"
                 if ability not in ABILITIES_DROP:
                     self.err(p, f"must be one of {', '.join(ABILITIES_DROP)}")
+                elif ability in ("Bash", "Agent"):
+                    self.err(p, f"`{ability}` cannot be dropped: Bash and Agent(reader, worker) are fixed for non-advisory departments (they are the only way to write files)"
+                             if dept_id not in ADVISORY else f"`{dept_id}` is advisory and has no {ability} to drop")
                 elif not has[ability]:
                     self.err(p, f"`{dept_id}` has no {ability} to drop")
                 elif ability in dropped:
@@ -366,12 +373,10 @@ class Checker:
                 elif ability in added:
                     self.err(p, f"`{ability}` is both added and dropped")
                 dropped.append(ability)
-        if "Bash" in dropped and has["Agent(worker)"] and "Agent" not in dropped:
-            self.err(f"{path}.abilities_drop", "dropping Bash from an entry with Agent(worker) needs Agent dropped too")
 
     def check_custom(self, item, path, dept_id):
-        keys = ("from", "id", "role", "purpose", "scope", "triggers", "exclusions", "core_job", "commands")
-        m = self.mapping(item, path, required=keys)
+        keys = ("from", "id", "role", "purpose", "scope", "triggers", "exclusions", "core_job")
+        m = self.mapping(item, path, required=keys, optional=("commands",))
         if not KEBAB_RE.match(dept_id):
             self.err(f"{path}.id", "must be kebab-case: letters, digits and hyphens")
         if not m:
@@ -385,6 +390,7 @@ class Checker:
         if "exclusions" in m:
             self.item_owner_list(m["exclusions"], f"{path}.exclusions")
         if "commands" in m:
+            # Deprecated: accepted and ignored, but a malformed one still errors.
             cm = self.mapping(m["commands"], f"{path}.commands", required=("needed",), optional=("reason",))
             if cm:
                 if not isinstance(cm.get("needed"), bool):

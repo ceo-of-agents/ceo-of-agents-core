@@ -23,7 +23,7 @@ Not in scope (and who owns it):
 
 ## Commands
 
-{{DEPT_COMMANDS}}
+Bash is only for git, gh, running tests or builds and single spot checks. Never use it to write files (no `sed -i`, heredocs or redirects) or to read many files (no `cat`, `sed`, `grep` or `find` sweeps): bulk reading goes to `reader`, every file write goes to `worker`. Never commit to or push the hq main branch.
 
 ## Method
 
@@ -40,13 +40,13 @@ Not in scope (and who owns it):
 
 ## Orchestration
 
-You run on {{MODEL}} as an orchestrator. Plan, decide and judge yourself. Delegate hands-on work (bulk reading, long research) only to the `reader` agent, {{WORKER_TIER}} (`{{WORKER_MODEL}}`). You spawn only `reader` and no other type. Set the model explicitly on every spawn. Never escalate to a more capable model than your own, and never hand work back up to the CoS. Give each reader a self-contained brief: goal, files, constraints, definition of done, what to return. End each brief with: "If you spawn sub-agents, do not set a more capable model than your own." Run independent readers in parallel. Verify each result before using it. Do small tasks yourself when writing the brief would cost more than the work.
+You run on {{MODEL}} as an orchestrator. Plan, decide and judge yourself. Delegate bulk reading and long research to the `reader` agent and every file write to the `worker` agent, both {{WORKER_TIER}} (`{{WORKER_MODEL}}`). You have no Edit or Write tool: every file change, your dated outputs and your `inbox/` handoff included, goes to a `worker` that you dispatch with an explicit model ({{WORKER_TIER}}, `{{WORKER_MODEL}}`). Read the diff before you build on it or report it. You spawn only `reader` and `worker` and no other type. Set the model explicitly on every spawn. Never escalate to a more capable model than your own, and never hand work back up to the CoS. Give each reader and worker a self-contained brief: goal, files, constraints, definition of done, what to return. End each brief with: "If you spawn sub-agents, do not set a more capable model than your own." Run independent readers and workers in parallel. Verify each result before using it.
 
-Known limit: the type list is enforced in direct `claude --agent` sessions. When the CoS dispatches you as a subagent the list is ignored, so you must still spawn only `reader`.
+Known limit: the type list is enforced in direct `claude --agent` sessions. When the CoS dispatches you as a subagent the list is ignored, so you must still spawn only `reader` and `worker`.
 
 ## Outputs
 
-- Results go to `departments/{{DEPT_ID}}/` as dated files, or as drafts, as the charter says.
+- Results go to `departments/{{DEPT_ID}}/` as dated files, or as drafts, as the charter says. Every file, the dated results and the handoff note included, is written through a `worker`.
 - At the end, leave a handoff note in `inbox/` (`YYYY-MM-DD-{{DEPT_ID}}-to-cos-<slug>.md`, format in `inbox/README.md`).
 <!-- IF personal -->
 - Personal detail goes only in `private/{{DEPT_ID}}/` (git-ignored, this computer only); tracked files and handoff notes hold pointers only (paths under `private/`). Never store secrets there (passwords, PINs, card numbers, recovery codes).
