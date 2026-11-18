@@ -2,6 +2,17 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.17.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.16.0...v0.17.0) (2026-11-18)
+
+
+### Features
+
+* add an optional CEO todo list (company/todo.md, T codes) ([#79](https://github.com/iamgiolaga/ceo-of-agents/issues/79)) ([927e282](https://github.com/iamgiolaga/ceo-of-agents/commit/927e2820ba3900b6d8b5984118acc69db48a0ac0))
+* close and reopen an org ([#82](https://github.com/iamgiolaga/ceo-of-agents/issues/82)) ([80a3548](https://github.com/iamgiolaga/ceo-of-agents/commit/80a35488c6f4342545faa14ab2654f46355ecb54))
+* **init-fleet:** accept a setup answers file and add a dry run ([#83](https://github.com/iamgiolaga/ceo-of-agents/issues/83)) ([dc98d58](https://github.com/iamgiolaga/ceo-of-agents/commit/dc98d5833f7dd596f7c1508089a0fd7c38bc8ff4))
+* rewrite state lines, append history to a log and check at write time ([#85](https://github.com/iamgiolaga/ceo-of-agents/issues/85)) ([cf82322](https://github.com/iamgiolaga/ceo-of-agents/commit/cf823221b3f3d20af955f81e60196f0d76b2c8c0))
+* store the user's profile and word chat in plain terms for non-technical users ([#81](https://github.com/iamgiolaga/ceo-of-agents/issues/81)) ([f9f34bb](https://github.com/iamgiolaga/ceo-of-agents/commit/f9f34bb609ef1ea7fffc8440dea789c599c4a41d))
+
 ## [0.16.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.15.1...v0.16.0) (2026-11-18)
 
 
