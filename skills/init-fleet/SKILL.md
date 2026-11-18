@@ -3,7 +3,7 @@ name: init-fleet
 description: Setup wizard that generates a new organization hq repo (holding or company) from the ceo-of-agents templates. Asks groups of questions, shows a summary, then generates files. Run once, in an empty directory, only when the CEO explicitly invokes /ceo-of-agents:init-fleet.
 argument-hint: "[optional: path to a file with all answers]"
 disable-model-invocation: true
-allowed-tools: Read Grep Glob Edit Write Bash(git init *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(git remote add *) Bash(git -C * init *) Bash(git -C * add *) Bash(git -C * commit *) Bash(git -C * remote add *) Bash(git -C * fetch *) Bash(git -C * show *) Bash(ls *) Bash(mkdir *) Bash(cp *) Bash(grep *) Bash(date *) Bash(python3 -c *) Bash(ruby -ryaml *) Bash(ruby -rjson *) Bash(sh *check-boot-set.sh*) Bash(pwd *) Bash(claude plugin list *) Bash(claude plugin install *)
+allowed-tools: Read Grep Glob Edit Write Bash(git init *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(git remote add *) Bash(git -C * init *) Bash(git -C * add *) Bash(git -C * commit *) Bash(git -C * remote add *) Bash(git -C * fetch *) Bash(git -C * show *) Bash(ls *) Bash(mkdir *) Bash(cp *) Bash(grep *) Bash(date *) Bash(pwd *) Bash(claude plugin list *) Bash(claude plugin install *)
 ---
 
 # init-fleet: setup wizard

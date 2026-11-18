@@ -5,12 +5,16 @@ The rule groups table in gates/permissions.md is the source. This script reads
 it, generates the rules for fixture orgs, and checks:
 - every action id in the table is a known action id of gates/default.md;
 - every rule is in a known form (Bash, Edit, Read, Skill) with balanced parentheses;
+- no rule puts a wildcard in a command that starts a shell or an interpreter
+  (`*` spans spaces and arguments, so such a rule runs any code), neither in
+  the table, nor in a generated `allow` list, nor in the `allowed-tools` of a
+  skill; and no retired rule is still in the table;
 - no rule of a group that can reach an `ok` action ends up in `allow`, for any
   fixture, and no rule is in both `allow` and `ask`;
 - the default and the stricter example orgs of the "Examples" section produce
   exactly the lists below;
-- merging keeps every other key and every rule that is not of this file, and a
-  second merge changes nothing.
+- merging keeps every other key and every rule that is not of this file,
+  removes the retired rules, and a second merge changes nothing.
 
 Run with `--render <org.yaml> [<settings.json>]` to print the merged settings
 file for an hq, without writing anything (used for dry runs).
@@ -31,6 +35,19 @@ TIERS = ["free", "notice", "ok"]
 SKILL_RULE = "Skill(ceo-of-agents:*)"
 RULE_FORM = re.compile(r"^(Bash|Edit|Read|Skill)\((.+)\)$")
 HEADER = "| Group | Scope | Actions | Rules |"
+RETIRED_HEADING = "## Retired rules"
+SKILLS = ROOT / "skills"
+
+# Programs that run code given in their arguments, or run another command
+# named in them. A Bash rule for one of them must be exact (no wildcard).
+SHELLS = {
+    "sh", "bash", "zsh", "dash", "ksh", "mksh", "fish", "csh", "tcsh", "pwsh", "powershell",
+    "env", "exec", "eval", "command", "builtin", "source", ".", "xargs", "nohup", "sudo", "doas",
+    "su", "time", "nice", "timeout", "watch", "script", "osascript",
+    "node", "nodejs", "deno", "bun", "npx", "ruby", "irb", "perl", "php", "lua", "luajit",
+    "tclsh", "wish", "awk", "gawk", "mawk", "nawk", "R", "Rscript", "julia", "uv", "uvx",
+}
+INTERPRETER = re.compile(r"^(python|pypy|pip)[0-9.]*$")
 
 
 def load_groups():
@@ -49,6 +66,58 @@ def load_groups():
             "rules": re.findall(r"`([^`]+)`", rules),
         })
     return groups
+
+
+def load_retired():
+    """Rules listed under "Retired rules": bullets that start with a rule."""
+    lines = DOC.read_text(encoding="utf-8").splitlines()
+    start = lines.index(RETIRED_HEADING)
+    retired = []
+    for line in lines[start + 1:]:
+        if line.startswith("## "):
+            break
+        match = re.match(r"^- `([^`]+)`", line)
+        if match:
+            retired.append(match.group(1))
+    return retired
+
+
+def shell_wildcard(rule):
+    """True if the rule is a Bash rule with a wildcard whose command starts a
+    shell or an interpreter, or whose command itself is a wildcard."""
+    match = re.match(r"^Bash\((.*)\)$", rule)
+    if not match:
+        return False
+    command = match.group(1).strip()
+    if "*" not in command:
+        return False
+    words = command.split()
+    while words and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", words[0]):
+        words = words[1:]
+    if not words:
+        return True
+    first = words[0].split(":", 1)[0]
+    if "*" in first:
+        return True
+    name = first.rsplit("/", 1)[-1]
+    return name in SHELLS or bool(INTERPRETER.match(name))
+
+
+def skill_rules():
+    """(skill file, rule) for every Bash rule in a skill's allowed-tools."""
+    out = []
+    for path in sorted(SKILLS.glob("*/SKILL.md")):
+        text = path.read_text(encoding="utf-8")
+        match = re.match(r"^---\n(.*?)\n---\n", text, re.S)
+        if not match:
+            continue
+        front = yaml.safe_load(match.group(1)) or {}
+        tools = front.get("allowed-tools") or ""
+        if isinstance(tools, list):
+            tools = " ".join(tools)
+        for rule in re.findall(r"Bash\([^)]*\)", tools):
+            out.append((path.relative_to(ROOT).as_posix(), rule))
+    return out
 
 
 def known_actions():
@@ -116,8 +185,8 @@ def dedupe(items):
     return out
 
 
-def managed_patterns(groups):
-    pats = [re.escape(SKILL_RULE)]
+def managed_patterns(groups, retired):
+    pats = [re.escape(SKILL_RULE)] + [re.escape(r) for r in retired]
     for g in groups:
         for rule in g["rules"]:
             for form in {rule, general(rule)}:
@@ -128,9 +197,9 @@ def managed_patterns(groups):
     return re.compile("^(?:" + "|".join(pats) + ")$")
 
 
-def merge(settings, org, groups):
+def merge(settings, org, groups, retired):
     allow, ask, deny = generate(org, groups)
-    managed = managed_patterns(groups)
+    managed = managed_patterns(groups, retired)
     out = copy.deepcopy(settings)
     perms = out.setdefault("permissions", {})
     for key, new in (("allow", allow), ("ask", ask)):
@@ -177,9 +246,32 @@ def repo_rules(groups, names, slugs):
     return [r.replace("<slug>", s) for g in groups if g["name"] in names for s in slugs for r in g["rules"]]
 
 
-def check(groups):
+def check(groups, retired):
     errors = []
     actions = known_actions()
+    table = {r for g in groups for r in g["rules"]}
+
+    # The detector itself: these must be caught, and these must pass.
+    for rule in ("Bash(sh *check-boot-set.sh*)", "Bash(bash -c *)", "Bash(python3 -c *)", "Bash(env *)",
+                 "Bash(FOO=1 node *)", "Bash(sh:*)", "Bash(* --version)", "Bash(/usr/bin/zsh *)"):
+        if not shell_wildcard(rule):
+            errors.append(f"detector: does not flag {rule}")
+    for rule in ("Bash(gh issue list *)", "Bash(git pull)", "Bash(sh /opt/tool/check.sh)", "Edit(/**)",
+                 "Bash(shellcheck *)", "Bash(git rev-list --count HEAD)"):
+        if shell_wildcard(rule):
+            errors.append(f"detector: flags {rule}")
+
+    if not retired:
+        errors.append("gates/permissions.md: no rule under \"Retired rules\"")
+    for rule in retired:
+        if rule in table:
+            errors.append(f"retired rule still in the table: {rule}")
+    for rule in sorted(table):
+        if shell_wildcard(rule):
+            errors.append(f"table: wildcard rule for a shell or interpreter: {rule}")
+    for path, rule in skill_rules():
+        if shell_wildcard(rule):
+            errors.append(f"{path}: allowed-tools has a wildcard rule for a shell or interpreter: {rule}")
     for g in groups:
         for a in g["actions"]:
             if a not in actions:
@@ -201,6 +293,9 @@ def check(groups):
         both = set(allow) & set(ask)
         if both:
             errors.append(f"{label}: rules in both allow and ask: {sorted(both)}")
+        for rule in allow:
+            if shell_wildcard(rule):
+                errors.append(f"{label}: allow has a wildcard rule for a shell or interpreter: {rule}")
         for g in groups:
             if tier_of(g["actions"], org["gates"]) == "ok":
                 leaked = [r for r in allow if r in g["rules"] or r.startswith(general(g["rules"][0])[:-2])]
@@ -242,13 +337,14 @@ def check(groups):
     before = {
         "enabledPlugins": {"ceo-of-agents@ceo-of-agents": True},
         "attribution": {"commit": "", "pr": ""},
-        "permissions": {"allow": ["Bash(make test)", SKILL_RULE, "Bash(gh issue create -R old/repo *)"],
+        "permissions": {"allow": ["Bash(make test)", SKILL_RULE, "Bash(gh issue create -R old/repo *)"] + retired,
+                        "ask": list(retired),
                         "deny": ["mcp__other"], "defaultMode": "default"},
     }
     org = copy.deepcopy(DEFAULT_ORG)
     org["accounts"]["forbidden_connectors"] = ["mcp__work"]
-    once = merge(before, org, groups)
-    twice = merge(once, org, groups)
+    once = merge(before, org, groups, retired)
+    twice = merge(once, org, groups, retired)
     if once != twice:
         errors.append("merge is not idempotent")
     for key in ("enabledPlugins", "attribution"):
@@ -261,17 +357,20 @@ def check(groups):
         errors.append("merge dropped an own allow rule")
     if "Bash(gh issue create -R old/repo *)" in p["allow"]:
         errors.append("merge kept a managed rule for an unregistered repo")
+    left = [r for r in p.get("allow", []) + p.get("ask", []) if r in retired]
+    if left:
+        errors.append(f"merge kept retired rules: {left}")
     if p["allow"].count(SKILL_RULE) != 1:
         errors.append("merge: Skill rule not exactly once")
     if p["deny"] != ["mcp__other", "mcp__work"]:
         errors.append(f"merge deny wrong: {p['deny']}")
     freed = copy.deepcopy(org)
     freed["repos"][2]["protected"] = False
-    after = merge(once, freed, groups)
+    after = merge(once, freed, groups, retired)
     if "Bash(gh issue comment -R partner/site *)" in after["permissions"]["ask"] or \
             "Bash(gh issue comment -R partner/site *)" not in after["permissions"]["allow"]:
         errors.append("regeneration after freeing a repo did not move its rules")
-    strict_after = merge(once, dict(org, gates=STRICT_ORG["gates"]), groups)
+    strict_after = merge(once, dict(org, gates=STRICT_ORG["gates"]), groups, retired)
     if any(r.startswith("Bash(gh issue create -R") for r in strict_after["permissions"]["allow"]):
         errors.append("regeneration to a stricter org kept gh issue create in allow")
     return errors
@@ -279,15 +378,17 @@ def check(groups):
 
 def main(argv):
     groups = load_groups()
+    retired = load_retired()
     if len(argv) >= 2 and argv[0] == "--render":
         org = yaml.safe_load(Path(argv[1]).read_text(encoding="utf-8"))
         settings = json.loads(Path(argv[2]).read_text(encoding="utf-8")) if len(argv) > 2 and Path(argv[2]).exists() else {}
-        print(json.dumps(merge(settings, org, groups), indent=2, ensure_ascii=False))
+        print(json.dumps(merge(settings, org, groups, retired), indent=2, ensure_ascii=False))
         return 0
-    errors = check(groups)
+    errors = check(groups, retired)
     for error in errors:
         print(f"error: {error}")
-    print(f"{len(groups)} rule groups, {sum(len(g['rules']) for g in groups)} rules; {len(errors)} errors")
+    print(f"{len(groups)} rule groups, {sum(len(g['rules']) for g in groups)} rules, {len(retired)} retired; "
+          f"{len(skill_rules())} skill Bash rules scanned; {len(errors)} errors")
     return 1 if errors else 0
 
 

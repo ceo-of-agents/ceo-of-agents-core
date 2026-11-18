@@ -1,6 +1,6 @@
 # Permission rules from the gates
 
-The approval gates in `org.yaml` say what the agents may do on their own. Claude Code has its own permission rules (`permissions.allow`, `ask` and `deny` in `.claude/settings.json`). This file turns the first into the second, so that Claude Code stops asking about work the gates leave free, and keeps asking about work the gates hold back. Setup writes the rules (`init-fleet`, generation step 13), migration `0.14.0-to-0.15.0` adds them to an existing hq, and the chief of staff writes them again whenever `gates:`, `repos:`, `tracker:` or `accounts.forbidden_connectors` change (section "Write the rules again").
+The approval gates in `org.yaml` say what the agents may do on their own. Claude Code has its own permission rules (`permissions.allow`, `ask` and `deny` in `.claude/settings.json`). This file turns the first into the second, so that Claude Code stops asking about work the gates leave free, and keeps asking about work the gates hold back. Setup writes the rules (`init-fleet`, generation step 13), migration `0.14.0-to-0.15.0` adds them to an existing hq, migration `0.15.0-to-0.15.1` removes the retired rules (section "Retired rules"), and the chief of staff writes them again whenever `gates:`, `repos:`, `tracker:` or `accounts.forbidden_connectors` change (section "Write the rules again").
 
 The rules lower the number of prompts. They are not a sandbox: a rule matches the start of a command, so it cannot see which branch a push goes to or whether a command really only reads. The written gates in `CLAUDE.md` still bind every agent, and a Claude Code prompt that the CEO approves is not the OK a gate asks for.
 
@@ -10,6 +10,7 @@ Facts from the Claude Code permissions documentation that this design relies on:
 
 - Rules are checked in the order deny, then ask, then allow, across every settings file (user, project, local): an `ask` rule in the hq's `.claude/settings.json` wins over an `allow` rule anywhere else, also in `.claude/settings.local.json`.
 - `Bash(gh issue list *)` matches the command with any arguments and also the bare command. A command chained with `&&`, `;` or `|` runs without a prompt only when every part is allowed.
+- `*` matches any sequence of characters, spaces and further arguments included, wherever it stands in the rule: `Bash(sh *check.sh*)` matches every `sh` command whose text contains `check.sh`, whatever else it runs.
 - Claude Code already runs common read-only commands without a prompt (`ls`, `cat`, `head`, `tail`, `grep`, `find`, `wc`, `diff`, read-only `git`), and reads files inside the working folder without a prompt. These need no rule.
 - `Edit(/**)` in a project settings file means every file under the folder Claude Code was started in. `Edit` rules also cover `Write`. Writes into `.claude/` always ask, whatever the rules.
 - Allow rules in `.claude/settings.json` apply only once the folder is trusted (the workspace trust prompt has been accepted). Ask and deny rules apply at once.
@@ -34,6 +35,8 @@ And one fixed rule: `Skill(ceo-of-agents:*)` stays in `allow` (since 0.14.0), so
 
 No rule ever puts a group with an `ok` action in `allow`.
 
+No rule puts a wildcard in a command that starts a shell or an interpreter (`sh`, `bash`, `zsh`, `env`, `python3`, `node`, `ruby` and the like): any such rule lets that program run any code. A command whose options can run a program or write a file (for example `git rev-list --output=<file>`) gets only exact rules, in the form the skills use. `scripts/ci/check_permissions.py` fails on a wildcard shell or interpreter rule, here and in the `allowed-tools` of the plugin's skills.
+
 ## Rule groups
 
 `hq` rules are written once. `repo` rules are written once per repo: `<slug>` is the repo's `slug` from `repos:` (for an owner pattern the rule ends at the pattern, for example `Bash(gh issue create -R acme/*)`). A repo with `planned: true` gets no repo rule until it exists. `tracker` rules are written only when `tracker:` is a GitHub Project, with its `owner` and `number`.
@@ -41,8 +44,8 @@ No rule ever puts a group with an `ok` action in `allow`.
 | Group | Scope | Actions | Rules |
 |---|---|---|---|
 | read-github | hq | `research` | `Bash(gh issue list *)`, `Bash(gh issue view *)`, `Bash(gh pr list *)`, `Bash(gh pr view *)`, `Bash(gh pr diff *)`, `Bash(gh pr checks *)`, `Bash(gh repo view *)`, `Bash(gh release list *)`, `Bash(gh release view *)`, `Bash(gh run list *)`, `Bash(gh run view *)`, `Bash(gh label list *)`, `Bash(gh search issues *)`, `Bash(gh search prs *)`, `Bash(gh project view *)`, `Bash(gh project item-list *)`, `Bash(gh project field-list *)`, `Bash(gh auth status *)` |
-| sync-hq | hq | `research` | `Bash(git pull)`, `Bash(git pull --ff-only)`, `Bash(git fetch)`, `Bash(git fetch origin)`, `Bash(git fetch --prune)`, `Bash(git remote)`, `Bash(git remote -v)`, `Bash(git rev-list *)`, `Bash(date +%F)` |
-| plugin-files | hq | `research` | `Read(~/.claude/plugins/cache/ceo-of-agents/**)`, `Bash(sh *check-boot-set.sh*)` |
+| sync-hq | hq | `research` | `Bash(git pull)`, `Bash(git pull --ff-only)`, `Bash(git fetch)`, `Bash(git fetch origin)`, `Bash(git fetch --prune)`, `Bash(git remote)`, `Bash(git remote -v)`, `Bash(git rev-list --count HEAD)`, `Bash(date +%F)` |
+| plugin-files | hq | `research` | `Read(~/.claude/plugins/cache/ceo-of-agents/**)` |
 | edit-hq | hq | `hq-write` | `Edit(/**)` |
 | commit-hq | hq | `hq-commit` | `Bash(git add *)`, `Bash(git commit *)` |
 | issues | repo | `issues-and-labels` | `Bash(gh issue create -R <slug> *)`, `Bash(gh issue edit -R <slug> *)`, `Bash(gh issue close -R <slug> *)`, `Bash(gh issue reopen -R <slug> *)`, `Bash(gh label create -R <slug> *)`, `Bash(gh label edit -R <slug> *)` |
@@ -61,13 +64,20 @@ When a repo group's tier is not free, its rules are written once without the rep
 
 Why each group is where it is:
 
-- **read-github, sync-hq, plugin-files.** Reading is `research`. Reads on GitHub are free on every repo, protected ones included, so they carry no repo. `git pull` and `git fetch` are listed only in their plain forms: options such as `--upload-pack` can run a program. `Read(~/.claude/plugins/cache/ceo-of-agents/**)` lets the chief of staff read the plugin's schemas and migrations, which live outside the hq; reads elsewhere outside the hq still ask. `Bash(sh *check-boot-set.sh*)` runs the plugin's boot-set check. Web search and fetch get no rule: they reach outside the org and keep Claude Code's prompt.
+- **read-github, sync-hq, plugin-files.** Reading is `research`. Reads on GitHub are free on every repo, protected ones included, so they carry no repo. `git pull` and `git fetch` are listed only in their plain forms: options such as `--upload-pack` can run a program. `git rev-list` is listed only as `--count HEAD`, the form the session start runs: its `--output` option writes a file. `Read(~/.claude/plugins/cache/ceo-of-agents/**)` lets the chief of staff read the plugin's schemas and migrations, which live outside the hq; reads elsewhere outside the hq still ask. The plugin's boot-set check (`sh "${CLAUDE_PLUGIN_ROOT}/scripts/check-boot-set.sh"`) gets no rule, so Claude Code asks before it runs: an exact rule would have to name the plugin's install path, which differs per computer and changes with every version, and a rule with a wildcard would let any `sh` command through. Web search and fetch get no rule: they reach outside the org and keep Claude Code's prompt.
 - **edit-hq.** `hq-write` is editing files in the hq's working tree; `Edit(/**)` covers exactly the hq folder (Claude Code still asks for `.claude/`).
 - **commit-hq.** A commit is `hq-commit`. In the default table it is notice, so it gets no rule: Claude Code asks, and the CEO may allow it on this computer. The skills that commit also allow `git add` and `git commit` while they run.
 - **issues, comments, pull-requests, tracker.** Free tracking writes, scoped to one registered repo through `-R <slug>` right after the subcommand (`gh issue comment -R acme/app 12 --body "..."`). A command without `-R`, or with a repo that is not registered, gets no rule and asks. Issue and label deletes are in `delete`. Setting a Project field (`gh project item-edit`) names the project by an id the setup cannot know, so it keeps its prompt.
 - **push.** One rule cannot tell a work branch from a branch that deploys, or from the hq's main branch, so `git push` takes the strictest of the three actions.
 - **merge, release, settings, secrets, delete.** One action each; in the default table all are `ok`.
 - **github-api.** `gh api` can read or change anything on GitHub, and its method can be set anywhere in the command, so it takes the strictest action it can reach.
+
+## Retired rules
+
+Rules that an earlier version wrote and that are no longer in the tables. "Write the rules" removes them from `allow` and `ask` like any other rule of this file:
+
+- `Bash(sh *check-boot-set.sh*)` (0.15.0): the wildcard matched any `sh` command that names the script, so it allowed any shell command.
+- `Bash(git rev-list *)` (0.15.0): `git rev-list --output=<file>` writes a file anywhere. Replaced by `Bash(git rev-list --count HEAD)`.
 
 ## Examples
 
@@ -90,9 +100,9 @@ The exact lists for both examples are checked by `scripts/ci/check_permissions.p
 Merge into `.claude/settings.json`, never replace it:
 
 1. Read `gates:`, `repos:`, `tracker:` and `accounts.forbidden_connectors` from `org.yaml`, and compute the three lists from the tables above, in table order, groups first, then repos in the order of `repos:`.
-2. If `.claude/settings.json` does not exist, write `{ "permissions": { "allow": [...], "ask": [...], "deny": [...] } }`, leaving out an empty list. If it exists, keep every key (`enabledPlugins`, `attribution`, `permissions.defaultMode`, `permissions.additionalDirectories` and any other) and every rule that is not a rule of this file. A rule of this file is any rule in the tables above, with any slug, owner or number in place of `<slug>`, `<owner>` and `<number>`, in `allow` or `ask`.
+2. If `.claude/settings.json` does not exist, write `{ "permissions": { "allow": [...], "ask": [...], "deny": [...] } }`, leaving out an empty list. If it exists, keep every key (`enabledPlugins`, `attribution`, `permissions.defaultMode`, `permissions.additionalDirectories` and any other) and every rule that is not a rule of this file. A rule of this file is any rule in the tables above, with any slug, owner or number in place of `<slug>`, `<owner>` and `<number>`, or a rule of "Retired rules", in `allow` or `ask`.
 3. In `allow` and `ask`, remove each rule of this file that the new lists do not hold, then append each rule of the new lists that is missing, so each appears once. In `deny`, only add: a forbidden connector removed from `org.yaml` loses its deny rule by hand, through the decision that removes it.
-4. Check: the file parses as JSON; every key it had before is still there; `permissions.allow` holds `Skill(ceo-of-agents:*)` once; no rule of an `ok` group is in `allow`; no rule is both in `allow` and in `ask`.
+4. Check: the file parses as JSON; every key it had before is still there; `permissions.allow` holds `Skill(ceo-of-agents:*)` once; no rule of an `ok` group is in `allow`; no rule is both in `allow` and in `ask`; no retired rule is left.
 
 `.claude/settings.local.json` (per computer, not tracked) is never written. Read it, and the `allow` list of `.claude/settings.json`, for allow rules that a new `ask` rule overrides (the same command, for example a local `Bash(gh pr merge *)` when `merge` is `ok`), and tell the CEO in one plain line per rule that the command will ask again; the CEO who wants it free changes the gate, through a decision.
 

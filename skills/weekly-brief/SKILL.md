@@ -2,7 +2,7 @@
 name: weekly-brief
 description: On-demand weekly brief for one org hq. Reads state, decision queue, recent decisions, inbox, metrics, initiatives and (read-only) the tracker, issues and PRs of registered product repos, runs a hygiene check (files over budget, old documents, long-open pending items, idle initiatives, contradictions, stale claims, orphans, missing links), writes company/briefs/YYYY-MM-DD-weekly.md with headline, changes, numbers with sources, risks, hygiene with a proposed archive list, what waits on the CEO and a proposed next week, and gives a short chat summary. Archives only what the CEO approves. Use only when the CEO asks for a briefing or weekly update; it never runs on a schedule.
 user-invocable: false
-allowed-tools: Read Write Edit Grep Glob Bash(git remote:*) Bash(git pull:*) Bash(git log:*) Bash(git status:*) Bash(git diff:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(git -C * rev-list *) Bash(mkdir:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(sh *check-boot-set.sh*) Bash(gh project item-list:*) Bash(gh issue list:*) Bash(gh pr list:*)
+allowed-tools: Read Write Edit Grep Glob Bash(git remote:*) Bash(git pull:*) Bash(git log:*) Bash(git status:*) Bash(git diff:*) Bash(git add:*) Bash(git commit:*) Bash(git mv:*) Bash(git -C * rev-list *) Bash(mkdir:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(gh project item-list:*) Bash(gh issue list:*) Bash(gh pr list:*)
 ---
 
 # weekly-brief
