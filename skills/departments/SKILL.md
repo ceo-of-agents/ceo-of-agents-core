@@ -13,6 +13,8 @@ Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is clo
 
 Only the chief of staff (CoS) runs this skill. A department never changes its own charter, agent file or tools.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Prepare the card
 
 1. Frame the change in one line: a new department, a change to one (scope, exclusions, tools, model, name), a removal, or a new tool or connector for one.

@@ -33,7 +33,8 @@ TIERS = ("opus", "sonnet", "haiku")
 GATE_TIERS = ("free", "notice", "ok")
 NEVER_MOVE = ("file-or-sign", "make-payment")
 # Bash and Agent(worker) are fixed (non-advisory departments have them, advisory ones never
-# gain them): they stay in the lists only to give a clear error.
+# gain them): they stay in the lists for older answers files (ignored with a warning on a
+# non-advisory entry, an error on an advisory one).
 FIXED_ABILITIES = ("Bash", "Agent(worker)")
 ABILITIES_ADD = ("Bash", "Agent(worker)", "WebSearch", "WebFetch")
 ABILITIES_DROP = ("Bash", "Agent", "WebSearch", "WebFetch")
@@ -122,11 +123,15 @@ class Checker:
         self.doc = doc
         self.label = label
         self.errors = []
+        self.warnings = []
         self.gates = gate_tiers()
         self.catalog = catalog_entries()
 
     def err(self, path, message):
         self.errors.append(f"{self.label}: {path}: {message}" if path else f"{self.label}: {message}")
+
+    def warn(self, path, message):
+        self.warnings.append(f"{self.label}: {path}: {message}" if path else f"{self.label}: {message}")
 
     def mapping(self, value, path, required=(), optional=()):
         """Return the mapping, or None after reporting a wrong type. Reports missing and unknown keys."""
@@ -174,6 +179,7 @@ class Checker:
         check(value, path)
 
     def run(self):
+        """Return the errors; the warnings are in self.warnings."""
         doc = self.mapping(self.doc, "", required=ALWAYS_REQUIRED, optional=[k for k in TOP_KEYS if k not in ALWAYS_REQUIRED])
         if doc is None:
             return self.errors
@@ -349,8 +355,10 @@ class Checker:
                 if dept_id in ADVISORY:
                     self.err(p, f"`{dept_id}` is advisory and never gains {ability}")
                 else:
-                    self.err(p, f"`{ability}` is already there: Bash and Agent(worker) are fixed for non-advisory departments")
-            elif has[ability] or ability in added:
+                    # Deprecated, kept for older answers files: ignored, so it counts for nothing below.
+                    self.warn(p, f"`{ability}` is fixed for non-advisory departments since this version: the add is ignored")
+                continue
+            if has[ability] or ability in added:
                 self.err(p, f"`{ability}` is already there (in the catalog entry or added twice)")
             added.append(ability)
         dropped = []
@@ -364,8 +372,12 @@ class Checker:
                 if ability not in ABILITIES_DROP:
                     self.err(p, f"must be one of {', '.join(ABILITIES_DROP)}")
                 elif ability in ("Bash", "Agent"):
-                    self.err(p, f"`{ability}` cannot be dropped: Bash and Agent(reader, worker) are fixed for non-advisory departments (they are the only way to write files)"
-                             if dept_id not in ADVISORY else f"`{dept_id}` is advisory and has no {ability} to drop")
+                    if dept_id in ADVISORY:
+                        self.err(p, f"`{dept_id}` is advisory and has no {ability} to drop")
+                    else:
+                        # Deprecated, kept for older answers files: ignored, so it counts for nothing below.
+                        self.warn(p, f"`{ability}` is fixed for non-advisory departments since this version: the drop is ignored")
+                    continue
                 elif not has[ability]:
                     self.err(p, f"`{dept_id}` has no {ability} to drop")
                 elif ability in dropped:
@@ -390,7 +402,8 @@ class Checker:
         if "exclusions" in m:
             self.item_owner_list(m["exclusions"], f"{path}.exclusions")
         if "commands" in m:
-            # Deprecated: accepted and ignored, but a malformed one still errors.
+            # Deprecated: accepted and ignored (with a warning), but a malformed one still errors.
+            self.warn(f"{path}.commands", "deprecated and ignored: every non-advisory department has limited Bash and Agent(reader, worker)")
             cm = self.mapping(m["commands"], f"{path}.commands", required=("needed",), optional=("reason",))
             if cm:
                 if not isinstance(cm.get("needed"), bool):
@@ -703,8 +716,10 @@ def check_file(path, label):
     try:
         doc = load(path)
     except (OSError, yaml.YAMLError) as exc:
-        return [f"{label}: does not parse: {str(exc).splitlines()[0] if str(exc) else exc}"]
-    return Checker(doc, label).run()
+        return [f"{label}: does not parse: {str(exc).splitlines()[0] if str(exc) else exc}"], []
+    checker = Checker(doc, label)
+    errors = checker.run()
+    return errors, checker.warnings
 
 
 def coverage(docs, samples_dir):
@@ -761,16 +776,23 @@ def main():
     parser.add_argument("--file", help="check this one answers file only")
     args = parser.parse_args()
     errors = []
+    warnings = []
     if args.file:
-        errors += check_file(Path(args.file), args.file)
+        found, warned = check_file(Path(args.file), args.file)
+        errors += found
+        warnings += warned
         count = 1
     else:
-        errors += check_file(SCHEMA_FILE, "schemas/setup-answers.yaml (example)")
+        found, warned = check_file(SCHEMA_FILE, "schemas/setup-answers.yaml (example)")
+        errors += found
+        warnings += warned
         docs = {}
         paths = sorted(SAMPLES.glob("*.yaml")) if SAMPLES.is_dir() else []
         for path in paths:
             label = f"examples/setup-answers/{path.name}"
-            errors += check_file(path, label)
+            found, warned = check_file(path, label)
+            errors += found
+            warnings += warned
             try:
                 docs[path.name] = load(path)
             except (OSError, yaml.YAMLError):
@@ -779,7 +801,10 @@ def main():
         count = 1 + len(paths)
     for error in errors:
         print(f"error: {error}")
-    print(f"{count} answers file(s) checked; {len(errors)} errors")
+    for warning in warnings:
+        print(f"warning: {warning}")
+    plural = "" if len(warnings) == 1 else "s"
+    print(f"{count} answers file(s) checked; {len(errors)} errors; {len(warnings)} warning{plural}")
     return 1 if errors else 0
 
 

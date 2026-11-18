@@ -13,6 +13,8 @@ Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is clo
 
 On demand only: no scheduled automation. Never invent numbers; every number carries a source and a date, and unknowns are written as unknown.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Steps
 
 1. Sync. Run `git remote`. If it prints nothing, skip pull and push and say once: "No remote: pull and push skipped". Otherwise run `git pull`; if it fails, say so in one line and continue with the local copy. Skip this step if the session already synced hq. Read `org.yaml`, `company/vision.md` and `company/strategy.md` (if present), `company/state.md`, `company/decision-queue.md`, `inbox/` (list and read the notes; do not process or delete them, that is the `intake` skill), `metrics/README.md`, `initiatives/README.md` (if present), `company/todo.md` (if present; `${CLAUDE_PLUGIN_ROOT}/schemas/todo.md`), and the latest file in `company/briefs/` if any.

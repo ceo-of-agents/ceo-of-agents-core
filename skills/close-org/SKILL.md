@@ -17,6 +17,8 @@ Never delete, move or archive a file as part of closing or reopening. Git histor
 
 The two record titles are fixed, so the session start can find them: `Close the org` and `Reopen the org`.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Hard rule
 
 Never close on a guess. The CEO's explicit confirmation of the list in step 2 is required, in this conversation. A question about closing, a draft or silence is not a confirmation. Nothing is preselected: every open item gets the CEO's own answer.

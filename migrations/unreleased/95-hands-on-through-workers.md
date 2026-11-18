@@ -6,7 +6,7 @@ Advisory departments (legal, finance, tax, and in a personal hq health, money, p
 
 No schema version changes: `org.yaml` stays `org/5` and `company/state.md` stays `state/1`. No `org.yaml` key changes; `framework_version` is bumped by the release migration, not by this note.
 
-Apply the sections below in order, all in one commit. In the hq the template placeholders are already rendered, so each edit names a fragment without placeholders; where a fragment needs a rendered value, it says how to match it. Where a fragment is not found exactly (the CEO edited that part), do not guess: show the CEO the current text and the intended result, and ask.
+Apply the sections below in order, all in one commit. In the hq the template placeholders are already rendered, so each edit names a fragment without placeholders; where a fragment needs a rendered value, it says how to match it. Where a fragment is not found exactly (the CEO edited that part), do not guess: show the CEO the current text and the intended result, and ask. If an edit's new text is already present (the hq was partly migrated before, or this is a second run), skip that edit silently, without asking: ask only when neither the old nor the new text is found.
 
 ## What this changes (show the CEO before applying)
 
@@ -272,8 +272,8 @@ Both files are needed now: every non-advisory department spawns `worker` for its
 ## 6. Plugin-only changes (no hq edit)
 
 - The setup wizard and the `departments` skill no longer ask whether a custom department runs commands: a custom department always gets `Read, Grep, Glob, Bash, Agent(reader, worker)`.
-- `commands` in a setup answers file (`schemas/setup-answers.yaml`) is deprecated: it is accepted and ignored (when present its shape is still checked).
-- On a catalog department, only `WebSearch` and `WebFetch` can be added or dropped; `Bash` and `Agent(reader, worker)` are fixed for non-advisory departments, and an advisory one never gains them.
+- `commands` in a setup answers file (`schemas/setup-answers.yaml`) is deprecated: it is accepted and ignored with a warning (when present its shape is still checked).
+- On a catalog department, only `WebSearch` and `WebFetch` can be added or dropped; `Bash` and `Agent(reader, worker)` are fixed for non-advisory departments, and an advisory one never gains them. An older answers file that adds `Bash` or `Agent(worker)`, or drops `Bash` or `Agent`, on a non-advisory entry still works: the entry is ignored with a warning (an error on an advisory entry).
 - `docs/design.md`, `catalog/README.md` and the example answers files are updated.
 
 ## Summary for the CEO

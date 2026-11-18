@@ -76,12 +76,15 @@
 #         never               things it must never do: {item, owner}; owner does them instead
 #         abilities_add       {ability, reason}: ability is WebSearch | WebFetch, reason is one
 #                             line (the reason for the grant). Bash and Agent(worker) are fixed:
-#                             every non-advisory entry already has them (so adding is an error)
-#                             and an advisory entry (legal, finance, tax, health, money,
-#                             paperwork) never gains them; a catalog ability cannot be added
-#                             twice
+#                             every non-advisory entry already has them, so adding them is
+#                             deprecated (accepted and ignored with a warning, so older answers
+#                             files keep working); an advisory entry (legal, finance, tax,
+#                             health, money, paperwork) never gains them (an error); a catalog
+#                             ability cannot be added twice
 #         abilities_drop      WebSearch | WebFetch, only what the catalog entry has. Bash and
-#                             Agent are fixed for non-advisory entries and cannot be dropped
+#                             Agent are fixed for non-advisory entries: dropping them is
+#                             deprecated (accepted and ignored with a warning); an advisory
+#                             entry has neither to drop (an error)
 #     from: custom          a department from scratch (way 3). Keys, all required:
 #       id                    kebab-case: ^[a-z0-9]+(-[a-z0-9]+)*$
 #       role                  role name
@@ -90,10 +93,10 @@
 #       triggers              list: when the CoS routes work to it
 #       exclusions            list of {item, owner}: what it must not do or handle, and who does it
 #       core_job              one single-line sentence
-#       commands              optional and deprecated: accepted and ignored (every non-advisory
-#                             department has limited Bash and Agent(reader, worker) by
-#                             construction). If present it must still be {needed: true | false,
-#                             reason: <one line, required when needed>}
+#       commands              optional and deprecated: accepted and ignored with a warning (every
+#                             non-advisory department has limited Bash and Agent(reader, worker)
+#                             by construction). If present it must still be {needed: true |
+#                             false, reason: <one line, required when needed>}
 #     from: own             an agent or skill the CEO already has, used as it is (way 4). Keys,
 #                           all required:
 #       id                    kebab-case, as for custom; propose the replaced department's id
@@ -339,10 +342,12 @@ enable_plugin: true
 #   - services is no or absent. later appears only where marked [later].
 #   - Department ids are unique; catalog ids are known; health, money and paperwork appear
 #     only with purpose personal; every item has the keys of its way and no other.
-#   - Changes: only WebSearch and WebFetch can be added or dropped (Bash and Agent(worker) are
-#     fixed: never for an advisory entry, already there for the others); drops are in the
-#     catalog entry, adds are not.
-#   - A custom department's commands key is optional and ignored; if present its shape is checked.
+#   - Changes: only WebSearch and WebFetch can be added or dropped; drops are in the catalog
+#     entry, adds are not. Bash and Agent(worker) in abilities_add, and Bash and Agent in
+#     abilities_drop, are deprecated on a non-advisory entry (accepted and ignored with a
+#     warning: older answers files keep working) and are errors on an advisory entry.
+#   - A custom department's commands key is optional, deprecated and ignored with a warning; if
+#     present its shape is checked.
 #   - A brought-in department that replaces a catalog entry appears next to no copy of it.
 #   - names.departments has exactly one entry per department id; derived agent names match
 #     ^[a-z][a-z0-9-]*$ and are unique, differ from every department id, reader and worker.

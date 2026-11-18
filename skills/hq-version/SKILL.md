@@ -15,6 +15,8 @@ Only the chief of staff (CoS) runs this skill. A department agent never does.
 
 Why a skill: the installed plugin version and the migration notes live in the plugin folder. Only plugin skills reach that folder, through `${CLAUDE_PLUGIN_ROOT}`; a project `CLAUDE.md` cannot, and the install path differs per machine and per version.
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## Check
 
 Run at session start. It is read-only, except for one A item.

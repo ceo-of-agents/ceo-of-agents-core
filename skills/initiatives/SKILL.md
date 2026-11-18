@@ -15,6 +15,8 @@ Only the chief of staff (CoS) runs this skill. Departments write documents into 
 
 Formats: `${CLAUDE_PLUGIN_ROOT}/schemas/initiative.md` (the folder, `status.md`, the indexes, the line in `company/state.md`) and `${CLAUDE_PLUGIN_ROOT}/schemas/document.md` (document frontmatter, folder indexes, archiving).
 
+Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
+
 ## When to open one
 
 Open an initiative when a piece of work:
