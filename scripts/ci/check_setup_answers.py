@@ -48,7 +48,7 @@ SLUG_RE = re.compile(r"^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$")
 PIN_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
 PROJECT_RE = re.compile(r"^https://github\.com/(orgs|users)/[A-Za-z0-9-]+/projects/[0-9]+$")
 LATER_PATHS = {"names.ceo", "policy", "employer_rules", "remote.hq", "policies_repo.remote", "repos", "roadmap", "attribution"}
-TOP_KEYS = ("schema", "language", "org", "services", "ceo", "about", "departments", "names", "gates", "models",
+TOP_KEYS = ("schema", "language", "org", "services", "ceo", "about", "departments", "names", "gates", "destructive", "models",
             "policy", "employer_rules", "remote", "policies_repo", "repos", "issues_home", "roadmap",
             "attribution", "enable_plugin")
 ALWAYS_REQUIRED = ("schema", "language", "org", "ceo", "about", "departments", "names", "gates", "models",
@@ -185,6 +185,8 @@ class Checker:
         depts = self.check_departments(doc.get("departments"), purpose)
         self.check_names(doc.get("names"), depts)
         self.check_gates(doc.get("gates"))
+        if "destructive" in doc and doc["destructive"] not in ("deny", "ask"):
+            self.err("destructive", "must be deny or ask")
         self.check_models(doc.get("models"), depts)
         self.check_case_keys(doc, purpose, level)
         if not isinstance(doc.get("enable_plugin"), bool):

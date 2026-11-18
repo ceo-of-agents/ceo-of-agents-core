@@ -33,6 +33,7 @@ gates:                          # action ids from the framework gate table
   free: {{GATES_FREE}}
   notice: {{GATES_NOTICE}}
   ok: {{GATES_OK}}
+  destructive: {{GATES_DESTRUCTIVE}}   # deny | ask: destructive commands (force push, deletes, history rewrites) refused, or asked every time
 accounts:
   forbidden_connectors: []   # optional: connectors no agent of this org may use; added only through a decision
 # Product repos, read by charters, agents and skills (never copied). [] for none. Item shape:

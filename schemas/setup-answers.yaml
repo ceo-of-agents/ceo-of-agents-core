@@ -123,6 +123,9 @@
 #                           Every action id is one of gates/default.md. file-or-sign and
 #                           make-payment can never move. An action is listed once, and moves to
 #                           a tier different from its own
+#   destructive             optional: deny (default when absent) | ask. Whether destructive
+#                           commands (force push, deletes, history rewrites) are refused or
+#                           asked every time (gates/permissions.md, "Deny or ask")
 #   models.cos              opus | sonnet | haiku
 #   models.departments      opus | sonnet | haiku
 #   models.overrides        optional: mapping from a department id to a tier. Never for a
@@ -350,3 +353,4 @@ enable_plugin: true
 #     GitHub remote URL); a personal hq or a holding has no repos, issues_home or roadmap.
 #   - roadmap url matches the project address and has a status_field.
 #   - attribution is default, none, later, or has commit and pr.
+#   - destructive, when present, is deny or ask.
