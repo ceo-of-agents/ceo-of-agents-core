@@ -37,7 +37,7 @@ No scheduled automation and no hooks: everything runs when the CEO opens a sessi
 add a blank line and this paragraph:
 
 ```
-When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing until the CEO reopens it (`close-org` skill).
+When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing except reopening it, through the `close-org` skill, when the CEO asks.
 ```
 
 2. Section "What the CEO says and what you do". Right before the row that starts `| Anything else unclear |`, add this row:
@@ -87,6 +87,7 @@ with:
 - New hidden skill `close-org`: the close procedure (list, confirm, closing record, `org.status: closed`, commit with notice) and the reopen procedure (reopening record, `org.status: open`).
 - `session-start`: in a closed org the status opens with one line (closed since the date of the closing record, read-only, the CEO can say "reopen") and every step that writes or starts work is skipped. For a holding, step 7 now reads `org.purpose` and `org.status` of each company and marks a closed one.
 - `intake`: in a closed org it frames and routes no new work and leaves handoff notes unprocessed.
+- `record-decision`, `weekly-brief`, `initiatives`, `departments` and `product-repos`: in a closed org they say the org is closed and stop, writing nothing. `hq-version`: the check reports in one line and adds no A item, and Apply stops. Only the Reopen procedure of `close-org` writes in a closed org.
 - `portfolio-brief`: reads `org.purpose` and `org.status` (and no other key) of each company; a closed company gets a `closed` mark in its Organizations line and its pending items are left out.
 
 ## Summary line for the CEO

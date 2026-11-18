@@ -10,6 +10,8 @@ allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Ba
 
 Reply to the CEO in the chat language set in `org.yaml` (`language.chat`); write every file in the file language (`language.files`).
 
+Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is closed and read-only, and stop: this skill writes nothing. Only the Reopen procedure of the `close-org` skill writes in a closed org.
+
 Only the chief of staff (CoS) runs this skill. Record format: `${CLAUDE_PLUGIN_ROOT}/schemas/decision-record.md`; card format: `${CLAUDE_PLUGIN_ROOT}/schemas/decision-card.md`; state format: `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`.
 
 ## Hard rule

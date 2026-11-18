@@ -36,7 +36,7 @@ At the start of every session, use the `session-start` skill: it syncs the hq, r
 
 No scheduled automation and no hooks: everything runs when the CEO opens a session.
 
-When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing until the CEO reopens it (`close-org` skill).
+When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing except reopening it, through the `close-org` skill, when the CEO asks.
 
 ## What the CEO says and what you do
 

@@ -9,6 +9,8 @@ allowed-tools: Read Write Edit Grep Glob Bash(git remote) Bash(git remote -v) Ba
 
 Reply to the CEO in the chat language set in `org.yaml` (`language.chat`); write the brief in the file language (`language.files`).
 
+Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is closed and read-only, and stop: this skill writes nothing. Only the Reopen procedure of the `close-org` skill writes in a closed org.
+
 On demand only: no scheduled automation. Never invent numbers; every number carries a source and a date, and unknowns are written as unknown.
 
 ## Steps

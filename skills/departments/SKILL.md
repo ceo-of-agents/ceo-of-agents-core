@@ -9,6 +9,8 @@ allowed-tools: Read Grep Glob Edit Write Bash(git status:*) Bash(git ls-files:*)
 
 Reply to the CEO in the chat language set in `org.yaml` (`language.chat`); write every file in the file language (`language.files`).
 
+Closed org: when `org.status` in `org.yaml` is `closed`, say that the org is closed and read-only, and stop: this skill writes nothing. Only the Reopen procedure of the `close-org` skill writes in a closed org.
+
 Only the chief of staff (CoS) runs this skill. A department never changes its own charter, agent file or tools.
 
 ## Prepare the card
