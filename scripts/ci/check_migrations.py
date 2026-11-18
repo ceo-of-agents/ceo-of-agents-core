@@ -10,6 +10,9 @@ Rules (see CONTRIBUTING.md, "Every version ships a migration"):
 - The version in .claude-plugin/plugin.json is listed, so it has a migration
   from the previous version.
 - Every migration file belongs to a listed version (no orphans).
+
+Notes in migrations/unreleased/ (one per pull request, folded into the next
+version's migration at release time) are listed, not checked.
 """
 import json
 import re
@@ -74,6 +77,10 @@ def main():
         pending = [v for v in listed if key(v) > key(plugin_version)]
         if pending:
             print(f"note: listed but not released yet: {', '.join(pending)}")
+
+    unreleased = sorted(path.name for path in (MIGRATIONS / "unreleased").glob("*.md")) if (MIGRATIONS / "unreleased").is_dir() else []
+    if unreleased:
+        print(f"note: unreleased migration notes, to fold into the next version's migration: {', '.join(unreleased)}")
 
     for error in errors:
         print(f"error: {error}")

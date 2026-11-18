@@ -8,6 +8,7 @@ org:
 ceo:
   role_id: {{CEO_ROLE_ID}}      # the CEO is a role, not a hard-coded person
   display_name: "{{CEO_DISPLAY_NAME}}"   # optional
+  profile: {{CEO_PROFILE}}   # technical | non-technical: how the chief of staff words things in chat
 cos:
   display_name: "{{COS_DISPLAY_NAME}}"   # role name or persona, the CEO's choice
 language:

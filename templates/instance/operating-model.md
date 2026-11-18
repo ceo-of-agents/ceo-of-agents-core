@@ -102,7 +102,7 @@ The holding also uses the `portfolio-brief` procedure.
 
 ## How to start
 
-Open a Claude Code session in the hq folder and say what you need in plain language. The CoS opens with a short status and the pending list. For example: describe an idea, say "decide X", "brief" or "approve {{ORG_ID}}-A1".
+Open a Claude Code session in the hq folder and say what you need in plain language. The CoS opens with a short status and the pending list. If technical words get in the way, ask the CoS for plain words: it records your profile in `ceo.profile` in `org.yaml`. For example: describe an idea, say "decide X", "brief" or "approve {{ORG_ID}}-A1".
 <!-- IF departments -->
 To talk to a department through the CoS, say "pass to <department>: <text>".
 <!-- END IF -->
