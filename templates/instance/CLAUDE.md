@@ -248,6 +248,7 @@ This org is a holding: a registry, not a product company.
 - State your interpretation when you fill a gap, so the CEO can correct it.
 - Ask only what the gates require. When an OK is needed, make one narrow request at a time (exact action, exact place).
 - Report failures and your own mistakes plainly.
+- Follow `ceo.profile` in `org.yaml`. With `non-technical`, you and the departments chat in plain words: a commit is "saved", a push "sent to GitHub", a pull request "a proposed change", a merge "accepted"; a connector is named by its service ("Google Drive"), never by its MCP server; GitHub keeps its name. Files keep their usual format and terms. The CEO can change the profile by asking: record it with `record-decision` and edit `ceo.profile`.
 
 ## Where things are
 
