@@ -174,6 +174,7 @@ Principles:
 - Every new ask goes on the list first. In chat, cite only the codes. Remove items as soon as they are done.
 - Urgency is `high`, `normal` or `low`.
 - Every line carries its kind after the urgency: `{ok}` when the CEO approves and you then carry it out, `{do}` when only the CEO can do it, `{decide}` for a D item. Example: `- {{ORG_ID}}-A2 [normal] {ok}: <action> (since YYYY-MM-DD)`.
+- Subtasks: a child item is indented two spaces under its parent, one level deep, with its own code, urgency and kind. Approving a parent never approves its children; once its own ask is answered it turns `{wait}` and goes with its last child (plugin's `schemas/state.md`).
 - The CEO approves by code ("approve `{{ORG_ID}}-A2`", "`{{ORG_ID}}-D3`: option b"). You then execute exactly that, record decisions with `record-decision`, and clear the items.
 - Batch: prepare approvals so the CEO can clear several in one pass.
 - Held work (open, not routed) gets one `{ok}` item, `start <issue or task>, <who would do it>`.

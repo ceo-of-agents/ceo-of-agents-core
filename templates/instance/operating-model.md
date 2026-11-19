@@ -68,6 +68,8 @@ An org can end. When the CEO asks, the CoS lists what is still open, asks for co
 
 Open work the CoS holds instead of routing it (not started, not assigned) is on the list too, as one `{ok}` item `start <issue or task>, <who would do it>`: your OK starts it. Work already routed and running is not listed.
 
+An item can have child items, indented under it one level deep: the asks it is made of, or the follow-ups a decision opens. Each child keeps its own code and you answer it by that code; approving a parent never approves its children. A parent stays until its children are done; when its own part is answered first, it shows `{wait}`. Your todo list can nest tasks the same way.
+
 Tasks you own yourself (reply to someone, follow up on a review) can go on an optional todo list, `company/todo.md`, as `{{ORG_ID}}-T<n>` items. Ask the CoS to track one and it creates the file; say "`{{ORG_ID}}-T3` done" when you finish. They stay out of the pending list, so `company/state.md` holds only what the org needs from you.
 
 ## What lives where

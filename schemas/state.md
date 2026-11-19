@@ -61,8 +61,32 @@ The kind, in braces right after the urgency, tells a reader (or a script, or a f
 | `ok` | A | An approval: the CoS (or a department) carries out the action once the CEO says yes | "approve ACME-A2" |
 | `do` | A | A task only the CEO can perform (a click in a console, a signature, a command on their computer, an answer only they have) | "ACME-A4 done" |
 | `decide` | D | A decision card in `company/decision-queue.md` | "ACME-D3: option b" |
+| `wait` | A or D | A parent whose own ask is answered, or that only groups its children: nothing on this line needs the CEO | nothing; the line goes with its last child |
 
-Every line has exactly one kind. An A item is `ok` or `do`; a D item is always `decide`.
+Every line has exactly one kind. An A item is `ok` or `do`; a D item is `decide`; `wait` is only for a parent line, A or D, with at least one child (see "Parent and child items").
+
+## Parent and child items
+
+One piece of work often breaks down into several asks, and one decision can open follow-ups. A top-level item can have child items, one level deep, so the list shows what belongs together and what blocks what.
+
+```markdown
+- ACME-A7 [high] {ok}: launch the beta once the items below are done (since 2026-01-12)
+  - ACME-A8 [normal] {ok}: approve the store copy in docs/beta-copy.md (since 2026-01-12)
+  - ACME-D5 [normal] {decide}: decide the beta price, see decision queue (since 2026-01-13)
+- ACME-D3 [normal] {wait}: pricing model decided (decision 0012); follow-ups below (since 2026-01-10)
+  - ACME-A9 [low] {do}: update the price in the store console, Pricing > Edit (since 2026-01-15)
+```
+
+- A child line is indented by exactly two spaces and sits right under its parent or a sibling. It has the full line format (own code, urgency, kind, since date). No grandchildren: a child is never a parent.
+- Any top-level A or D item can be a parent; children can be A or D items. A D parent is the usual way to group the follow-ups a decision opens.
+- Every item is answered by its own code. Approving a parent never approves its children, and approving a child never approves its parent: gates stay per action.
+- Children block their parent: the CoS carries out a parent's approved action only once all its children are done or dropped.
+- Clearing a child removes only its line. When a parent's own ask is answered while children are still open, the parent line stays as the group's head: its kind becomes `{wait}` and its text says what was answered and when (for example `launch the beta: approved 2026-01-14, runs when the items below are done`). A decided D parent keeps its line the same way, with the decision record number, while it has open children; its card has left the decision queue and "Open decisions".
+- A parent goes when its own ask is answered and its last child is gone: the CoS then carries out an approved parent action (citing the OK) and removes the line. A parent whose own ask is still open stays as an ordinary item once its children are gone.
+- A new ask that belongs to an open item goes under it as a child. An existing item can move under a parent: it keeps its code and since date.
+- Counting: a summary counts every line that asks something (kind `ok`, `do` or `decide`), children included; a `{wait}` line is a group, not an ask (for example "6 items, 2 groups"). When listing codes, each child comes after its parent: `ACME-A7 (ACME-A8, ACME-D5)`.
+- `wait` is valid for an A or a D code, only on a top-level line that has at least one child.
+- "Open decisions" stays flat (never indented).
 
 ## Codes
 
@@ -117,9 +141,11 @@ next_decision: 4
 - The five H2 headings exist, spelled exactly, in the stated order, with no extra H2.
 - No section is empty: use `- none`.
 - Every code starts with `<org_id>-A` or `<org_id>-D` followed by an integer; no code is below the `next_*` counters' history (all issued numbers are less than `next_action` / `next_decision`).
-- Every line in Waiting on the CEO has a kind: `{ok}` or `{do}` for an A code, `{decide}` for a D code (`scripts/check-boot-set.sh` in the plugin reports the lines that do not).
+- Every line in Waiting on the CEO has a kind: `{ok}` or `{do}` for an A code, `{decide}` for a D code, `{wait}` for a parent of either code (`scripts/check-boot-set.sh` in the plugin reports the lines that do not).
+- Child lines are indented by exactly two spaces, follow a top-level item, never carry `{wait}` and have no children of their own; every `{wait}` line has at least one child (`scripts/check-boot-set.sh` in the plugin reports the lines that do not).
 - No code appears twice within a section; no code is ever reused for a different item.
-- Every open card in decision-queue.md has one line in Open decisions and one D line in Waiting on the CEO; every D line points to a card.
+- Every open card in decision-queue.md has one line in Open decisions and one D line in Waiting on the CEO; every D line points to a card, except a `{wait}` D line, which names its decision record instead.
+- "Open decisions" lines are never indented.
 - Every Key numbers line has a source and date, or says `unknown (no source yet)`.
 - Every dated item uses `YYYY-MM-DD`.
 - No sensitive tax, personal legal or personal finance detail appears.

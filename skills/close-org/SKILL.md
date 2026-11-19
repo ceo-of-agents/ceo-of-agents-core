@@ -28,7 +28,7 @@ Never close on a guess. The CEO's explicit confirmation of the list in step 2 is
 When the CEO asks to close the org (and `org.status` is not already `closed`):
 
 1. **List what is still open**, from the hq only, one line each, after syncing (`git remote`: if it prints nothing, skip the pull and say once "No remote: pull and push skipped"; otherwise `git pull`, and continue with the local copy if it fails). Read `org.yaml`, `company/state.md`, `company/decision-queue.md`, `initiatives/README.md` (if present) and the `status.md` of each initiative that is not `done` or `dropped`, and `ls inbox/`:
-   - pending items: each line of "Waiting on the CEO", by code;
+   - pending items: each line of "Waiting on the CEO", by code, children under their parent;
    - open decision cards in `company/decision-queue.md`, by code;
    - initiatives not closed (`active` or `paused`), by slug;
    - notes in `inbox/` other than `README.md`, by file name (unprocessed handoffs).
