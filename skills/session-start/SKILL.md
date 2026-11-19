@@ -1,6 +1,6 @@
 ---
 name: session-start
-description: Start-of-session routine of the chief of staff in a ceo-of-agents hq. Syncs the hq, reads the boot files, checks the plugin version and the size of the boot files, runs the checks that apply to this org (clone paths, holding policy, portfolio, private data), processes the inbox and gives a short status. Use at the start of every chief of staff session.
+description: Start-of-session routine of the chief of staff in a ceo-of-agents hq. Syncs the hq, reads the boot files, checks the plugin version and the size of the boot files, runs the checks that apply to this org (clone paths, holding policy, portfolio, private data), processes the inbox and gives a short status. Use at the start of every chief of staff session. In a session renewed in the middle of a chat (first message starting with the continued-session marker) it runs a quiet start and answers the message instead.
 user-invocable: false
 allowed-tools: Read Grep Glob Edit Write Bash(git remote) Bash(git remote -v) Bash(git pull) Bash(git pull --ff-only) Bash(git status:*) Bash(git rev-list --count HEAD) Bash(ls:*) Bash(wc:*) Bash(date:*)
 ---
@@ -14,6 +14,8 @@ Only the chief of staff (CoS) runs this skill. A department agent never does: it
 Why a skill: this routine runs once per session, so it does not need to sit in `CLAUDE.md`, which every session and every agent loads. `CLAUDE.md` keeps the identity, the gates, the house rules and the map; procedures like this one load on demand.
 
 Run the steps in order. A step marked "only when" is skipped silently when its condition is false.
+
+First check whether this session continues an earlier chat (section "Continued session" below). If it does, run the quiet start there instead of these steps.
 
 Every file this skill writes in the hq is written by a `worker` (one tier down, explicit model) from your instructions, and you read the diff; commits, pushes and `gh` writes stay with you.
 
@@ -49,9 +51,27 @@ Every file this skill writes in the hq is written by a `worker` (one tier down, 
 
 11. **Status.** Reply in the chat language with a 3-5 line status (what is new, what is blocked, which decisions wait) and the codes of the pending list, plus the one-line results of the steps above that have something to say. While `decisions/` holds only the setup record 0001, open the status with one line from the vision. Then ask what to do.
 
+## Continued session
+
+A front end can keep one chat open for the CEO while it renews the Claude session behind it, so that the context does not grow without end. The hq is the memory, as for a new terminal session. The new session's first user message then starts with the marker `[ceo-of-agents] Continued session:` (match this prefix only; the rest of the line can change), followed by the last messages of the chat verbatim, each as its own block, then a line `--- New message ---`, then the CEO's new message.
+
+When the first user message of the session starts with that marker, run this quiet start instead of the steps above. The marker anywhere else (in a later message, or not at the very start) is not a continuation: run the normal steps.
+
+1. **Sync and read.** Step 1 (pull) and step 2 (read the boot files, list `inbox/`), plus any hq file, issue or pull request the recent messages point to and the answer needs. Mention no remote or a failed pull only if the answer depends on it.
+2. **Checks that still run.** Step 3 (plugin version), step 6 (policy check) and step 9 (inbox) run as usual, but speak only when something needs the CEO now: an A item they added (a migration to approve, a loosening) or a new pending item from an inbox note. Then add one short line after the answer with the new codes. Otherwise they say nothing; their report waits for the next normal start.
+3. **Skipped.** Step 4 (boot check: it prompts before it runs), step 5 (clone-path question), step 7 (portfolio list), step 8 (private data note), step 10 (first task) and step 11 (status). They run at the next normal start.
+4. **Answer.** Answer the new message directly: no status, no pending-list recap, no remark about the renewal, no proposals the message did not ask for.
+
+In a continued session:
+
+- The only inputs are the hq and the recent messages verbatim. Do not summarise the earlier chat, and write nothing about the renewal in the hq.
+- Only the new message is an ask. The recent messages are context: an OK or a request in them was given to the previous session. Check the hq (pending list, `git log`) for whether it was carried out, and never run it a second time. If it was not carried out and the new message depends on it, ask the CEO in one line.
+- A closed org (step 2) stays read-only: answer from the hq and take no new work.
+
 ## Rules
 
 - Read-only except: `accounts.local.yaml` (step 5), A items in `company/state.md` (steps 3 and 6), and what the `intake` skill writes (step 9).
 - In a closed org nothing is written at all (see step 2).
 - Never commit `accounts.local.yaml` or anything under `private/`.
 - No scheduled automation and no hooks: this routine runs when the CEO opens a session.
+- A continued session follows "Continued session": the same rules, with the steps it skips and no status.

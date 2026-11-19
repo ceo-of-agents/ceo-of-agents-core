@@ -112,3 +112,5 @@ Open a Claude Code session in the hq folder and say what you need in plain langu
 <!-- IF departments -->
 To talk to a department through the CoS, say "pass to <department>: <text>".
 <!-- END IF -->
+
+A front end that keeps one chat open while it renews the session behind it starts the new session with a first line that begins with `[ceo-of-agents] Continued session:`, then the last messages verbatim and, after a line `--- New message ---`, your new message. The CoS then reads the hq without a recap and answers that message; the full status comes at your next normal start.
