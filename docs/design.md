@@ -42,7 +42,7 @@ The pattern was proven in one running instance (the reference instance, the auth
 | Decision card | A pending question: context, options, recommendation, and who proposes it (or "needs analysis by <department>") |
 | Decision record | A numbered, immutable file in `decisions/` recording an answered card |
 | Approval gate | A rule saying which actions are free, need notice, or need the CEO's explicit OK |
-| CEO pending list | The one list of what waits on the CEO: actions (`A`) and decisions (`D`), with codes and a kind (`{ok}` approve, `{do}` the CEO does it, `{decide}` a card) that a script or a front-end can read. Lives in `company/state.md` under "Waiting on the CEO". Tasks the CEO owns personally (`T` codes) live apart, in the optional `company/todo.md` |
+| CEO pending list | The one list of what waits on the CEO: actions (`A`) and decisions (`D`), with codes and a kind (`{ok}` approve, `{do}` the CEO does it, `{decide}` a card) that a script or a front-end can read. Lives in `company/state.md` under "Waiting on the CEO". Tasks the CEO owns personally (`T` codes) live apart, in the optional `company/todo.md`. Items can have one level of child items (indented, each with its own code and kind); a parent whose own ask is answered shows `{wait}` until its children are done. |
 
 ## 4. Framework vs instance
 

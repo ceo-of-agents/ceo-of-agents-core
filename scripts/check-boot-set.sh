@@ -5,10 +5,15 @@
 #
 # Prints the size of each boot file against its budget, the lines of
 # company/state.md longer than 300 characters, and the lines of the section
-# "Waiting on the CEO" that do not follow the line format of schemas/state.md,
+# "Waiting on the CEO" that do not follow the line format of schemas/state.md
+# (a child line is "  - ", two spaces, under a top-level item; the group
+# "pending lines nested wrongly" counts an orphan child, a grandchild or bad
+# indent, {wait} on a child, and a {wait} line with no child),
 # and, only when the optional company/todo.md exists (not part of the boot
-# set), its item lines that do not follow schemas/todo.md. The last line is "verdict: ok" or "verdict: N issue(s)". Changes nothing on
-# disk and exits 0, except exit 2 when the argument is not a directory.
+# set), its item lines that do not follow schemas/todo.md (children only in
+# Open, two spaces under a top-level item). The last line is "verdict: ok" or
+# "verdict: N issue(s)". Changes nothing on disk and exits 0, except exit 2
+# when the argument is not a directory.
 #
 # The budgets below must match the table in schemas/boot-set.md; the CI check
 # scripts/ci/check_boot_set.py keeps them in sync.
@@ -154,19 +159,51 @@ else
       count[g]++
       if (count[g] <= 3) quote[g, count[g]] = text
     }
+    # A top-level {wait} line needs at least one child before the next
+    # top-level line, the next heading or the end of the file.
+    function endwait() {
+      if (waitline != "" && !haschild) add("nested", waitline)
+      waitline = ""
+    }
+    # Checks one item line (a top-level line, or a child with its two spaces
+    # removed); ischild is 1 for a child.
+    function check(line, ischild) {
+      if (line ~ /^- [A-Za-z0-9]+-[AD][0-9]+ \[(high|normal|low)\] \{(ok|do|decide|wait)\}: ./) {
+        if (ischild && line ~ /^- [A-Za-z0-9]+-[AD][0-9]+ \[[a-z]+\] \{wait\}/) {
+          add("nested", "line " NR ": " first8(line))
+        } else if (line ~ /^- [A-Za-z0-9]+-A[0-9]+ \[[a-z]+\] \{decide\}/ || \
+                   line ~ /^- [A-Za-z0-9]+-D[0-9]+ \[[a-z]+\] \{(ok|do)\}/) {
+          add("fit", "line " NR ": " first8(line))
+        } else if (line ~ /^- [A-Za-z0-9]+-[AD][0-9]+ \[[a-z]+\] \{wait\}/ && !ischild) {
+          waitline = "line " NR ": " first8(line)
+        }
+      } else if (line ~ /^- [A-Za-z0-9]+-[AD][0-9]+ \[(high|normal|low)\]: /)
+        add("nokind", "line " NR ": " first8(line))
+      else add("bad", "line " NR ": " first8(line))
+    }
     {
       sub(/\r$/, "")
       c = chars($0)
       if (c > 300) add("long", "line " NR " (" c " characters): " first8($0))
-      if ($0 ~ /^## /) inpend = ($0 == "## Waiting on the CEO")
-      else if (inpend && $0 ~ /^- / && $0 != "- none") {
-        if ($0 ~ /^- [A-Za-z0-9]+-[AD][0-9]+ \[(high|normal|low)\] \{(ok|do|decide)\}: ./) {
-          if ($0 ~ /^- [A-Za-z0-9]+-A[0-9]+ \[[a-z]+\] \{decide\}/ || \
-              $0 ~ /^- [A-Za-z0-9]+-D[0-9]+ \[[a-z]+\] \{(ok|do)\}/)
-            add("fit", "line " NR ": " first8($0))
-        } else if ($0 ~ /^- [A-Za-z0-9]+-[AD][0-9]+ \[(high|normal|low)\]: /)
-          add("nokind", "line " NR ": " first8($0))
-        else add("bad", "line " NR ": " first8($0))
+      if ($0 ~ /^## /) {
+        if (inpend) endwait()
+        inpend = ($0 == "## Waiting on the CEO")
+        top = 0
+      } else if (inpend && $0 ~ /^[ \t]+- /) {
+        if ($0 !~ /^  - / || !top || substr($0, 3) == "- none") {
+          add("nested", "line " NR ": " first8($0))
+        } else {
+          haschild = 1
+          check(substr($0, 3), 1)
+        }
+      } else if (inpend && $0 ~ /^- /) {
+        endwait()
+        if ($0 == "- none") top = 0
+        else {
+          top = 1
+          haschild = 0
+          check($0, 0)
+        }
       }
     }
     function show(g, title,   i, n) {
@@ -176,11 +213,13 @@ else
       if (n > 3) print "Q   and " (n - 3) " more"
     }
     END {
+      if (inpend) endwait()
       show("long", "company/state.md lines over 300 characters")
       show("nokind", "pending lines without a kind")
       show("fit", "pending lines whose kind does not fit the code")
+      show("nested", "pending lines nested wrongly")
       show("bad", "pending lines not in the line format")
-      print "T " (count["long"] + count["nokind"] + count["fit"] + count["bad"])
+      print "T " (count["long"] + count["nokind"] + count["fit"] + count["nested"] + count["bad"])
     }' "$state")
   extra=$(printf '%s\n' "$report" | sed -n 's/^T //p')
   issues=$((issues + extra))
@@ -211,10 +250,23 @@ if [ -f "$todo" ]; then
       sub(/\r$/, "")
       if ($0 ~ /^## /) {
         sect = ($0 == "## Open") ? "open" : ($0 == "## Done (last 7 days)") ? "done" : ""
+        top = 0
         next
       }
-      if (sect == "" || $0 !~ /^- / || $0 == "- none") next
       date = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\\)$"
+      if (sect == "") next
+      # A child: two spaces, only in Open, right under a top-level item.
+      # Any other indented list line is a line not in the line format.
+      if ($0 ~ /^[ \t]+- /) {
+        if (sect == "open" && top && $0 ~ /^  - / && substr($0, 3) ~ (item "since " date)) next
+        n++
+        if (n <= 3) print "Q   line " NR ": " first8($0)
+        next
+      }
+      if ($0 !~ /^- /) next
+      top = 0
+      if ($0 == "- none") next
+      if (sect == "open") top = 1
       if (sect == "open" && $0 ~ (item "since " date)) next
       if (sect == "done" && $0 ~ (item "done " date)) next
       n++

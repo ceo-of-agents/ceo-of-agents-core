@@ -9,8 +9,9 @@ Rules:
   (B bytes") and STATUS_BUDGET in the script are the same number, and the
   script reports pages over it and their long lines (nothing without pages).
 - The script behaves as documented on small fixture hqs (budgets, long lines in
-  characters, pending line groups, missing files, exit codes, and the line
-  format of the optional company/todo.md, silent when that file is missing).
+  characters, pending line groups including parent and child items, missing
+  files, exit codes, and the line format of the optional company/todo.md,
+  silent when that file is missing).
 """
 import re
 import subprocess
@@ -169,6 +170,55 @@ def behaviour(errors):
          ["pending lines without a kind: 0", "pending lines whose kind does not fit the code: 1", "pending lines not in the line format: 0"])
     case("junk line", hq(state=pending("- just something")),
          ["pending lines without a kind: 0", "pending lines whose kind does not fit the code: 0", "pending lines not in the line format: 1"])
+    nested0 = ["pending lines nested wrongly: 0", "verdict: ok"]
+    case("parents and children", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch the beta once the items below are done (since 2026-01-12)",
+        "  - ACME-A8 [normal] {ok}: approve the store copy (since 2026-01-12)",
+        "  - ACME-D5 [normal] {decide}: decide the beta price, see decision queue (since 2026-01-13)",
+        "- ACME-D3 [normal] {wait}: pricing model decided (decision 0012); follow-ups below (since 2026-01-10)",
+        "  - ACME-A9 [low] {do}: update the price in the console (since 2026-01-15)",
+        "- ACME-A10 [low] {do}: a single item")), nested0)
+    case("wait on an A parent", hq(state=pending(
+        "- ACME-A7 [high] {wait}: approved 2026-01-14, runs when the items below are done (since 2026-01-12)",
+        "  - ACME-A8 [normal] {do}: rename the folder (since 2026-01-12)")), nested0)
+    case("orphan child", hq(state=pending("  - ACME-A8 [normal] {ok}: approve it (since 2026-01-12)")),
+         ["pending lines nested wrongly: 1", "pending lines not in the line format: 0", "verdict: 1 issue(s)"])
+    case("child after none", hq(state=pending("- none", "  - ACME-A8 [normal] {ok}: approve it")),
+         ["pending lines nested wrongly: 1", "verdict: 1 issue(s)"])
+    case("grandchild", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch",
+        "  - ACME-A8 [normal] {ok}: approve the copy",
+        "    - ACME-A9 [low] {do}: sub-step")),
+         ["pending lines nested wrongly: 1", "pending lines not in the line format: 0", "verdict: 1 issue(s)"])
+    case("bad indent", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch", "   - ACME-A8 [normal] {ok}: three spaces", "\t- ACME-A9 [low] {do}: tab")),
+         ["pending lines nested wrongly: 2", "verdict: 2 issue(s)"])
+    case("wait without child", hq(state=pending(
+        "- ACME-D3 [normal] {wait}: decided (decision 0012)",
+        "- ACME-A2 [low] {do}: Rename the folder")),
+         ["pending lines nested wrongly: 1", "line 2: - ACME-D3 [normal] {wait}: decided", "verdict: 1 issue(s)"])
+    case("wait as last line", hq(state="## Waiting on the CEO\n- ACME-D3 [normal] {wait}: decided (decision 0012)\n"),
+         ["pending lines nested wrongly: 1", "verdict: 1 issue(s)"])
+    case("wait on a child", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch", "  - ACME-A8 [normal] {wait}: grouped")),
+         ["pending lines nested wrongly: 1", "pending lines whose kind does not fit the code: 0",
+          "pending lines not in the line format: 0", "verdict: 1 issue(s)"])
+    case("wait in a child's text", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch", "  - ACME-A8 [normal] {ok}: approve the {wait} label")),
+         ["pending lines nested wrongly: 0", "verdict: ok"])
+    case("child without a kind", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch", "  - ACME-A8 [normal]: approve the copy")),
+         ["pending lines without a kind: 1", "pending lines nested wrongly: 0", "verdict: 1 issue(s)"])
+    case("child with a wrong kind", hq(state=pending(
+        "- ACME-A7 [high] {ok}: launch", "  - ACME-A8 [normal] {decide}: approve the copy")),
+         ["pending lines whose kind does not fit the code: 1", "pending lines nested wrongly: 0"])
+    case("todo with a child", hq(**{"company/todo.md": GOOD_TODO.replace(
+        "\n- ACME-T4", "\n  - ACME-T6 [low]: Check the export (since 2026-01-14)\n- ACME-T4")}),
+         ["company/todo.md lines not in the line format: 0", "verdict: ok"])
+    case("todo bad children", hq(**{"company/todo.md": GOOD_TODO.replace(
+        "## Open\n", "## Open\n  - ACME-T6 [low]: Orphan (since 2026-01-14)\n").replace(
+        "(done 2026-01-12)\n", "(done 2026-01-12)\n  - ACME-T7 [low]: Done child (done 2026-01-12)\n")}),
+         ["company/todo.md lines not in the line format: 2", "verdict: 2 issue(s)"])
     case("many long lines", hq(state=GOOD_STATE + ("w" * 301 + "\n") * 5),
          ["lines over 300 characters: 5", "and 2 more"])
     with tempfile.TemporaryDirectory() as tmp:
