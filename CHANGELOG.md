@@ -2,6 +2,14 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.20.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.19.0...v0.20.0) (2026-11-19)
+
+
+### Features
+
+* **session-start:** add a quiet start for sessions renewed mid-chat ([#100](https://github.com/iamgiolaga/ceo-of-agents/issues/100)) ([2a6305f](https://github.com/iamgiolaga/ceo-of-agents/commit/2a6305f908a71616db28340c0f85191ab65d52d6))
+* support parent and child items in the pending list and todo list ([#101](https://github.com/iamgiolaga/ceo-of-agents/issues/101)) ([0d24c05](https://github.com/iamgiolaga/ceo-of-agents/commit/0d24c059c54926f22a874ea629cfa42434936cf1))
+
 ## [0.19.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.18.0...v0.19.0) (2026-11-18)
 
 
