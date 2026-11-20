@@ -48,6 +48,7 @@ CI runs on every pull request and on `main`:
 | The permission rule groups in `gates/permissions.md` use known action ids and rule forms, never allow an ok-tier group, never allow a rule whose wildcard can carry a shell, an interpreter, a file write, a risky git option or a GitHub write (also checked in the skills' `allowed-tools`), and give the documented lists for the example orgs | `scripts/ci/check_permissions.py` |
 | Relative links and anchors in Markdown resolve (external links are not checked, to keep CI stable) | `scripts/ci/check_links.py` |
 | The setup answers format (`schemas/setup-answers.yaml`) and every sample in `examples/setup-answers/` follow the documented rules, and there is a sample for each purpose and for a holding | `scripts/ci/check_setup_answers.py` |
+| The tips file (`tips/tips.yaml`) follows `schemas/tips.md`: ids, versions, conditions, placeholders and translations | `scripts/ci/check_tips.py` |
 
 Run them locally before pushing (Python 3.9 or later and PyYAML):
 
@@ -60,6 +61,7 @@ python3 scripts/ci/check_boot_set.py
 python3 scripts/ci/check_permissions.py
 python3 scripts/ci/check_links.py
 python3 scripts/ci/check_setup_answers.py
+python3 scripts/ci/check_tips.py
 ```
 
 If you have Claude Code, `claude plugin validate .` is a useful extra check of the plugin layout.

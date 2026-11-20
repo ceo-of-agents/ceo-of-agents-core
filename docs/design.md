@@ -60,7 +60,8 @@ ceo-of-agents/
     policies-repo/   policy.yaml and README.md for the holding's separate policies repo
   catalog/           department catalog (charter + agent template each)
   skills/            init-fleet; CoS procedures: session-start, intake, record-decision, weekly-brief, hq-version, departments, product-repos, initiatives, portfolio-brief
-  schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set, CEO todo list
+  schemas/           state.md, org.yaml, portfolio.yaml, policy.yaml, handoff, decision card, decision record, document lifecycle, initiative, boot set, CEO todo list, tips file
+  tips/              tips.yaml: contextual tips (a text and a phrase to say)
   gates/             default approval-gate table
   migrations/        vN-to-vN+1 diffs
 ```
