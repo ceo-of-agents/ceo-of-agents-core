@@ -22,31 +22,12 @@ Use this file only for text that goes out under the CEO's name (messages, mails,
 
 ## Base
 
-- Direct, conclusion first.
-- No signature.
-- Short sentences.
+<!-- One rule per line, e.g. "- Conclusion first." -->
 
 ## Channels
 
-### Slack
-
-- No greeting.
-- Max 3 lines, then a list.
-- Emoji only as reactions.
-
-Example (2026-01-15): "Build is green. Release at 16:00 unless someone objects."
-
-### Mail
-
-- Subject = the ask.
-- Short greeting by name.
-- One paragraph per point.
-- End with an explicit closing question.
-
-Example (2026-01-15): "Subject: Approve the ACME launch date? / Hi Ana, the launch can move to 12 March. Impact: two more weeks of testing. Do you approve?"
+<!-- One "### <channel>" per channel you use (Slack, Mail, ...): only what differs from Base, then up to two examples: Example (YYYY-MM-DD): "..." -->
 
 ## Audiences
 
-### Management
-
-- Decision asked and impact first.
+<!-- One "### <audience>" per audience (peers, management, ...): only what differs. -->

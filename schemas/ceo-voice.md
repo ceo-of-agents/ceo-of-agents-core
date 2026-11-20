@@ -37,7 +37,27 @@ An empty section or subsection is fine: it never blocks a draft.
 
 ## Minimal valid example
 
-See `templates/instance/company/ceo-voice.md`.
+See `templates/instance/company/ceo-voice.md`: the How-to block and the four headings, with the three sections empty (each holds only a format comment). An empty section is valid. Sample rules, as below, belong only in this documentation, never in the template:
+
+```markdown
+## Base
+
+- Conclusion first.
+
+## Channels
+
+### Slack
+
+- No greeting.
+
+Example (2026-01-15): "Build is green. Release at 16:00 unless someone objects."
+
+## Audiences
+
+### Management
+
+- Decision asked and impact first.
+```
 
 ## Validation checklist
 
