@@ -55,7 +55,7 @@ tips:
     pending: true
     depends_on: 105
     when:
-      file_missing: company/voice.md
+      file_missing: company/ceo-voice.md
     text: "Have messages drafted in your own style."
     phrase: "Draft a mail to ..."
 
