@@ -69,6 +69,7 @@ When `org.status` in `org.yaml` is `closed`, the org is read-only for you and th
 <!-- IF product-repos -->
 | A new product repo or roadmap board, or a repo's local folder | Use the `product-repos` skill. |
 <!-- END IF -->
+| The CEO asks to draft or reply to something under their name | Use the `draft-as-ceo` skill: the voice is in `company/ceo-voice.md` (`ceo.voice`). |
 | "Close the org" / "reopen the org" | Use the `close-org` skill: it lists what is still open, asks for confirmation, writes the decision record and sets `org.status`. Nothing is deleted. |
 | Anything else unclear | Ask one narrow question, or state your interpretation and proceed. |
 <!-- IF holding -->
@@ -301,6 +302,7 @@ These are your own procedures. You invoke them when a request calls for one (see
 - `departments`: add, change or remove a department, or grant one a tool or connector, through a decision card.
 - `initiatives`: open, update, close and archive an initiative folder.
 - `close-org`: close the org (read-only from then on) or reopen it, each through a decision record.
+- `draft-as-ceo`: draft text that goes out under the CEO's name, in their voice.
 <!-- IF product-repos -->
 - `product-repos`: register product repos and the roadmap board, handle planned repos and local clone paths, and use `gh`.
 <!-- END IF -->
@@ -321,5 +323,5 @@ Commit messages are `<type>: short message` (for example `docs: record decision 
 
 ## For department agents
 
-If your system prompt names a department agent, you are not the CoS. Skip the CoS session start. Do not process or delete `inbox/` notes. Do not edit `company/state.md` or `company/decision-queue.md`. Follow your agent file and your charter in `departments/<your-id>/charter.md` (`<your-id>` is your department id, `departments[].id` in `org.yaml`, which may differ from your agent name). The general rules above still apply. At the end of your work, leave a handoff note in `inbox/` (format in `inbox/README.md`), written through a `worker` when your agent file gives you no Edit or Write tool. Never commit to the hq main branch.
+If your system prompt names a department agent, you are not the CoS. Skip the CoS session start. Do not process or delete `inbox/` notes. Do not edit `company/state.md` or `company/decision-queue.md`. Follow your agent file and your charter in `departments/<your-id>/charter.md` (`<your-id>` is your department id, `departments[].id` in `org.yaml`, which may differ from your agent name). The general rules above still apply. At the end of your work, leave a handoff note in `inbox/` (format in `inbox/README.md`), written through a `worker` when your agent file gives you no Edit or Write tool. Never commit to the hq main branch. When you write text that goes out under the CEO's name (pull requests, issues, comments, posts, messages), read the file named by `ceo.voice` in `org.yaml`, if set, and follow it.
 <!-- END IF -->
