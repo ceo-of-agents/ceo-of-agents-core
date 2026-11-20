@@ -56,7 +56,7 @@ tips:
     depends_on: 105
     when:
       file_missing: company/ceo-voice.md
-    text: "Have messages drafted in your own style."
+    text: "Have messages drafted in your own voice: define it once, then every draft sounds like you."
     phrase: "Draft a mail to ..."
 
   - id: add-department
