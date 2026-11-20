@@ -7,7 +7,8 @@
 #                departments, gates, accounts, repos, tracker
 # Optional keys: policy (company level, purpose product, startup or company; null when unused),
 #                policies_repo (holding level only; null for a company),
-#                employer_rules (job only; null otherwise)
+#                employer_rules (job only; null otherwise),
+#                tips (contextual tips; absent = tips on, nothing dismissed)
 #
 # Allowed values and rules
 #   schema                  exactly "org/5"
@@ -121,6 +122,11 @@
 #                           Project can hold issues from repos of different owners
 #     number                the Project number (an integer, from its URL)
 #     status_field          name of the single-select status field, for example "Status"
+#   tips                    optional. Absent = tips on, nothing dismissed (the default, so the
+#                           example below leaves it out). A mapping written by the CoS on
+#                           the CEO's request, see schemas/tips.md:
+#     show                  true | false; false = no tips at all
+#     dismissed             list of tip ids from the plugin's tips/tips.yaml
 #   policy                  company level, purpose product, startup or company; null, or
 #                           a mapping:
 #     repo                  git remote URL of the holding's policies repo, or "" when
