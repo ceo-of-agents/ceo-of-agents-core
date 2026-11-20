@@ -2,6 +2,14 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.21.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.20.0...v0.21.0) (2026-11-20)
+
+
+### Features
+
+* let the CEO define a voice for drafts written under their name ([#109](https://github.com/iamgiolaga/ceo-of-agents/issues/109)) ([11b4c4e](https://github.com/iamgiolaga/ceo-of-agents/commit/11b4c4ecd89a85b345ebcc94d012313e2b88217b))
+* **tips:** add contextual tips file shown at session start ([#107](https://github.com/iamgiolaga/ceo-of-agents/issues/107)) ([ebd318e](https://github.com/iamgiolaga/ceo-of-agents/commit/ebd318e23ae30aee7b6d584a5677b1ad1f0b1d2b))
+
 ## [0.20.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.19.0...v0.20.0) (2026-11-19)
 
 
