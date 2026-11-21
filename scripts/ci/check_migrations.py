@@ -12,7 +12,11 @@ Rules (see CONTRIBUTING.md, "Every version ships a migration"):
 - Every migration file belongs to a listed version (no orphans).
 
 Notes in migrations/unreleased/ (one per pull request, folded into the next
-version's migration at release time) are listed, not checked.
+version's migration by scripts/fold_migrations.py at release time) are listed,
+and each one must have the shape the fold needs: a "# Unreleased: <what>"
+title, an intro paragraph, a schema line, a "Plain summary for the CEO:" line
+and a "## Check after applying" section with bullets. The check uses the same
+parser as the fold, so a malformed note fails on its own pull request.
 """
 import json
 import re
@@ -20,6 +24,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
+from fold_migrations import NoteError, parse_note  # noqa: E402  (the fold's own parser)
+
 MIGRATIONS = ROOT / "migrations"
 SEMVER = r"\d+\.\d+\.\d+"
 ENTRY = re.compile(rf"^Version `({SEMVER})`", re.MULTILINE)
@@ -81,6 +88,13 @@ def main():
     unreleased = sorted(path.name for path in (MIGRATIONS / "unreleased").glob("*.md")) if (MIGRATIONS / "unreleased").is_dir() else []
     if unreleased:
         print(f"note: unreleased migration notes, to fold into the next version's migration: {', '.join(unreleased)}")
+
+    if unreleased:
+        for path in sorted((MIGRATIONS / "unreleased").glob("*.md")):
+            try:
+                parse_note(path)
+            except NoteError as error:
+                errors.append(str(error))
 
     for error in errors:
         print(f"error: {error}")
