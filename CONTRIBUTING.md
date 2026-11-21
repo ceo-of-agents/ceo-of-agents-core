@@ -91,15 +91,15 @@ So a release is fully automatic, from a merged `feat` or `fix` pull request to t
 - The secret `RELEASE_PLEASE_TOKEN`, as described in step 3.
 - The repository setting "Allow auto-merge" (Settings, General).
 
-### If the token expires or is revoked
-
-The workflow fails at its first step with a clear error. Create a new token with the same scopes, update the secret `RELEASE_PLEASE_TOKEN`, then re-run the failed Release workflow run (or merge the next change). Meanwhile a maintainer can approve the held runs and merge the release pull request by hand.
-
 To release a specific version (for example `1.0.0`), add the footer `Release-As: 1.0.0` to the body of a squash commit on `main`.
 
 The files that carry the version are listed under `extra-files` in `release-please-config.json`: `.claude-plugin/plugin.json` and the lines marked `x-release-please-version` in `skills/init-fleet/SKILL.md`, `schemas/org.yaml` and `docs/design.md`. If you add a place that states the current plugin version, mark the line the same way and list the file there; `scripts/ci/check_manifest.py` checks that every marked line matches `plugin.json`.
 
 Tags and releases for 0.1.1 to 0.11.0, which shipped before this flow, are created by `scripts/backfill-releases.sh` (a dry run unless called with `--apply`).
+
+### If the token expires or is revoked
+
+The workflow fails at its first step with a clear error, and no release pull request is created or updated until the token works again. Create a new token with the same scopes, update the secret `RELEASE_PLEASE_TOKEN`, then re-run the failed Release workflow run (or merge the next change). If a release pull request is already open, a maintainer can instead approve its held workflow runs and merge it by hand.
 
 ## Licence
 
