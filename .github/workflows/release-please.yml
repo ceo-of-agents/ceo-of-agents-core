@@ -16,28 +16,43 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      # Needed to start CI on the release branch (gh workflow run).
-      actions: write
+      # Every write below uses RELEASE_PLEASE_TOKEN, not the GITHUB_TOKEN.
+      contents: read
     steps:
+      # Since GitHub's change of 2026-05-21, pull_request runs on pull requests and commits
+      # made by github-actions[bot] are held as action_required until a maintainer approves
+      # them, and the held runs keep the required check "Repository checks" from counting.
+      # Pushes and pull requests made with a maintainer token run normally, so this workflow
+      # uses a fine-grained personal access token. See CONTRIBUTING.md, "How releases happen".
+      # https://github.blog/changelog/2026-05-21-bot-created-pull-requests-can-run-workflows-if-approved
+      - name: Check the release token
+        env:
+          RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          if [ -z "$RELEASE_PLEASE_TOKEN" ]; then
+            echo "::error::The secret RELEASE_PLEASE_TOKEN is missing or empty. Create a fine-grained personal access token for this repository with Contents, Pull requests and Issues read and write, and store it as the repository secret RELEASE_PLEASE_TOKEN. See CONTRIBUTING.md, How releases happen."
+            exit 1
+          fi
+
       - name: Run release-please
         id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
       # Everything below runs only when release-please created or updated its pull request.
       # release-please rewrites its branch on every push to main, so the migration fold
-      # runs again each time, and CI is started last, on the final head commit.
+      # runs again each time, and auto-merge is enabled last, on the final head commit.
       - name: Check out the release branch
         if: ${{ steps.release.outputs.prs_created == 'true' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ fromJSON(steps.release.outputs.pr || '{}').headBranchName }}
-          # Credentials stay on to push the fold commit; only this repository's own script runs.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          # Credentials stay on to push the fold commit with the maintainer token, so the
+          # push starts the pull request's own CI; only this repository's own script runs.
           persist-credentials: true
 
       - name: Set up Python
@@ -60,14 +75,16 @@ jobs:
             git push origin HEAD:"$BRANCH"
           fi
 
-      # Events created with the Actions token do not start workflows, so the pull
-      # request's own CI run never starts. workflow_dispatch is the exception. The
-      # run is on the branch head, so the required check "Repository checks"
-      # reports on the head commit of the release pull request.
-      - name: Start CI on the release branch
+      # The repository allows only squash merges. GitHub merges the pull request once the
+      # required check "Repository checks" passes on its head commit; the check
+      # scripts/ci/check_migrations.py fails while the version's migration file is missing,
+      # so a head commit from before the fold cannot pass. The merge is made on behalf of
+      # the token owner, so the push to main starts this workflow again, which creates the
+      # tag and the GitHub Release.
+      - name: Enable auto-merge on the release pull request
         if: ${{ steps.release.outputs.prs_created == 'true' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           GH_REPO: ${{ github.repository }}
-          BRANCH: ${{ fromJSON(steps.release.outputs.pr || '{}').headBranchName }}
-        run: gh workflow run ci.yml --ref "$BRANCH"
+          PR_NUMBER: ${{ fromJSON(steps.release.outputs.pr || '{}').number }}
+        run: gh pr merge --auto --squash "$PR_NUMBER"
