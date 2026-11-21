@@ -19,9 +19,55 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+      # Needed to start CI on the release branch (gh workflow run).
+      actions: write
     steps:
       - name: Run release-please
+        id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      # Everything below runs only when release-please created or updated its pull request.
+      # release-please rewrites its branch on every push to main, so the migration fold
+      # runs again each time, and CI is started last, on the final head commit.
+      - name: Check out the release branch
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          # Credentials stay on to push the fold commit; only this repository's own script runs.
+          persist-credentials: true
+
+      - name: Set up Python
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Fold the unreleased migration notes
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        env:
+          BRANCH: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+        run: |
+          python scripts/fold_migrations.py
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+            git add -A migrations
+            git commit -m "docs: fold unreleased migration notes"
+            git push origin HEAD:"$BRANCH"
+          fi
+
+      # Events created with the Actions token do not start workflows, so the pull
+      # request's own CI run never starts. workflow_dispatch is the exception. The
+      # run is on the branch head, so the required check "Repository checks"
+      # reports on the head commit of the release pull request.
+      - name: Start CI on the release branch
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+        run: gh workflow run ci.yml --ref "$BRANCH"
