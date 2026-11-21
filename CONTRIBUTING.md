@@ -79,18 +79,27 @@ A feature or fix pull request does not know its version yet, and several may shi
 
 ## How releases happen
 
-Releases are automated with [release-please](https://github.com/googleapis/release-please). Configuration: `release-please-config.json` and `.release-please-manifest.json`.
+Releases are fully automatic, built on [release-please](https://github.com/googleapis/release-please). Configuration: `release-please-config.json` and `.release-please-manifest.json`.
 
 1. Every merge to `main` updates one open release pull request, titled `chore: release X.Y.Z`. It computes the next version from the Conventional Commit titles merged since the last release, bumps the version in every file that carries it, and adds the entry to `CHANGELOG.md`. A `docs`, `chore` or `ci` merge alone opens no release.
 2. The release workflow then folds the notes in `migrations/unreleased/` into `migrations/<previous>-to-X.Y.Z.md`, adds the version's paragraph to `migrations/README.md`, deletes the notes and pushes that commit to the release branch (`scripts/fold_migrations.py`). It runs again every time release-please updates its pull request, because release-please rewrites its branch. So to change the generated migration, edit the notes on `main`; an edit on the release branch is lost at the next update. To preview the result, run `python3 scripts/fold_migrations.py --dry-run`. A maintainer may still add a sentence for the version to the status paragraph at the top of `docs/design.md`.
-3. GitHub does not start workflows on pull requests opened or updated by the Actions token, and `main` requires "Repository checks" to pass before a merge. So the same workflow starts `ci.yml` by hand on the release branch (`workflow_dispatch`, which the Actions token may do) as its last step, after the fold. The run is on the head commit of the release pull request, so the required check reports there and no one has to close and reopen the pull request.
-4. A maintainer merges the release pull request. release-please then creates the tag `vX.Y.Z` and the GitHub Release with the changelog entry as notes. Users get the new version with `/plugin`, Installed tab, Update now.
+3. The workflow uses a maintainer token, the repository secret `RELEASE_PLEASE_TOKEN`: a fine-grained personal access token limited to this repository, with Contents, Pull requests and Issues read and write. It is needed because GitHub holds workflow runs on pull requests made by the Actions bot until a maintainer approves them, and `main` requires "Repository checks" to pass before a merge. With the token, the pull request and the fold commit are made by a maintainer, so the release pull request's CI runs normally.
+4. As its last step the workflow enables auto-merge (squash) on the release pull request. GitHub merges it when "Repository checks" passes. The merge push starts the workflow again, which creates the tag `vX.Y.Z` and the GitHub Release with the changelog entry as notes. Users get the new version with `/plugin`, Installed tab, Update now.
+
+So a release is fully automatic, from a merged `feat` or `fix` pull request to the published GitHub Release. It needs two things:
+
+- The secret `RELEASE_PLEASE_TOKEN`, as described in step 3.
+- The repository setting "Allow auto-merge" (Settings, General).
 
 To release a specific version (for example `1.0.0`), add the footer `Release-As: 1.0.0` to the body of a squash commit on `main`.
 
 The files that carry the version are listed under `extra-files` in `release-please-config.json`: `.claude-plugin/plugin.json` and the lines marked `x-release-please-version` in `skills/init-fleet/SKILL.md`, `schemas/org.yaml` and `docs/design.md`. If you add a place that states the current plugin version, mark the line the same way and list the file there; `scripts/ci/check_manifest.py` checks that every marked line matches `plugin.json`.
 
 Tags and releases for 0.1.1 to 0.11.0, which shipped before this flow, are created by `scripts/backfill-releases.sh` (a dry run unless called with `--apply`).
+
+### If the token expires or is revoked
+
+The workflow fails at its first step with a clear error, and no release pull request is created or updated until the token works again. Create a new token with the same scopes, update the secret `RELEASE_PLEASE_TOKEN`, then re-run the failed Release workflow run (or merge the next change). If a release pull request is already open, a maintainer can instead approve its held workflow runs and merge it by hand.
 
 ## Licence
 
