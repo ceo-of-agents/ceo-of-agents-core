@@ -21,11 +21,11 @@ The voice applies only to text that goes out under the CEO's name: messages, mai
 
 ## Draft
 
-1. Load. Read `ceo.voice` in `org.yaml`. If it is set and the file exists, read it. Otherwise the voice is empty.
+1. Load. Read `ceo.voice` in `org.yaml`; if it is unset (absent or null), use `company/ceo-voice.md`. If that file exists, read it. Otherwise the voice is empty.
 2. Pick the channel: from the request; else from the pasted material (mail headers, a Slack thread); else ask one question that lists the channels in the file (or the common ones, Slack, mail, GitHub and slides, when there is no file). Pick the audience from the request or the recipient. If it is unclear, use Base and the channel only. Never ask more than one question in total.
-3. Compose Base, then the channel, then the audience; the later layer wins on a conflict. There are no entries per combination. Apply the channel mechanics: Slack uses mrkdwn (`*bold*`), no headings, short, and says whether it is a thread reply or a new message; mail has a `Subject:` line, then a plain body; GitHub uses GitHub Markdown, and in a public repo nothing internal (no persona names, department names or codes); slides use short bullets, no full sentences. Never invent numbers or facts: use only what the CEO or the source gave you.
-4. Deliver the text ready to paste in the channel's format, then one short line saying which channel and audience you applied. Never send, post or open anything: the gates for `contact-people` and `publish` are unchanged.
-5. Empty voice: deliver the draft with the channel mechanics only, then offer in one line to set up the voice (see Bootstrap). Never block on a missing or empty voice.
+3. Compose Base, then the channel, then the audience; the later layer wins on a conflict. There are no entries per combination. Apply the channel mechanics: Slack uses mrkdwn (`*bold*`), no headings, short, and says whether it is a thread reply or a new message; mail has a `Subject:` line, one blank line, then a plain body; GitHub uses GitHub Markdown, and in a public repo nothing internal (no persona names, department names or codes); slides use short bullets, no full sentences. Never invent numbers or facts: use only what the CEO or the source gave you.
+4. Deliver the draft in this format. It goes in exactly one fenced code block with no info string, and nothing else is inside the block. If the draft itself contains a run of backticks, the fence is longer than the longest run (for example four backticks). For mail, the block's first line is `Subject: <subject>`, then one blank line, then the plain body. After the block, one short line says which channel and audience you applied. Any offer (set up the voice, add a channel section) comes after that line, outside the block. Never send, post or open anything: the gates for `contact-people` and `publish` are unchanged.
+5. Empty voice: deliver the draft in the same format with the channel mechanics only, then offer in one line to set up the voice (see Bootstrap). Never block on a missing or empty voice.
 6. Missing channel: when the draft is for a channel that has no section in the file, after the draft offer once to add a section. If the CEO declines, add one entry to `company/log.md` (`${CLAUDE_PLUGIN_ROOT}/schemas/log.md`) saying that a draft was made for channel <X> with no section, so the weekly brief can flag it.
 
 ## Captured corrections
@@ -38,7 +38,7 @@ When the CEO asks to set up their voice, or accepts the offer:
 
 1. Ask for 3 to 5 messages the CEO wrote themselves, ideally across the channels they use. Only the CEO's own phrasing: drop quoted replies and never use other people's messages. For a work hq (`org.purpose: job`, or `employer_rules` set), first warn explicitly: paste no confidential employer content.
 2. Derive Base, the channel deltas and the audience deltas. For each channel, write one or two short examples rewritten generically, each marked `Example (YYYY-MM-DD):` with today's date. Never copy a raw sample.
-3. Show the CEO the draft of the file in chat. Only on the CEO's yes, create `company/ceo-voice.md` from the template (a `worker` writes it), add `voice: company/ceo-voice.md` under `ceo:` in `org.yaml`, and commit with notice (`docs: add CEO voice`).
+3. Show the CEO the draft of the file in chat. Only on the CEO's yes, create `company/ceo-voice.md` from the template (a `worker` writes it), add `voice: company/ceo-voice.md` under `ceo:` in `org.yaml` (optional: it is the default path), and commit with notice (`docs: add CEO voice`).
 4. Raw samples never go into any file, log, commit, brief or handoff. Say so to the CEO.
 
 ## Rules

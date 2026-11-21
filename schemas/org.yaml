@@ -37,7 +37,8 @@
 #                           GitHub"); files keep their usual format
 #   ceo.voice               optional: path to the CEO's voice file for text written under
 #                           the CEO's name (company/ceo-voice.md, schema voice/1,
-#                           schemas/ceo-voice.md), or absent or null for no voice. Not
+#                           schemas/ceo-voice.md); absent or null means
+#                           company/ceo-voice.md if it exists, else no voice. Not
 #                           how agents talk to the CEO (that is ceo.profile). Adding or
 #                           removing it does not change the schema version
 #   cos.display_name        required, non-empty; the role name ("Chief of staff") or a
@@ -159,7 +160,7 @@ ceo:
   role_id: ceo
   display_name: ""
   profile: technical   # technical | non-technical: how the chief of staff words things in chat
-  # voice: company/ceo-voice.md   # optional: the CEO's voice for text written under their name; absent = no voice
+  # voice: company/ceo-voice.md   # optional: the CEO's voice for text written under their name; absent = company/ceo-voice.md if it exists
 cos:
   display_name: Chief of staff
 language:
