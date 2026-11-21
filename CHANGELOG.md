@@ -2,6 +2,19 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.23.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.22.0...v0.23.0) (2026-11-21)
+
+
+### Features
+
+* **draft-as-ceo:** ask for the intended tone first when setting up the voice ([#117](https://github.com/iamgiolaga/ceo-of-agents/issues/117)) ([06c415d](https://github.com/iamgiolaga/ceo-of-agents/commit/06c415d1881f6be245df2263a8c25eb57ca7d9ab))
+
+
+### Bug fixes
+
+* **ci:** do not fail the release workflow when no release PR changed ([#121](https://github.com/iamgiolaga/ceo-of-agents/issues/121)) ([a63eecf](https://github.com/iamgiolaga/ceo-of-agents/commit/a63eecf0855e42454da931b4e790b42cd9656a76))
+* **ci:** make releases fully automatic with a maintainer token and auto-merge ([#123](https://github.com/iamgiolaga/ceo-of-agents/issues/123)) ([150e1f3](https://github.com/iamgiolaga/ceo-of-agents/commit/150e1f39ea283e6ec95047d2d3fee2f24a1ceeb7))
+
 ## [0.22.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.21.0...v0.22.0) (2026-11-21)
 
 
