@@ -28,6 +28,7 @@ An empty section or subsection is fine: it never blocks a draft.
 
 ## Rules
 
+- **Intent first.** The voice records how the CEO wants to sound outward, not only how they write today. The setup asks for the intended tone first (Base, then per channel and audience); samples from sources the CEO names only calibrate it, and where they disagree the stated intent wins and the gap is shown to the CEO in one line.
 - **Composition.** Base, then the channel, then the audience. A later layer wins on a conflict. There are no entries per channel and audience pair.
 - **Deltas only.** A channel or an audience says only what differs from the layers before it.
 - **No raw samples.** The file holds rules and short generic examples, never a raw copy of a message the CEO or anyone else wrote. Raw samples never go into any file, log, commit, brief or handoff.
