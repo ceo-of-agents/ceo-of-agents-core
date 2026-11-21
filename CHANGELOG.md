@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.22.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.21.0...v0.22.0) (2026-11-21)
+
+
+### Features
+
+* **draft-as-ceo:** default voice path and one draft format ([#113](https://github.com/iamgiolaga/ceo-of-agents/issues/113)) ([960ed89](https://github.com/iamgiolaga/ceo-of-agents/commit/960ed895892b868be2ea12f65561f9823ddbeca9))
+
 ## [0.21.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.20.0...v0.21.0) (2026-11-20)
 
 
