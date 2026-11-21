@@ -2,7 +2,7 @@
 
 An optional file that says how the CEO writes. It is used only for text that goes out under the CEO's name: messages, mails, Slack, posts, slides, and GitHub pull requests, issues and comments made from the CEO's account. It is never used in chat with the CEO (that is `ceo.profile` in `org.yaml`) and never in hq files.
 
-The file is opt-in. An hq without `company/ceo-voice.md` behaves as before: nothing reads it, nothing creates it, and no check reports its absence. It is named by the optional key `ceo.voice: company/ceo-voice.md` in `org.yaml` (`schemas/org.yaml`); absent means no voice. The chief of staff (CoS) creates the file from `templates/instance/company/ceo-voice.md` on first use, after the CEO agrees to a draft of it (`skills/draft-as-ceo/SKILL.md`, "Bootstrap"). The setup wizard does not copy it. One voice per hq: nothing is inherited from a holding.
+The file is opt-in. An hq without `company/ceo-voice.md` behaves as before: nothing reads it, nothing creates it, and no check reports its absence. The optional key `ceo.voice` in `org.yaml` (`schemas/org.yaml`) can name it; when the key is absent or null, the file at `company/ceo-voice.md` is used if it exists. The chief of staff (CoS) creates the file from `templates/instance/company/ceo-voice.md` on first use, after the CEO agrees to a draft of it (`skills/draft-as-ceo/SKILL.md`, "Bootstrap"). The setup wizard does not copy it. One voice per hq: nothing is inherited from a holding.
 
 Only the CEO changes what the voice says. The CoS and the departments propose a line; it is added only after the CEO says yes. It is not in the boot set (`schemas/boot-set.md`): the session start does not read it.
 
@@ -59,10 +59,18 @@ Example (2026-01-15): "Build is green. Release at 16:00 unless someone objects."
 - Decision asked and impact first.
 ```
 
+## Draft format
+
+A draft is delivered in one stable format, so a front end can copy it. The skill `draft-as-ceo` (step "Deliver") and the "How to use this file" block of the template both follow it.
+
+- The draft goes in exactly one fenced code block with no info string, and nothing else is inside the block. If the draft contains a run of backticks, the fence is longer than the longest run (for example four backticks).
+- Mail: the block's first line is `Subject: <subject>`, then one blank line, then the plain body.
+- After the block, one short line says which channel and audience were applied. Any offer (set up the voice, add a channel section) comes after that line, outside the block.
+
 ## Validation checklist
 
 - Frontmatter has the two fields; `schema` is `voice/1`.
 - The four H2 headings exist, spelled exactly, in the stated order.
 - Every example under a channel starts with `Example (YYYY-MM-DD):`.
 - No raw message is stored: examples are short and generic.
-- `ceo.voice` in `org.yaml` names this file, and no script checks the file: the CoS keeps these rules.
+- `ceo.voice` in `org.yaml` names this file, or is unset and the file is at `company/ceo-voice.md`; no script checks the file: the CoS keeps these rules.
