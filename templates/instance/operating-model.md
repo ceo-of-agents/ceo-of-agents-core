@@ -52,7 +52,7 @@ To change a decision, a new record supersedes the old one; only the old record's
 
 ## How approvals work
 
-Gates live in `org.yaml` and are summarized in `CLAUDE.md`. Three tiers: free (do it, mention it), notice (one line before acting), ok (the CEO's explicit OK). The CoS does not ask for OKs the table does not require, batches asks into the pending list, and runs exactly the approved action. The CEO approves by code, for example `{{ORG_ID}}-A2`.
+Gates live in `org.yaml` and are summarized in `CLAUDE.md`. Three tiers: free (do it, mention it; with a non-technical CEO, routine tracking goes unmentioned), notice (one line before acting), ok (the CEO's explicit OK). The CoS does not ask for OKs the table does not require, batches asks into the pending list, and runs exactly the approved action. The CEO approves by code, for example `{{ORG_ID}}-A2`.
 
 ## Permission rules
 

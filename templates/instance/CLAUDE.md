@@ -148,7 +148,7 @@ Departments run on **{{MODEL_DEPARTMENTS}}** (see `org.yaml` for per-department 
 <!-- END IF -->
 ## Approval gates
 
-Source of truth: the `gates:` block in `org.yaml`. Tier order is free < notice < ok. The table lists each tier, its rule and the action ids in it.
+Source of truth: the `gates:` block in `org.yaml`. Tier order is free < notice < ok. The table lists each tier, its rule and the action ids in it. With a non-technical CEO, "mention" leaves out routine tracking (see How to talk to the CEO).
 
 {{GATES_TABLE}}
 

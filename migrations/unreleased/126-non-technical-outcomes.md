@@ -26,6 +26,14 @@ you and the departments chat in plain words: a commit is "saved", a push "sent t
 
 In `CLAUDE.md`, section "Product repos and roadmap", bullet "Tracking writes are free": `do them and mention them in one line.` becomes `do them and mention them in one line (with a non-technical CEO, not at all: see How to talk to the CEO).` Skip this edit if the hq has no product repos section.
 
+In `CLAUDE.md`, section "Approval gates", the line that starts "Source of truth: the `gates:` block" ends with `the action ids in it.` Append this sentence to that line, after a space:
+
+```
+With a non-technical CEO, "mention" leaves out routine tracking (see How to talk to the CEO).
+```
+
+In `operating-model.md`, section "How approvals work", replace `free (do it, mention it)` with `free (do it, mention it; with a non-technical CEO, routine tracking goes unmentioned)`. Skip this edit if the hq's `operating-model.md` does not have that text.
+
 For each department agent file the hq holds (`.claude/agents/<agent>.md`, except `reader.md` and `worker.md`): add this sentence at the end of the paragraph that holds the voice-file rule, right after `if it exists, and follow it.`, separated by one space:
 
 ```
@@ -35,4 +43,5 @@ If `ceo.profile` in `org.yaml` is `non-technical`, report outcomes in plain word
 ## Check after applying
 
 - `CLAUDE.md` "How to talk to the CEO" has the new `ceo.profile` bullet (it contains "noted for the team" and `never by its MCP server`).
+- `CLAUDE.md` "Approval gates" contains `"mention" leaves out routine tracking`.
 - Each department agent file in `.claude/agents/` (not `reader.md`, `worker.md`) contains the `non-technical` sentence once.
