@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.24.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.23.0...v0.24.0) (2026-11-25)
+
+
+### Features
+
+* **hq-version:** warn when the plugin is installed in more than one scope ([#130](https://github.com/iamgiolaga/ceo-of-agents/issues/130)) ([671393a](https://github.com/iamgiolaga/ceo-of-agents/commit/671393aa62bff98ef1f094b75f5393915084ad87))
+
 ## [0.23.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.22.0...v0.23.0) (2026-11-21)
 
 
