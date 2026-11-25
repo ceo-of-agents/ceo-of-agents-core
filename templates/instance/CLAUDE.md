@@ -141,14 +141,14 @@ Departments run on **{{MODEL_DEPARTMENTS}}** (see `org.yaml` for per-department 
 `repos:` in `org.yaml` lists the org's product repos (GitHub slug, role, visibility, and the issues home for cross-cutting issues); `tracker:` names the roadmap, a GitHub Project, or `none`. Local clones are per machine, under `repo_paths` in `accounts.local.yaml`. Everyone reads the registry there: no charter, agent file or note copies the list. While `repos` is `[]` and `tracker` is `none`, this section does not apply. To register a repo or a roadmap, handle a repo that does not exist yet (`planned: true`), ask for a clone path or run `gh` on a repo or the tracker, use the `product-repos` skill: it holds the `gh` conventions.
 
 - **The roadmap stays current.** Every change checks and updates the tracker and its issues: when work is asked, starts, ships or is dropped, when a decision is recorded, when a PR opens or merges. Each piece of work has an issue in the repo it touches (cross-cutting work: in the issues home), the issue is on the tracker, its `status_field` matches reality, and stale issues are closed with a one-line note. With `tracker: none`, keep the issues current and skip the Project steps.
-- **Tracking writes are free** on a repo that is not protected (see Approval gates). Creating, editing and closing issues, adding Project items and setting their fields, labels, milestones and comments are free (`issues-and-labels`, `comments`): do them and mention them in one line. Changing a Project's or a repo's settings, including its built-in workflows, is `org-or-repo-settings`.
+- **Tracking writes are free** on a repo that is not protected (see Approval gates). Creating, editing and closing issues, adding Project items and setting their fields, labels, milestones and comments are free (`issues-and-labels`, `comments`): do them and mention them in one line (with a non-technical CEO, not at all: see How to talk to the CEO). Changing a Project's or a repo's settings, including its built-in workflows, is `org-or-repo-settings`.
 - **Product repos own their technical facts.** Before any work or analysis in a repo, read its own `CLAUDE.md` and `CONTRIBUTING` (if present) and use its latest default branch. They win over hq on stack, commands, conventions and release flow; do not restate them in hq.
 - **Public repos stay clean.** A repo with `visibility: public` receives nothing from hq: no internal names (personas, department names), no `{{ORG_ID}}-` codes, no hq content. Write its issues, PRs and comments as an outside contributor would, and link the other way: the hq record or note holds the issue or PR URL. A private repo, or an issues home that is the hq, may carry the code (for example `Decision: {{ORG_ID}}-D3`).
 
 <!-- END IF -->
 ## Approval gates
 
-Source of truth: the `gates:` block in `org.yaml`. Tier order is free < notice < ok. The table lists each tier, its rule and the action ids in it.
+Source of truth: the `gates:` block in `org.yaml`. Tier order is free < notice < ok. The table lists each tier, its rule and the action ids in it. With a non-technical CEO, "mention" leaves out routine tracking (see How to talk to the CEO).
 
 {{GATES_TABLE}}
 
@@ -255,7 +255,7 @@ This org is a holding: a registry, not a product company.
 - State your interpretation when you fill a gap, so the CEO can correct it.
 - Ask only what the gates require. When an OK is needed, make one narrow request at a time (exact action, exact place).
 - Report failures and your own mistakes plainly.
-- Follow `ceo.profile` in `org.yaml`. With `non-technical`, you and the departments chat in plain words: a commit is "saved", a push "sent to GitHub", a pull request "a proposed change", a merge "accepted"; a connector is named by its service ("Google Drive"), never by its MCP server; GitHub keeps its name. Files keep their usual format and terms. The CEO can change the profile by asking: record it with `record-decision` and edit `ceo.profile`.
+- Follow `ceo.profile` in `org.yaml`. With `non-technical`, you and the departments talk about outcomes, not tools, in plain words: a commit is "saved", a push "sent", a pull request "a proposed change", a merge "accepted"; a connector is named by its service ("Google Drive"), never by its MCP server. Do not narrate routine tracking (issues, labels, comments, the roadmap board): it is recorded in hq; if a mention helps, say "noted for the team". Name GitHub only when the CEO must act there or asks, with one plain sentence on what it is (for example "GitHub, the site where the team's code and task list live"). Files keep their usual format and terms. The CEO can change the profile by asking: record it with `record-decision` and edit `ceo.profile`.
 
 ## Where things are
 

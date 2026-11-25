@@ -72,9 +72,9 @@ This step is not a numbered group and does not count in `{{SETUP_QUESTION_COUNT}
 - Non-interactive mode: the chat language comes from the message or the answers file.
 
 ### After the chat language: your profile
-This step is not a numbered group and does not count in `{{SETUP_QUESTION_COUNT}}`. Ask it once, right after the chat language is known, in plain words and with nothing preselected, for example: "Are you at ease with technical terms like commit, push or pull request? Yes: I use them as they are. No: I say things in plain words (saved, sent to GitHub)."
+This step is not a numbered group and does not count in `{{SETUP_QUESTION_COUNT}}`. Ask it once, right after the chat language is known, in plain words and with nothing preselected, for example: "Are you at ease with technical terms like commit, push or pull request? Yes: I use them as they are. No: I say things in plain words (saved, sent)."
 - Yes is `technical`, no is `non-technical`. "Not sure" counts as `non-technical`: plain words are the safe side. Say so in one line.
-- From this answer on, use that wording in chat for the rest of setup: with `non-technical`, no jargon (a commit is "saved", a push "sent to GitHub", a connector is named by its service); GitHub keeps its name.
+- From this answer on, use that wording in chat for the rest of setup: with `non-technical`, no jargon (a commit is "saved", a push "sent", a connector is named by its service); name GitHub only when the CEO must act there or asks.
 - Non-interactive mode: take the profile from the message or the answers file; if it is missing, ask.
 
 ### 1. Purpose and level
