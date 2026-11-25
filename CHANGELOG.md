@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.25.1](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.25.0...v0.25.1) (2026-11-25)
+
+
+### Bug fixes
+
+* keep GitHub mechanics out of chat for a non-technical CEO ([#132](https://github.com/iamgiolaga/ceo-of-agents/issues/132)) ([a3ee3f7](https://github.com/iamgiolaga/ceo-of-agents/commit/a3ee3f7522be0f669d5cac44139939f9e317e70d))
+
 ## [0.25.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.24.0...v0.25.0) (2026-11-25)
 
 
