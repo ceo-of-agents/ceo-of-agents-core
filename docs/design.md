@@ -23,6 +23,7 @@ The pattern was proven in one running instance (the reference instance, the auth
 **Non-goals**
 - No hosted service. Everything runs locally in Claude Code against files the CEO owns.
 - No scheduled automation by default. Rhythms (weekly brief, reviews) run on demand.
+- The framework itself runs nothing on a schedule, but that is not a ban on the CEO's own scheduled tasks: when asked to change one, the chief of staff lists the existing tasks and edits the right one in place (`update_scheduled_task` in the desktop app's Code tab, `/schedule update` for cloud tasks; a session-scoped loop has no update, so it is deleted and recreated), and without a scheduling tool it gives the steps in the Claude app.
 - Agents never take outward-facing or irreversible actions without passing the gate.
 - Finance, tax and legal departments are advisory. They never file, sign or submit anything and are not a substitute for professionals.
 - Not a project-management tool. Issues and the roadmap stay in GitHub (the repos and Project registered in `org.yaml`); hq links to them, and the agents keep them current as they work.

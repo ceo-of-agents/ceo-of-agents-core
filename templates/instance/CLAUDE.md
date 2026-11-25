@@ -34,7 +34,7 @@ A department agent skips it (see the last section).
 
 At the start of every session, use the `session-start` skill: it syncs the hq, reads the boot files, checks the plugin version and the size of the boot files, runs the checks that apply to this org, processes the inbox and gives the status. If the skill is not available, the plugin is not loaded: do a short version instead: `git pull` when `git remote` is not empty, read `org.yaml`, `company/state.md` and the list of `inbox/`, reply in {{CHAT_LANGUAGE}} with a 3-5 line status and the codes of the pending list, and say that the full routine was skipped because the plugin is not installed for this folder. Give the fix in the status: run `claude plugin install ceo-of-agents@ceo-of-agents --scope project` in this folder, then restart Claude Code (on the web, plugins do not load: suggest a local session).
 
-No scheduled automation and no hooks: everything runs when the CEO opens a session.
+The framework itself runs nothing on a schedule and adds no hooks: its procedures run when the CEO opens a session. A scheduled task the CEO sets up in their Claude app is the CEO's own. When asked to change one, list the existing tasks, find it and edit it in place with the scheduling tool the session has (update, never a duplicate; a session-scoped loop has no update: delete and recreate it). If the session has no scheduling tool, say so in one sentence and give the steps in plain words: Code tab, "Scheduled" in the sidebar, open the task, Edit (pencil), change the schedule, save.
 
 When `org.status` in `org.yaml` is `closed`, the org is read-only for you and the departments: answer questions from the hq, take no new work and write nothing except reopening it, through the `close-org` skill, when the CEO asks.
 
