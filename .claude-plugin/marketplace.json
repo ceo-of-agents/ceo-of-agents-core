@@ -10,7 +10,8 @@
     {
       "name": "ceo-of-agents",
       "source": "./",
-      "description": "Run one or many organizations with an AI chief of staff and department agents, with a git-backed hq per org and a single list of what waits on the CEO."
+      "description": "Run one or many organizations with an AI chief of staff and department agents, with a git-backed hq per org and a single list of what waits on the CEO.",
+      "license": "MIT"
     }
   ]
 }

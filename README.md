@@ -219,3 +219,7 @@ Run by a CEO, a chief of staff and five departments: engineering and product, de
 This plugin is built by its own fleet: a chief of staff and two departments, with the same structure.
 
 <img src="assets/coa-org-chart.svg" width="100%" alt="ceo-of-agents org chart: the CEO, then Giulia the chief of staff, then two departments: Mike (engineering) and Alpha (design and brand). Handoffs and decisions land as commits in hq">
+
+## License
+
+MIT. See [LICENSE](LICENSE).
