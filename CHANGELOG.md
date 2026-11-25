@@ -2,6 +2,18 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
+## [0.25.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.24.0...v0.25.0) (2026-11-25)
+
+
+### Features
+
+* **todo:** add optional categories to the CEO todo list ([#135](https://github.com/iamgiolaga/ceo-of-agents/issues/135)) ([cfd67f7](https://github.com/iamgiolaga/ceo-of-agents/commit/cfd67f7166fe42156d5422d56192d964d330dc08))
+
+
+### Bug fixes
+
+* let the chief of staff edit an existing scheduled task ([#134](https://github.com/iamgiolaga/ceo-of-agents/issues/134)) ([1b1418c](https://github.com/iamgiolaga/ceo-of-agents/commit/1b1418c1383a9f8b931087cedd425205a6869c7c))
+
 ## [0.24.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.23.0...v0.24.0) (2026-11-25)
 
 
