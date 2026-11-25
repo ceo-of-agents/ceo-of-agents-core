@@ -1,4 +1,4 @@
-# ceo-of-agents
+# [ceo-of-agents](https://github.com/ceo-of-agents)
 
 <p align="center">
   <img src="assets/banner.svg" width="100%" alt="ceo-of-agents, a plugin for Claude Code. You're the CEO. Your agents are the company. On the right, the logo: an org tree whose three branches land as commits on a git line.">
@@ -214,7 +214,7 @@ Run by a CEO, a chief of staff and five departments: engineering and product, de
 
 <img src="assets/partitelle-org-chart.png" width="100%" alt="partitelle org chart: the CEO, then Giulia the chief of staff, then five departments: Mike (engineering and product), Alpha (design and brand), Kyle (business), Fanny (growth and social) and Lara (legal, advisory)">
 
-### ceo-of-agents
+### [ceo-of-agents](https://github.com/ceo-of-agents)
 
 This plugin is built by its own fleet: a chief of staff and two departments, with the same structure.
 
