@@ -113,7 +113,13 @@ claude plugin marketplace add iamgiolaga/ceo-of-agents
 claude plugin install ceo-of-agents@ceo-of-agents --scope project
 ```
 
-The plugin is then turned on in the folder's `.claude/settings.json`, so it loads only in your hq. Install it once, at project scope only: a second copy at another scope can stay on an older version and be the one that loads ([how to remove one](#6-update)). On another computer, or after moving the folder, run the same commands inside your hq's clone: being turned on in `.claude/settings.json` is not enough, the plugin must be installed for that folder.
+The plugin is then turned on in the folder's `.claude/settings.json`, so it loads only in your hq. Install it once, at project scope only: a second copy at another scope can stay on an older version and be the one that loads. On another computer, or after moving the folder, run the same commands inside your hq's clone: being turned on in `.claude/settings.json` is not enough, the plugin must be installed for that folder.
+
+To check for an install at another scope, run `claude plugin list` (or `/plugin`, Installed tab) and read the Scope line of `ceo-of-agents@ceo-of-agents`. The list also shows project installs of your other folders, so a second entry is a problem only when it is at user scope or for this same folder. To remove a user-scope copy, first install at project scope in each of your hqs (a user-scope install may be what your other hqs use), then run:
+
+```
+claude plugin uninstall ceo-of-agents@ceo-of-agents --scope user
+```
 
 ## 4. First run
 
@@ -182,7 +188,19 @@ claude plugin update ceo-of-agents@ceo-of-agents --scope project
 
 Auto-update is off by default for third-party marketplaces; turn it on in `/plugin`, Marketplaces tab.
 
-If you also installed the plugin for your whole computer (user scope), install it at project scope in each of your hqs first, then check `/plugin`, Installed tab, and remove the extra copy with `claude plugin uninstall ceo-of-agents@ceo-of-agents --scope user`.
+### If an update fails
+
+Try these in order:
+
+1. Refresh the marketplace: `claude plugin marketplace update ceo-of-agents`.
+2. Update the install for the right scope: `claude plugin update ceo-of-agents@ceo-of-agents --scope <user|project>`. Use `project` if you followed the install steps, and run it inside your hq folder.
+3. Restart Claude Code: the new version loads only in a new session.
+
+If it still fails, run `claude plugin list` and look for a second install at another scope: see [Install the plugin](#install-the-plugin) for how to read the list and remove an extra copy.
+
+If your git config rewrites GitHub HTTPS URLs to SSH (`url.git@github.com:.insteadOf https://github.com/`), the marketplace fetch goes over SSH and needs a working SSH agent with your key loaded. If the fetch fails, load the key (for example `ssh-add`) or remove the rule, then retry.
+
+Old versions stay in the plugin cache (`~/.claude/plugins/cache/`) after an update. They are harmless: only the installed version loads.
 
 An update never changes your hq by itself: at the start of a session your chief of staff notices the new version and offers to bring your hq up to date, and nothing in your hq changes until you say OK. Each update is described in [`migrations/`](migrations/README.md); your CoS shows a short summary of what changed and saves it as one commit per update.
 
