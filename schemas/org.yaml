@@ -32,9 +32,10 @@
 #   ceo.role_id             role id for the CEO (for example "ceo"); a role, not a person
 #   ceo.display_name        optional free text, may be ""
 #   ceo.profile             optional: technical | non-technical; absent means technical.
-#                           With non-technical, the CoS and the departments use plain
-#                           words in chat (a commit is "saved", a push is "sent to
-#                           GitHub"); files keep their usual format
+#                           With non-technical, the CoS and the departments talk about
+#                           outcomes in plain words, not tools or routine GitHub
+#                           tracking (a commit is "saved", a push is "sent"); files
+#                           keep their usual format
 #   ceo.voice               optional: path to the CEO's voice file for text written under
 #                           the CEO's name (company/ceo-voice.md, schema voice/1,
 #                           schemas/ceo-voice.md); absent or null means
