@@ -33,7 +33,7 @@ This org has no departments yet. The CoS proposes one through a decision card wh
 <!-- END IF -->
 ## Rhythms (on demand only)
 
-No scheduled automation, no hooks. Nothing runs unless the CEO opens a session.
+No scheduled automation, no hooks: the framework runs nothing unless the CEO opens a session. A scheduled task you set up in your Claude app is yours; ask the CoS to change its times and it edits that task in place, or, if the session cannot, tells you the steps in the app (Code tab, "Scheduled" in the sidebar, open the task, Edit, change the schedule, save).
 
 | Rhythm | What | How |
 |---|---|---|
