@@ -133,9 +133,9 @@ GOOD_TODO = (
 
 
 TAGGED_TODO = (
-    "---\nschema: todo/1\nlast_updated: 2026-01-15\nnext_todo: 8\ncategories: [admin, team]\n---\n\n# CEO todo list\n\n## Open\n"
+    "---\nschema: todo/1\nlast_updated: 2026-01-15\nnext_todo: 8\ncategories: [admin, people]\n---\n\n# CEO todo list\n\n## Open\n"
     "- ACME-T3 [high]: Review the vendor contract #admin. Status: waiting on Legal (since 2026-01-10)\n"
-    "  - ACME-T6 [low]: Check the export #team (since 2026-01-14)\n"
+    "  - ACME-T6 [low]: Check the export #people (since 2026-01-14)\n"
     "- ACME-T4 [normal]: Reply to the beta tester (since 2026-01-14)\n\n"
     "## Done (last 7 days)\n- ACME-T2 [low]: Renew the domain #admin (done 2026-01-12)\n"
 )

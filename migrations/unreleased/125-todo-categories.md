@@ -6,11 +6,11 @@ Why: a flat list of personal tasks gets hard to scan; grouping by type lets the 
 
 No schema version changes: `company/todo.md` stays `todo/1` and existing files without categories stay valid. `org.yaml` and `company/state.md` are unchanged.
 
-### Edits
+Plain summary for the CEO: "You can now sort your own tasks into categories, for example admin or people. Ask me and I suggest a few, and I can show your list grouped by category. Your current list does not change."
+
+## Edits
 
 None in the hq. The change lives in the plugin (`schemas/todo.md`, `skills/intake/SKILL.md`, `scripts/ci/check_boot_set.py`). An existing `company/todo.md` stays as it is; `scripts/check-boot-set.sh` accepts tagged lines.
-
-Plain summary for the CEO: "You can now sort your own tasks into categories, for example admin or people. Ask me and I suggest a few, and I can show your list grouped by category. Your current list does not change."
 
 ## Check after applying
 
