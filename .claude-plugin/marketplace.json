@@ -1,7 +1,8 @@
 {
   "name": "ceo-of-agents",
   "owner": {
-    "name": "Giovanni Laganà"
+    "name": "ceo-of-agents",
+    "url": "https://github.com/ceo-of-agents"
   },
   "metadata": {
     "description": "Marketplace for the ceo-of-agents plugin."
