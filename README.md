@@ -10,9 +10,9 @@
 
 <p align="center">
   <a href="#3-install"><img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-2DD4BF?style=flat-square&labelColor=0F172A"></a>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/iamgiolaga/ceo-of-agents?style=flat-square&labelColor=0F172A&color=94A3B8"></a>
-  <a href="https://github.com/iamgiolaga/ceo-of-agents/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iamgiolaga/ceo-of-agents?label=release&style=flat-square&labelColor=0F172A&color=A78BFA"></a>
-  <a href="https://github.com/iamgiolaga/ceo-of-agents/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/iamgiolaga/ceo-of-agents/ci.yml?branch=main&label=CI&style=flat-square&labelColor=0F172A&color=2DD4BF"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/ceo-of-agents/ceo-of-agents-core?style=flat-square&labelColor=0F172A&color=94A3B8"></a>
+  <a href="https://github.com/ceo-of-agents/ceo-of-agents-core/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/ceo-of-agents/ceo-of-agents-core?label=release&style=flat-square&labelColor=0F172A&color=A78BFA"></a>
+  <a href="https://github.com/ceo-of-agents/ceo-of-agents-core/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/ceo-of-agents/ceo-of-agents-core/ci.yml?branch=main&label=CI&style=flat-square&labelColor=0F172A&color=2DD4BF"></a>
   <img alt="Status: early" src="https://img.shields.io/badge/status-early-94A3B8?style=flat-square&labelColor=0F172A">
 </p>
 
@@ -41,7 +41,7 @@ Nothing important happens without your OK. More in the [design notes](docs/desig
 1. Add the marketplace:
 
    ```
-   /plugin marketplace add iamgiolaga/ceo-of-agents
+   /plugin marketplace add ceo-of-agents/ceo-of-agents-core
    ```
 
 2. Install the plugin. When asked where to install, pick project scope:
@@ -50,7 +50,7 @@ Nothing important happens without your OK. More in the [design notes](docs/desig
    /plugin install ceo-of-agents@ceo-of-agents
    ```
 
-Using the `/plugin` menu instead? In the "Add Marketplace" field, type only `iamgiolaga/ceo-of-agents`.
+Using the `/plugin` menu instead? In the "Add Marketplace" field, type only `ceo-of-agents/ceo-of-agents-core`.
 
 **2. Start** (same folder) and say what the fleet is for:
 
@@ -109,7 +109,7 @@ Install the plugin in your hq folder, not for your whole computer. Open the empt
 Or from your shell, inside that folder:
 
 ```
-claude plugin marketplace add iamgiolaga/ceo-of-agents
+claude plugin marketplace add ceo-of-agents/ceo-of-agents-core
 claude plugin install ceo-of-agents@ceo-of-agents --scope project
 ```
 

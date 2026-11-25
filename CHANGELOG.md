@@ -2,135 +2,135 @@
 
 All notable changes to this plugin are recorded here. New entries are written by release-please from the Conventional Commit titles of merged pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#how-releases-happen)).
 
-## [0.25.1](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.25.0...v0.25.1) (2026-11-25)
+## [0.25.1](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.25.0...v0.25.1) (2026-11-25)
 
 
 ### Bug fixes
 
-* keep GitHub mechanics out of chat for a non-technical CEO ([#132](https://github.com/iamgiolaga/ceo-of-agents/issues/132)) ([a3ee3f7](https://github.com/iamgiolaga/ceo-of-agents/commit/a3ee3f7522be0f669d5cac44139939f9e317e70d))
+* keep GitHub mechanics out of chat for a non-technical CEO ([#132](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/132)) ([a3ee3f7](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/a3ee3f7522be0f669d5cac44139939f9e317e70d))
 
-## [0.25.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.24.0...v0.25.0) (2026-11-25)
+## [0.25.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.24.0...v0.25.0) (2026-11-25)
 
 
 ### Features
 
-* **todo:** add optional categories to the CEO todo list ([#135](https://github.com/iamgiolaga/ceo-of-agents/issues/135)) ([cfd67f7](https://github.com/iamgiolaga/ceo-of-agents/commit/cfd67f7166fe42156d5422d56192d964d330dc08))
+* **todo:** add optional categories to the CEO todo list ([#135](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/135)) ([cfd67f7](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/cfd67f7166fe42156d5422d56192d964d330dc08))
 
 
 ### Bug fixes
 
-* let the chief of staff edit an existing scheduled task ([#134](https://github.com/iamgiolaga/ceo-of-agents/issues/134)) ([1b1418c](https://github.com/iamgiolaga/ceo-of-agents/commit/1b1418c1383a9f8b931087cedd425205a6869c7c))
+* let the chief of staff edit an existing scheduled task ([#134](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/134)) ([1b1418c](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/1b1418c1383a9f8b931087cedd425205a6869c7c))
 
-## [0.24.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.23.0...v0.24.0) (2026-11-25)
-
-
-### Features
-
-* **hq-version:** warn when the plugin is installed in more than one scope ([#130](https://github.com/iamgiolaga/ceo-of-agents/issues/130)) ([671393a](https://github.com/iamgiolaga/ceo-of-agents/commit/671393aa62bff98ef1f094b75f5393915084ad87))
-
-## [0.23.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.22.0...v0.23.0) (2026-11-21)
+## [0.24.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.23.0...v0.24.0) (2026-11-25)
 
 
 ### Features
 
-* **draft-as-ceo:** ask for the intended tone first when setting up the voice ([#117](https://github.com/iamgiolaga/ceo-of-agents/issues/117)) ([06c415d](https://github.com/iamgiolaga/ceo-of-agents/commit/06c415d1881f6be245df2263a8c25eb57ca7d9ab))
+* **hq-version:** warn when the plugin is installed in more than one scope ([#130](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/130)) ([671393a](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/671393aa62bff98ef1f094b75f5393915084ad87))
+
+## [0.23.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.22.0...v0.23.0) (2026-11-21)
+
+
+### Features
+
+* **draft-as-ceo:** ask for the intended tone first when setting up the voice ([#117](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/117)) ([06c415d](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/06c415d1881f6be245df2263a8c25eb57ca7d9ab))
 
 
 ### Bug fixes
 
-* **ci:** do not fail the release workflow when no release PR changed ([#121](https://github.com/iamgiolaga/ceo-of-agents/issues/121)) ([a63eecf](https://github.com/iamgiolaga/ceo-of-agents/commit/a63eecf0855e42454da931b4e790b42cd9656a76))
-* **ci:** make releases fully automatic with a maintainer token and auto-merge ([#123](https://github.com/iamgiolaga/ceo-of-agents/issues/123)) ([150e1f3](https://github.com/iamgiolaga/ceo-of-agents/commit/150e1f39ea283e6ec95047d2d3fee2f24a1ceeb7))
+* **ci:** do not fail the release workflow when no release PR changed ([#121](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/121)) ([a63eecf](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/a63eecf0855e42454da931b4e790b42cd9656a76))
+* **ci:** make releases fully automatic with a maintainer token and auto-merge ([#123](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/123)) ([150e1f3](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/150e1f39ea283e6ec95047d2d3fee2f24a1ceeb7))
 
-## [0.22.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.21.0...v0.22.0) (2026-11-21)
-
-
-### Features
-
-* **draft-as-ceo:** default voice path and one draft format ([#113](https://github.com/iamgiolaga/ceo-of-agents/issues/113)) ([960ed89](https://github.com/iamgiolaga/ceo-of-agents/commit/960ed895892b868be2ea12f65561f9823ddbeca9))
-
-## [0.21.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.20.0...v0.21.0) (2026-11-20)
+## [0.22.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.21.0...v0.22.0) (2026-11-21)
 
 
 ### Features
 
-* let the CEO define a voice for drafts written under their name ([#109](https://github.com/iamgiolaga/ceo-of-agents/issues/109)) ([11b4c4e](https://github.com/iamgiolaga/ceo-of-agents/commit/11b4c4ecd89a85b345ebcc94d012313e2b88217b))
-* **tips:** add contextual tips file shown at session start ([#107](https://github.com/iamgiolaga/ceo-of-agents/issues/107)) ([ebd318e](https://github.com/iamgiolaga/ceo-of-agents/commit/ebd318e23ae30aee7b6d584a5677b1ad1f0b1d2b))
+* **draft-as-ceo:** default voice path and one draft format ([#113](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/113)) ([960ed89](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/960ed895892b868be2ea12f65561f9823ddbeca9))
 
-## [0.20.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.19.0...v0.20.0) (2026-11-19)
-
-
-### Features
-
-* **session-start:** add a quiet start for sessions renewed mid-chat ([#100](https://github.com/iamgiolaga/ceo-of-agents/issues/100)) ([2a6305f](https://github.com/iamgiolaga/ceo-of-agents/commit/2a6305f908a71616db28340c0f85191ab65d52d6))
-* support parent and child items in the pending list and todo list ([#101](https://github.com/iamgiolaga/ceo-of-agents/issues/101)) ([0d24c05](https://github.com/iamgiolaga/ceo-of-agents/commit/0d24c059c54926f22a874ea629cfa42434936cf1))
-
-## [0.19.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.18.0...v0.19.0) (2026-11-18)
+## [0.21.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.20.0...v0.21.0) (2026-11-20)
 
 
 ### Features
 
-* route department file writes through workers and limit Bash ([#96](https://github.com/iamgiolaga/ceo-of-agents/issues/96)) ([76c0289](https://github.com/iamgiolaga/ceo-of-agents/commit/76c0289b5297ff8873129a596f5043b95456e6db))
+* let the CEO define a voice for drafts written under their name ([#109](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/109)) ([11b4c4e](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/11b4c4ecd89a85b345ebcc94d012313e2b88217b))
+* **tips:** add contextual tips file shown at session start ([#107](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/107)) ([ebd318e](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/ebd318e23ae30aee7b6d584a5677b1ad1f0b1d2b))
 
-## [0.18.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.17.0...v0.18.0) (2026-11-18)
-
-
-### Features
-
-* let an org choose ask instead of deny for the destructive-command baseline ([#91](https://github.com/iamgiolaga/ceo-of-agents/issues/91)) ([ef498a8](https://github.com/iamgiolaga/ceo-of-agents/commit/ef498a84cdb1d1686b5a7d606650c16d003e0b10))
-* put open work the chief of staff holds on the pending list ([#90](https://github.com/iamgiolaga/ceo-of-agents/issues/90)) ([fe36414](https://github.com/iamgiolaga/ceo-of-agents/commit/fe36414f55b6718c7d044af7d0b8cdb0f511e653))
-
-## [0.17.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.16.0...v0.17.0) (2026-11-18)
+## [0.20.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.19.0...v0.20.0) (2026-11-19)
 
 
 ### Features
 
-* add an optional CEO todo list (company/todo.md, T codes) ([#79](https://github.com/iamgiolaga/ceo-of-agents/issues/79)) ([927e282](https://github.com/iamgiolaga/ceo-of-agents/commit/927e2820ba3900b6d8b5984118acc69db48a0ac0))
-* close and reopen an org ([#82](https://github.com/iamgiolaga/ceo-of-agents/issues/82)) ([80a3548](https://github.com/iamgiolaga/ceo-of-agents/commit/80a35488c6f4342545faa14ab2654f46355ecb54))
-* **init-fleet:** accept a setup answers file and add a dry run ([#83](https://github.com/iamgiolaga/ceo-of-agents/issues/83)) ([dc98d58](https://github.com/iamgiolaga/ceo-of-agents/commit/dc98d5833f7dd596f7c1508089a0fd7c38bc8ff4))
-* rewrite state lines, append history to a log and check at write time ([#85](https://github.com/iamgiolaga/ceo-of-agents/issues/85)) ([cf82322](https://github.com/iamgiolaga/ceo-of-agents/commit/cf823221b3f3d20af955f81e60196f0d76b2c8c0))
-* store the user's profile and word chat in plain terms for non-technical users ([#81](https://github.com/iamgiolaga/ceo-of-agents/issues/81)) ([f9f34bb](https://github.com/iamgiolaga/ceo-of-agents/commit/f9f34bb609ef1ea7fffc8440dea789c599c4a41d))
+* **session-start:** add a quiet start for sessions renewed mid-chat ([#100](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/100)) ([2a6305f](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/2a6305f908a71616db28340c0f85191ab65d52d6))
+* support parent and child items in the pending list and todo list ([#101](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/101)) ([0d24c05](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/0d24c059c54926f22a874ea629cfa42434936cf1))
 
-## [0.16.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.15.1...v0.16.0) (2026-11-18)
+## [0.19.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.18.0...v0.19.0) (2026-11-18)
 
 
 ### Features
 
-* **permissions:** allow notice-tier actions and deny destructive commands in every mode ([#76](https://github.com/iamgiolaga/ceo-of-agents/issues/76)) ([69e27ee](https://github.com/iamgiolaga/ceo-of-agents/commit/69e27eea307adc92ad9039eb186fc630aaefccf2))
+* route department file writes through workers and limit Bash ([#96](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/96)) ([76c0289](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/76c0289b5297ff8873129a596f5043b95456e6db))
 
-## [0.15.1](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.15.0...v0.15.1) (2026-11-18)
+## [0.18.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.17.0...v0.18.0) (2026-11-18)
+
+
+### Features
+
+* let an org choose ask instead of deny for the destructive-command baseline ([#91](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/91)) ([ef498a8](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/ef498a84cdb1d1686b5a7d606650c16d003e0b10))
+* put open work the chief of staff holds on the pending list ([#90](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/90)) ([fe36414](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/fe36414f55b6718c7d044af7d0b8cdb0f511e653))
+
+## [0.17.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.16.0...v0.17.0) (2026-11-18)
+
+
+### Features
+
+* add an optional CEO todo list (company/todo.md, T codes) ([#79](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/79)) ([927e282](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/927e2820ba3900b6d8b5984118acc69db48a0ac0))
+* close and reopen an org ([#82](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/82)) ([80a3548](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/80a35488c6f4342545faa14ab2654f46355ecb54))
+* **init-fleet:** accept a setup answers file and add a dry run ([#83](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/83)) ([dc98d58](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/dc98d5833f7dd596f7c1508089a0fd7c38bc8ff4))
+* rewrite state lines, append history to a log and check at write time ([#85](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/85)) ([cf82322](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/cf823221b3f3d20af955f81e60196f0d76b2c8c0))
+* store the user's profile and word chat in plain terms for non-technical users ([#81](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/81)) ([f9f34bb](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/f9f34bb609ef1ea7fffc8440dea789c599c4a41d))
+
+## [0.16.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.15.1...v0.16.0) (2026-11-18)
+
+
+### Features
+
+* **permissions:** allow notice-tier actions and deny destructive commands in every mode ([#76](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/76)) ([69e27ee](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/69e27eea307adc92ad9039eb186fc630aaefccf2))
+
+## [0.15.1](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.15.0...v0.15.1) (2026-11-18)
 
 
 ### Bug fixes
 
-* harden permission rules for git and gh ([#71](https://github.com/iamgiolaga/ceo-of-agents/issues/71)) ([480dd56](https://github.com/iamgiolaga/ceo-of-agents/commit/480dd5680cae05affd8a09b338e0ab6ce921c5d6))
+* harden permission rules for git and gh ([#71](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/71)) ([480dd56](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/480dd5680cae05affd8a09b338e0ab6ce921c5d6))
 
-## [0.15.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.14.0...v0.15.0) (2026-11-18)
-
-
-### Features
-
-* derive permission rules from the gates and record outward writes in the same turn ([#67](https://github.com/iamgiolaga/ceo-of-agents/issues/67)) ([28104e1](https://github.com/iamgiolaga/ceo-of-agents/commit/28104e145720bfae6fe267758c34cee7edef8440))
-
-## [0.14.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.13.0...v0.14.0) (2026-11-17)
+## [0.15.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.14.0...v0.15.0) (2026-11-18)
 
 
 ### Features
 
-* tag pending items by kind, pre-allow plugin skills and check boot budgets with a script ([#63](https://github.com/iamgiolaga/ceo-of-agents/issues/63)) ([f90faed](https://github.com/iamgiolaga/ceo-of-agents/commit/f90faed5ebb99844e2f8ce996df15c399b3c1ca9))
+* derive permission rules from the gates and record outward writes in the same turn ([#67](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/67)) ([28104e1](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/28104e145720bfae6fe267758c34cee7edef8440))
 
-## [0.13.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.12.0...v0.13.0) (2026-11-07)
-
-
-### Features
-
-* **departments:** archive a removed department's folder instead of deleting it ([#52](https://github.com/iamgiolaga/ceo-of-agents/issues/52)) ([2aaf12b](https://github.com/iamgiolaga/ceo-of-agents/commit/2aaf12b73d42c7c42d8a3f98f6084a6cd852a1d5))
-
-## [0.12.0](https://github.com/iamgiolaga/ceo-of-agents/compare/v0.11.0...v0.12.0) (2026-11-07)
+## [0.14.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.13.0...v0.14.0) (2026-11-17)
 
 
 ### Features
 
-* add initiative folders, document indexes and a hygiene step to the weekly brief ([#48](https://github.com/iamgiolaga/ceo-of-agents/issues/48)) ([0b758b4](https://github.com/iamgiolaga/ceo-of-agents/commit/0b758b4d8eb1536be38bef9b117a4f1270f99f29))
+* tag pending items by kind, pre-allow plugin skills and check boot budgets with a script ([#63](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/63)) ([f90faed](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/f90faed5ebb99844e2f8ce996df15c399b3c1ca9))
+
+## [0.13.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.12.0...v0.13.0) (2026-11-07)
+
+
+### Features
+
+* **departments:** archive a removed department's folder instead of deleting it ([#52](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/52)) ([2aaf12b](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/2aaf12b73d42c7c42d8a3f98f6084a6cd852a1d5))
+
+## [0.12.0](https://github.com/ceo-of-agents/ceo-of-agents-core/compare/v0.11.0...v0.12.0) (2026-11-07)
+
+
+### Features
+
+* add initiative folders, document indexes and a hygiene step to the weekly brief ([#48](https://github.com/ceo-of-agents/ceo-of-agents-core/issues/48)) ([0b758b4](https://github.com/ceo-of-agents/ceo-of-agents-core/commit/0b758b4d8eb1536be38bef9b117a4f1270f99f29))
 
 ## 0.11.0 and earlier
 

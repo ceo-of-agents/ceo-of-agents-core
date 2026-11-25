@@ -20,7 +20,7 @@
 # reused only if it points to the expected commit.
 set -euo pipefail
 
-REPO="iamgiolaga/ceo-of-agents"
+REPO="ceo-of-agents/ceo-of-agents-core"
 OLD_TAG="ceo-of-agents--v0.1.1"
 
 # version  commit (merge commit on main)              pull request

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="sp-title sp-desc">
   <title id="sp-title">ceo-of-agents, a plugin for Claude Code</title>
-  <desc id="sp-desc">You're the CEO. Your agents are the company. A chief of staff and departments that work from one git repo, behind approval gates. Start with /ceo-of-agents:init-fleet. On the right, the ceo-of-agents logo: a violet node for you, the CEO, above a teal node for the chief of staff, whose three branches land as commits on the teal git line of the hq. github.com/iamgiolaga/ceo-of-agents, open source, MIT.</desc>
+  <desc id="sp-desc">You're the CEO. Your agents are the company. A chief of staff and departments that work from one git repo, behind approval gates. Start with /ceo-of-agents:init-fleet. On the right, the ceo-of-agents logo: a violet node for you, the CEO, above a teal node for the chief of staff, whose three branches land as commits on the teal git line of the hq. github.com/ceo-of-agents/ceo-of-agents-core, open source, MIT.</desc>
 
   <!-- Full-bleed, no transparency: GitHub social previews are shown as PNG on light and dark surfaces. Keep content 64px+ from every edge (crop safety). -->
   <!-- Source for social-preview.png. The PNG is rendered with JetBrains Mono and Inter loaded (both SIL OFL 1.1); the system names after them are only a fallback for viewing this file. -->
@@ -46,6 +46,6 @@
   </g>
 
   <!-- Footer -->
-  <text x="80" y="576" font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#94A3B8">github.com/iamgiolaga/ceo-of-agents</text>
+  <text x="80" y="576" font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#94A3B8">github.com/ceo-of-agents/ceo-of-agents-core</text>
   <text x="1200" y="576" text-anchor="end" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" fill="#94A3B8">open source · MIT</text>
 </svg>
