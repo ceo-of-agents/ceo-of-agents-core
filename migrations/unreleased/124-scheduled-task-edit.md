@@ -19,7 +19,7 @@ No scheduled automation and no hooks: everything runs when the CEO opens a sessi
 with:
 
 ```
-The framework itself runs nothing on a schedule and adds no hooks: its procedures run when the CEO opens a session. A scheduled task the CEO sets up in their Claude app is the CEO's own. When asked to change one, list the existing tasks, find it and edit it in place with the scheduling tool the session has (update, never a duplicate; a session-scoped loop has no update: delete and recreate it). If the session has no scheduling tool, say so in one sentence and give the steps in plain words: Code tab, "Scheduled" in the sidebar, open the task, Edit (pencil), change the schedule, save.
+The framework itself runs nothing on a schedule and adds no hooks: its procedures run when the CEO opens a session. A scheduled task the CEO set up in their Claude app is theirs: to change it, list the existing tasks and edit that one in place, never a duplicate (a session `/loop` task has no update: delete and recreate it). With no scheduling tool, say so in one sentence and give the app steps: Code tab, "Scheduled" in the sidebar, open the task, Edit, change the schedule, save.
 ```
 
 The "Rhythms" line (`Weekly brief, reviews and batched approvals run on demand only, when the CEO asks. No scheduled automation, no hooks.`) stays as it is.
@@ -42,5 +42,5 @@ Plain summary for the CEO: "If you ask me to change the times of a scheduled tas
 
 ## Check after applying
 
-- `CLAUDE.md` no longer contains the line `No scheduled automation and no hooks: everything runs when the CEO opens a session.` and contains `edit it in place`.
+- `CLAUDE.md` no longer contains the line `No scheduled automation and no hooks: everything runs when the CEO opens a session.` and contains `edit that one in place`.
 - `operating-model.md` contains `edits that task in place`.
