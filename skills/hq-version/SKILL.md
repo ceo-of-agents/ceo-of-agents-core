@@ -1,8 +1,8 @@
 ---
 name: hq-version
-description: Compare this hq's framework version with the installed ceo-of-agents plugin version and, after the CEO's OK, apply the pending migrations in order. Use at session start in a ceo-of-agents hq, and when the CEO approves an hq update.
+description: Compare this hq's framework version with the installed ceo-of-agents plugin version, flag a plugin installed in more than one scope, and, after the CEO's OK, apply the pending migrations in order. Use at session start in a ceo-of-agents hq, and when the CEO approves an hq update.
 user-invocable: false
-allowed-tools: Read Grep Glob Edit Write Bash(git status:*) Bash(git add:*) Bash(git mv:*) Bash(git commit:*) Bash(git remote) Bash(git remote -v) Bash(git check-ignore:*) Bash(ls:*) Bash(wc:*) Bash(date:*)
+allowed-tools: Read Grep Glob Edit Write Bash(git status:*) Bash(git add:*) Bash(git mv:*) Bash(git commit:*) Bash(git remote) Bash(git remote -v) Bash(git check-ignore:*) Bash(ls:*) Bash(wc:*) Bash(date:*) Bash(claude plugin list --json)
 ---
 
 # hq-version: check the hq against the plugin, then migrate
@@ -32,6 +32,15 @@ Then:
   Then add one A item to "Waiting on the CEO", unless an open A item for the hq update already exists, in the exact line format of `${CLAUDE_PLUGIN_ROOT}/schemas/state.md`: `- <ORG_ID>-A<n> [normal] {ok}: approve updating hq from <hq> to <installed> (migrations <list>, in the plugin's migrations/ folder) (since YYYY-MM-DD)`. Increment `next_action`. If an open item has an older target, update its text instead of adding another.
 - Ahead: say `hq on X is newer than the installed plugin Y: update the plugin (/plugin, Installed tab, Update now). If it is already up to date, a second, older install at another scope may be the one loaded: check /plugin, Installed tab, and remove the extra copy (for example claude plugin uninstall ceo-of-agents@ceo-of-agents --scope user).` and continue.
 - Unknown: say `Version check skipped: <reason>` and continue.
+
+### Installs in more than one scope
+
+Run `claude plugin list --json` from the hq root. Keep the entries whose `id` is `ceo-of-agents@<marketplace>` and that apply to this folder: scope `user` or `managed`, or scope `project` or `local` with `projectPath` equal to the hq root. The list also shows project installs of other folders: ignore them.
+
+- One entry or none left, or the command fails or is not available: say nothing.
+- Two or more left: add one line to the status with each scope and its version, the version loaded here (step 1), and the command for each extra copy. Keep the project install; for each other scope give the remove command `claude plugin uninstall ceo-of-agents@ceo-of-agents --scope <scope>` and the update alternative `claude plugin update ceo-of-agents@ceo-of-agents --scope <scope>`. If no project install is among them, keep the one whose version is loaded and name the others. For example: `Plugin installed in 2 scopes: user 0.20.0, project 0.23.0; loaded here: 0.23.0. Remove the user copy with claude plugin uninstall ceo-of-agents@ceo-of-agents --scope user (install at project scope in your other hqs first), or update it with claude plugin update ceo-of-agents@ceo-of-agents --scope user.`
+
+This is a report only: add no A item. It runs in a closed org too, because it is read-only.
 
 Never edit any other hq file during the check.
 
